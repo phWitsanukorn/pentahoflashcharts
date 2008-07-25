@@ -1,0 +1,25 @@
+&title={title},{color: #7E97A6; font-size: 20; text-align: center}& 
+&x_legend=Days,12,#164166& 
+&x_label_style=10,#164166,0,3,#818D9D&
+ &x_axis_steps=1& 
+ &y_legend=Cumulative,12,#164166& 
+ &y2_legend=Metric,12,#164166&
+  &y_ticks=5,10,5& &bar=50,#9933CC,Total Sales,10&
+   &line_hollow_2=2,#164166,Period Sales,10,4& 
+   &values={col3}& 
+   &values_2={col2}& 
+   &y2_lines=2& 
+   &show_y2=true& 
+   &x_labels={col1}& 
+   &bg_colour=#FFFFFF& 
+   &x_axis_colour=#818D9D& 
+   &x_grid_colour=#F0F0F0& 
+   &y_axis_colour=#818D9D& 
+   &y_grid_colour=#ADB5C7& 
+   &y2_axis_colour=#164166& 
+   &tool_tip=%23key%23%3Cbr%3E%23val%23+%28%23x_label%23%29&
+   &y2_max={max2}&
+   &y2_min={min2}&
+   &y_max={max3}&
+   
+   &y_min={min3}&

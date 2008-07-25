@@ -1,0 +1,13 @@
+&y_min=0& 
+&y_max={max1}& 
+&y_steps=4& 
+&title=Actual vs Budget by Region,{font-size:20px; color: #bcd6ff; margin:10px; background-color: #5E83BF; padding: 5px 15px 5px 15px;}& 
+&y_legend=USD,12,#736AFF& 
+&x_labels={col2}& 
+&x_axis_colour=#909090& 
+&x_grid_colour=#D2D2FB& 
+&y_axis_colour=#909090& 
+&y_grid_colour=#D2D2FB& 
+&bar_glass=55,#D54C78,#C31812,Actuals,12& 
+&values={col1}& &bar_glass_2=55,#5E83BF,#424581,Budget,12& 
+&values_2={col3}&
