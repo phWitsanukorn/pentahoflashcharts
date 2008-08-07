@@ -1,4 +1,4 @@
-#summary 4 Steps to installing and Seeing Flash Charts in Pentaho
+#summary Quickest way to See Flash Charts in Pentaho
 
 = Pre Reqs =
 
