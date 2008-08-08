@@ -7,10 +7,10 @@
 
 = Steps =
 
-  * Download and unzip the "openflashchartcomponent-VERSION.zip" somewhere.  We'll now refer to this as $OFC_HOME
+  * Download and unzip the "pentahoflashchartcomponent-VERSION.zip" somewhere.  We'll now refer to this as $OFC_HOME
   * Copy $OFC_HOME/open-flash-chart.swf to $PENTAHO_HOME/jboss/server/default/deploy/pentaho-styles.war/images/
   * Copy the directory "openflashchart" of $OFC_HOME/solutions/ to $PENTAHO_HOME/pentaho-solutions/.  End result is that there should be a directory (with files at $PENTAHO_HOME/pentaho-solutions/openflashchart
-  * Copy the file $OFC_HOME/openflashchartcomponent-VERSION.jar" to $PENTAHO_HOME/jboss/server/default/deploy/pentaho.war/WEB-INF/lib
+  * Copy the file $OFC_HOME/pentahoflashchartcomponent-VERSION.jar" to $PENTAHO_HOME/jboss/server/default/deploy/pentaho.war/WEB-INF/lib
   * Start (or Restart) your Pentaho server.  You may have to "Update the Solution Repository" from the Admin screen if the Solution doesn't show up.
 
 = Optional Steps =
