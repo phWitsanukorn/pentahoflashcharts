@@ -1,0 +1,21 @@
+#summary How to use the Component in an .xaction
+= Prerequsities =
+
+  * You need to know how to build .xaction sequences in design studio.
+  * You need to know how to build "Get Data From" a source (OLAP, Javascript, or SQL) in an .xaction
+  * You need to know how to add a "Custom" component definition to an .xaction using the Design Studio
+
+= Pentaho Flash Chart =
+
+== Component Class ==
+`com.bayontechnologies.bi.pentaho.plugin.openflashchart.OpenFlashChartComponent`
+
+== Inputs ==
+
+chart_dataset (_required_) - A Pentaho "result-set" passed from a previous "Get Data From" operation.  You must have configured a SQL/MDX/Javascript object BEFORE this action that retrieved your data
+
+chart_height (_optional_) - The height of the flash chart to render
+
+chart_width (_optional_) - The width of the flash chart to render
+
+*ANY OTHER VARIABLE* (_optional_) - You can pass as an input any custom variables (myCustomTitleForChart) that can be used in the chart template
