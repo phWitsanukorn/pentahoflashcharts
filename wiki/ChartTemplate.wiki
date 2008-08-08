@@ -1,0 +1,75 @@
+#summary How to make Chart Templates
+= Introduction =
+
+First off - 95% of the chart template examples and magic is provided by Open Flash Chart.  You should visit their web site for examples on Open Flash Chart datafiles to see how to build Open Flash Charts. 
+
+This component is only a means to use a template and combine it with the data to come up with the actual chart datafile.
+
+
+= Replacements =
+
+  * The component reads the template, and then replaces all occurences of the below tokens with the data from the "chart_dataset" that was an input to the component.
+
+== {colN} ==
+
+{colN} will be replaced with a comma separated list of values of the column in N in the dataset
+For instance, x_values={col1} could be replaced with the values in the FIRST column of the data set and end up looking like x_values=2039,193,8930,3839,1023
+
+== {minN} ==
+{minN} will be replaced with the minimum value in the column N in the dataset.
+
+y_min={min2} could be replaced with minimum values in SECOND column of the data set
+y_min=-900
+
+== {maxN} ==
+{maxN} will be replaced with the maximum value in the column N in the dataset
+x_max={max1} could be replaced with x_max=91929292
+
+== {headN} == 
+{headN} will be replaced with the “header value” for the column N in the dataset
+y_label={head1}
+could be replaced with y_label=Region.
+
+This will probably match your JDBC header if you are using SQL (`select col1 as "MyHeaderValue" from ...`)
+
+== {customVariable} ==
+Any custom variable that was passed to the component can be included.  This is useful if you want to create your Title programatically ahead of time.
+
+
+= Example =
+
+== Template ==
+{{{
+&y_min={min1}& 
+&y_max={max1} & 
+&y_steps=4&
+&title=Actual vs Budget by Region,{font-size:20px; color: #bcd6ff; margin:10px; background-color: #5E83BF; padding: 5px 15px 5px 15px;}& 
+&y_legend=USD,12,#736AFF&  
+&x_labels={col2}& 
+&x_axis_colour=#909090& 
+&x_grid_colour=#D2D2FB& 
+&y_axis_colour=#909090& 
+&y_grid_colour=#D2D2FB& 
+&bar_glass=55,#D54C78,#C31812,{head3},12& 
+&values={col3}& 
+&bar_glass_2=55,#5E83BF,#424581,{head4},12& 
+&values_2={col4}&
+}}}
+
+== Results == 
+{{{
+&y_min=0& 
+&y_max=2000000 & 
+&y_steps=4&
+&title=Actual vs Budget by Region,{font-size:20px; color: #bcd6ff; margin:10px; background-color: #5E83BF; padding: 5px 15px 5px 15px;}& 
+&y_legend=USD,12,#736AFF&  
+&x_labels=Central, Western, Eastern, Southern& 
+&x_axis_colour=#909090& 
+&x_grid_colour=#D2D2FB& 
+&y_axis_colour=#909090& 
+&y_grid_colour=#D2D2FB& 
+&bar_glass=55,#D54C78,#C31812,Actuals,12& 
+&values=200,400,600,800& 
+&bar_glass_2=55,#5E83BF,#424581,Budget,12& 
+&values_2=200,400,600,800&
+}}}
