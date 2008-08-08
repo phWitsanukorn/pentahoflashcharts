@@ -18,4 +18,16 @@ chart_height (_optional_) - The height of the flash chart to render
 
 chart_width (_optional_) - The width of the flash chart to render
 
+chart_template_string (_optional_) - The string chart template instead of using a "resource" to use.  See the section on Chart Template syntax.  Either chart_template_string or chart_template must be defined.
+
 *ANY OTHER VARIABLE* (_optional_) - You can pass as an input any custom variables (myCustomTitleForChart) that can be used in the chart template
+
+== Resources ==
+
+chart_template (_optional_) - The "resource", usually a solution file, to use as the chart template.  This is typically used so that you can create a file, "mychartdefinition.txt" that contains the chart template rather than using a string
+
+== Outputs ==
+
+html_fragment - Contains the HTML fragment that will render the flash chart.  This includes a Flash Object fragment of size chart_height x chart_width (from inputs) and a callback location for the open flash chart data file in the content repository.  
+
+content_url - Contains the URL of the generated open flash chart data file in the content repository.  This is the ChartTemplate mashed up with the data to make the real data file to display in open flash chart.
