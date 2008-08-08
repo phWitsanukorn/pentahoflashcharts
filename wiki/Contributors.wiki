@@ -1,0 +1,7 @@
+#summary Contributors
+#labels Featured
+
+= Code =
+
+  * Bayon Technologies, Inc ([http://nicholasgoodman.com Blog])
+  * Tom Qin ([http://qinhui99.itpub.net/ Blog])
