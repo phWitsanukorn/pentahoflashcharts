@@ -18,7 +18,7 @@ chart_height (_optional_) - The height of the flash chart to render
 
 chart_width (_optional_) - The width of the flash chart to render
 
-chart_template_string (_optional_) - The string chart template instead of using a "resource" to use.  See the section on Chart Template syntax.  Either chart_template_string or chart_template must be defined.
+chart_template_string (_optional_) - The string chart template instead of using a "resource" to use.  See the section on [ChartTemplate] syntax.  Either chart_template_string or chart_template must be defined.
 
 *ANY OTHER VARIABLE* (_optional_) - You can pass as an input any custom variables (myCustomTitleForChart) that can be used in the chart template
 
