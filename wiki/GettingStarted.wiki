@@ -15,4 +15,5 @@
 
 = Optional Steps =
 
-  * Configure the System Listener (stub) NEEDS MORE INFO
+  * Configure the System Listener (stub). Open $PENTAHO_HOME/pentaho-solutions/system/pentaho.xml and find the <system-listeners>. Then add the openflashchart listener like these: <openflashchart>com.bayontechnologies.bi.pentaho.plugin.openflashchart.OpenFlashChartSystemListener</openflashchart>
+Save it and restart your pentaho server.
