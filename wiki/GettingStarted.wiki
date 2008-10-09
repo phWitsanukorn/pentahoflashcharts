@@ -17,6 +17,8 @@
   * Start (or Restart) your Pentaho server.  You may have to "Update the Solution Repository" from the Admin screen if the Solution doesn't show up.
 
 = Optional Steps =
+  * (only for OFC 1.0)Configure the System Listener (stub). Open $PENTAHO_HOME/pentaho-solutions/system/pentaho.xml and find the <system-listeners>. Then add the openflashchart listener like these: <openflashchart>com.bayontechnologies.bi.pentaho.plugin.openflashchart.OpenFlashChartSystemListener</openflashchart>
+Save it and restart your pentaho server.
 
   * (only for OFC 2.0)Configure the System Listener (stub). Open $PENTAHO_HOME/pentaho-solutions/system/systemListeners.xml and find the <system-listeners>. Then add the openflashchart listener like these: <bean id="OpenFlashChartSystemListener" class="com.google.code.pentahoflashcharts.OpenFlashChartSystemListener"/>
 Save it and restart your pentaho server.
