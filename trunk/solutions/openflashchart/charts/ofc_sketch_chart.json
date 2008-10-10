@@ -1,0 +1,33 @@
+{
+	"title":
+	{"text":  "${head1} vs ${head2}" ,"style": "{font-size:35px; color: #800000}"},
+	"elements":[{"type":      "bar","colour":    "#99FF00",  
+	"alpha":     0.6,      
+	"border":    2,      
+	"animate":   0,      
+	"start-angle": 60,   
+	"values" :   [${col1}]    
+	}  ],
+	"y_legend":{    
+	"text": "${legendtext}", 
+	"style": "{color: #736AFF; font-size: 12px;}" 
+	}, 
+	"y_axis":{ "tick_length": 5,
+	"colour":      "#d000d0",   
+	"grid_colour": "#00ff00",    
+	"offset":      0,    
+	"min":         ${min},    
+	"max":         ${max1},    
+	"steps": 1100000  },  
+	 
+	"x_axis":{
+    "colour":"#FFFFFF",
+
+    "labels":{
+      "visible": true,
+     
+      "steps":  1,
+      "labels": [${col2}]
+    }
+   }
+ }
