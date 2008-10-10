@@ -157,8 +157,8 @@ from [SteelWheelsSales]]]></query>
       <component-name>MDXLookupRule</component-name>
       <action-type>chartdataset</action-type>
       <action-inputs> 
-        <startdate type="string"/>  
-        <enddate type="string"/> 
+        <enddate type="string"/>  
+        <startdate type="string"/>
       </action-inputs>
       <action-resources> 
         <catalog type="resource" mapping="catalog2"/> 
@@ -169,11 +169,7 @@ from [SteelWheelsSales]]]></query>
       <component-definition> 
         <jndi><![CDATA[SampleData]]></jndi>  
         <location><![CDATA[mondrian]]></location>  
-        <query><![CDATA[with member [Measures].[MonthName] as '(([Time].CurrentMember.Parent.Parent.Name || "-") || [Time].CurrentMember.Name)'
-  member [Measures].[Cum Sales] as 'Aggregate(PeriodsToDate([Time].[All Years], [Time].CurrentMember), [Measures].[Sales])'
-select {[Measures].[MonthName], [Measures].[Sales], [Measures].[Cum Sales]} ON COLUMNS,
-  { {startdate} : {enddate} } ON ROWS
-from [SteelWheelsSales]]]></query> 
+        <query><![CDATA[with member [Measures].[MonthName] as '(([Time].CurrentMember.Parent.Parent.Name || "-") ||[Time].CurrentMember.Name)' member [Measures].[Cum Sales] as 'Aggregate(PeriodsToDate([Time].[All Years], [Time].CurrentMember), [Measures].[Sales])' select {[Measures].[MonthName], [Measures].[Sales], [Measures].[Cum Sales]} ON COLUMNS, { {startdate} : {enddate} } ON ROWS from [SteelWheelsSales]]]></query> 
       </component-definition> 
     </action-definition>
   
