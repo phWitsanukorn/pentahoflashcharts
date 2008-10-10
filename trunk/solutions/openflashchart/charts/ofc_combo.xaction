@@ -178,7 +178,7 @@ from [SteelWheelsSales]]]></query>
     </action-definition>
   
     <action-definition> 
-      <component-name>com.bayontechnologies.bi.pentaho.plugin.openflashchart.OpenFlashChartComponent</component-name>
+      <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
       <action-type>Open Flash Char</action-type>
       <action-inputs> 
         <chart_dataset type="result-set"/>  

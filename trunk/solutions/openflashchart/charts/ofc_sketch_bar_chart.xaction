@@ -33,17 +33,17 @@
   </inputs>
 
   <outputs> 
-    <html_fragment type="string">
-      <destinations>
-        <response>content</response>
-      </destinations>
-    </html_fragment>
+    <html_fragment type="string"> 
+      <destinations> 
+        <response>content</response> 
+      </destinations> 
+    </html_fragment> 
   </outputs>
 
   <resources> 
     <chart_template> 
       <solution-file> 
-        <location>ofc_sketch_chart.txt</location>  
+        <location>ofc_sketch_chart.json</location>  
         <mime-type>text/plain</mime-type> 
       </solution-file> 
     </chart_template> 
@@ -103,7 +103,7 @@ header1 = headers[0];
     </action-definition>
   
     <action-definition> 
-      <component-name>com.bayontechnologies.bi.pentaho.plugin.openflashchart.OpenFlashChartComponent</component-name>
+      <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
       <action-type>Open Flash Chart</action-type>
       <action-inputs> 
         <chart_dataset type="result-set"/>  

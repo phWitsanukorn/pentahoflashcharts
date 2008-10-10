@@ -16,7 +16,7 @@
       <sources> 
         <request>chart_width</request> 
       </sources>  
-      <default-value><![CDATA[900]]></default-value> 
+      <default-value><![CDATA[800]]></default-value> 
     </chart_width>  
     <chart_height type="string"> 
       <sources> 
@@ -43,7 +43,7 @@
     </catalog>  
     <chart_template> 
       <solution-file> 
-        <location>ofc_bar_olap.txt</location>  
+        <location>ofc_bar_olap.json</location>  
         <mime-type>text/plain</mime-type> 
       </solution-file> 
     </chart_template> 
@@ -71,10 +71,10 @@ from [SteelWheelsSales]]]></query>
     </action-definition>
   
     <action-definition> 
-      <component-name>com.bayontechnologies.bi.pentaho.plugin.openflashchart.OpenFlashChartComponent</component-name>
+      <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
       <action-type>Open Flash Char</action-type>
       <action-inputs> 
-        <chart_dataset type="result-set" mapping="query_result"/>  
+        <chart_dataset type="string" mapping="query_result"/>  
         <chart_height type="string"/>  
         <chart_width type="string"/> 
       </action-inputs>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<action-sequence> 
+  <title>ofc2.0 sample</title>
+  <version>1</version>
+  <logging-level>DEBUG</logging-level>
+  <documentation> 
+    <author>tom qin</author>  
+    <description>Empty blank action sequence document</description>  
+    <help/>  
+    <result-type/>  
+    <icon/> 
+  </documentation>
+
+  <inputs> 
+    <datas type="result-set"> 
+      <default-value type="result-set"> 
+        <row> 
+          <New_Column>9</New_Column>  
+          <New_Column1>6</New_Column1>  
+          <New_Column2>3</New_Column2> 
+        </row>  
+        <row> 
+          <New_Column>6</New_Column>  
+          <New_Column1>7</New_Column1>  
+          <New_Column2>8</New_Column2> 
+        </row>  
+        <row> 
+          <New_Column>7</New_Column>  
+          <New_Column1>9</New_Column1>  
+          <New_Column2>7</New_Column2> 
+        </row> 
+      </default-value>  
+      <columns> 
+        <New_Column type="string"/>  
+        <New_Column1 type="string"/>  
+        <New_Column2 type="string"/> 
+      </columns> 
+    </datas> 
+  </inputs>
+
+  <outputs> 
+    <html_fragment type="string"/>  
+    <content_url type="string"/> 
+  </outputs>
+
+  <resources> 
+    <chart_template> 
+      <solution-file> 
+        <location>data.json</location>  
+        <mime-type>text/plain</mime-type> 
+      </solution-file> 
+    </chart_template> 
+  </resources>
+  
+  <actions> 
+    <action-definition> 
+      <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+      <action-type>Open Flash Char</action-type>
+      <action-inputs> 
+        <chart_dataset type="result-set" mapping="datas"/> 
+      </action-inputs>
+      <action-resources> 
+        <chart_template type="resource"/> 
+      </action-resources>
+      <action-outputs> 
+        <html_fragment type="string"/>  
+        <content_url type="string"/> 
+      </action-outputs>
+      <component-definition/> 
+    </action-definition>
+ 
+  </actions> 
+</action-sequence>

@@ -16,7 +16,7 @@
       <sources> 
         <request>chart_template_string</request> 
       </sources>  
-      <default-value><![CDATA[&is_thousand_separator_disabled=false&&title={head1} By {head2},{font-size:18px; color: #d01f3c}& &x_axis_steps=1& &y_ticks=5,10,5& &line=3,#87421F& &y_min=0& &y_max=20& &pie=60,#505050,{font-size: 12px; color: #404040;}& &values={col1}& &pie_labels={col2}& &colours=#d01f3c,#356aa0,#C79810& &links={col3}& &tool_tip=%23val%23&]]></default-value> 
+      <default-value><![CDATA[{"title":{"text":  "${head1} vs ${head2}" ,"style": "{font-size:18px; color: #d01f3c}"},"elements":[{"type":      "pie","colours":   ["#d01f3c","#356aa0","#C79810"],  "alpha":     0.6,      "border":    2,      "animate":   0,      "start-angle": 60,      "tip":         "#label#<br>$#val# (#percent#)",      "values" :   [{pie_head}]    }  ]}]]></default-value> 
     </chart_template_string> 
   </inputs>
 
@@ -45,11 +45,42 @@
     </action-definition>
   
     <action-definition> 
-      <component-name>com.bayontechnologies.bi.pentaho.plugin.openflashchart.OpenFlashChartComponent</component-name>
+      <component-name>JavascriptRule</component-name>
+      <action-type>JavaScript</action-type>
+      <action-inputs> 
+        <chart_dataset type="result-set"/> 
+      </action-inputs>
+      <action-outputs> 
+        <head3 type="string"/> 
+      </action-outputs>
+      <component-definition> 
+        <script><![CDATA[var rowCount = chart_dataset.getRowCount();
+var head3 ="";
+for (j = 0; j < rowCount; j++) 
+{
+head3+="{";
+var obj1 = chart_dataset.getValueAt(j,0);
+var obj2 = chart_dataset.getValueAt(j,1);
+head3+="\"value\":"+obj1;
+head3+=",";
+head3+="\"label\":"+"\""+obj2+"\"";
+head3+="}";
+
+if(j<rowCount-1)
+{
+	head3+=",";
+}
+}]]></script> 
+      </component-definition> 
+    </action-definition>
+  
+    <action-definition> 
+      <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
       <action-type>Open Flash Chart</action-type>
       <action-inputs> 
         <chart_template_string type="string"/>  
-        <chart_dataset type="result-set"/> 
+        <chart_dataset type="result-set"/>  
+        <pie_head type="string" mapping="head3"/> 
       </action-inputs>
       <action-outputs> 
         <html_fragment type="string"/>  

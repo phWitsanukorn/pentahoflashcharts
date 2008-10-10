@@ -28,7 +28,7 @@
       <sources> 
         <request>chart_template_string</request> 
       </sources>  
-      <default-value><![CDATA[&y_min=0& &y_max={max3}& &y_steps=4& &title=Actual vs Budget  by Region,{font-size:20px; color: #bcd6ff; margin:10px; background-color: #5E83BF; padding: 5px 15px 5px 15px;}& &y_legend=USD,12,#736AFF&  &x_labels={col2}& &x_axis_colour=#909090& &x_grid_colour=#D2D2FB& &y_axis_colour=#909090& &y_grid_colour=#D2D2FB& &bar_glass=55,#D54C78,#C31812,Actuals,12& &values={col1}& &bar_glass_2=55,#5E83BF,#424581,Budget,12& &values_2={col3}&]]></default-value> 
+      <default-value><![CDATA[{ "title":{    "text":  "Actual vs Budget  by Region",    "style": "{font-size:20px; color: #bcd6ff; margin:10px; background-color: #5E83BF; padding: 5px 15px 5px 15px;}"  },  "y_legend":{    "text": "USD",    "style": "{color: #736AFF; font-size: 12px;}"  },  "elements":[    {      "type":      "bar_glass",      "alpha":     0.5,      "colour":    "#D54C78",      "text":      "Actuals",      "font-size": 12,      "values" :   [${col1}]    },    {      "type":      "bar_glass",      "alpha":     0.5,      "colour":    "#5E83BF",      "text":      "Budget",      "font-size": 12,      "values" :   [${col3}]    }  ],  "x_axis":{    "stroke":1,    "tick_height":10,    "colour":"#909090",    "grid_colour":"#D2D2FB",    "labels": {"visible": true,       "steps":  1,      "labels": [${col2}]  }  },  "y_axis":{    "stroke":      4,    "tick_length": 3,    "colour":      "#909090",    "grid_colour": "#D2D2FB",    "offset":      0,    "min":         0,    "steps":       10000,    "max":         ${max3}  }}]]></default-value> 
     </chart_template_string> 
   </inputs>
 
@@ -54,12 +54,12 @@
       <component-definition> 
         <jndi><![CDATA[SampleData]]></jndi>  
         <live><![CDATA[true]]></live>  
-        <query><![CDATA[select sum(actual) as "Actuals", region, sum(budget) as "Budget" from quadrant_actuals group by region]]></query> 
+        <query><![CDATA[select sum(actual)/1000 as "Actuals", region, sum(budget)/1000 as "Budget" from quadrant_actuals group by region]]></query> 
       </component-definition> 
     </action-definition>
   
     <action-definition> 
-      <component-name>com.bayontechnologies.bi.pentaho.plugin.openflashchart.OpenFlashChartComponent</component-name>
+      <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
       <action-type>Open Flash Chart</action-type>
       <action-inputs> 
         <chart_template_string type="string"/>  
