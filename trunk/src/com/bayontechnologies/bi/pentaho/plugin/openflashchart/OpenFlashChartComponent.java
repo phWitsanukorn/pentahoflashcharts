@@ -1,24 +1,9 @@
-/**
- * Copyright [2008] [Bayon Technologies, Inc] 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- * http://www.apache.org/licenses/LICENSE-2.0 
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License.
- */
+package com.google.code.pentahoflashcharts;
 
-
-
-package com.bayontechnologies.bi.pentaho.plugin.openflashchart;
-
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -27,27 +12,27 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.commons.connection.IPentahoResultSet;
-import org.pentaho.core.repository.IContentItem;
-import org.pentaho.core.repository.IContentLocation;
-import org.pentaho.core.repository.IContentRepository;
-import org.pentaho.core.session.IPentahoSession;
-import org.pentaho.core.solution.IActionResource;
-import org.pentaho.core.system.PentahoSystem;
-import org.pentaho.messages.util.LocaleHelper;
-import org.pentaho.plugin.jfreechart.ChartComponent;
-import org.pentaho.repository.content.ContentRepository;
-import org.pentaho.util.UUIDUtil;
+import org.pentaho.platform.api.engine.IActionSequenceResource;
+import org.pentaho.platform.api.engine.IPentahoSession;
+import org.pentaho.platform.api.repository.IContentItem;
+import org.pentaho.platform.api.repository.IContentLocation;
+import org.pentaho.platform.api.repository.IContentRepository;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.plugin.action.jfreechart.ChartComponent;
+import org.pentaho.platform.repository.content.ContentRepository;
+import org.pentaho.platform.util.UUIDUtil;
+import org.pentaho.platform.util.messages.LocaleHelper;
 
 /**
  * To integrate the open-flash-chart, we write this component.
  * This component has the following parameters:
- * ?chart_template-----optional,
- * ?chart_template_string-----optional,Contains the open flash chart template for this chart, along with the required tokens for replacing values in the chart with values from the dataset
- * ?chart_dataset (required),
- * ?chart_width,
- * ?chart_height,
- * ?ofc_url.It is the URL of the open flash chart .swf file.  Defaults to the pentaho base URL (style deployment) / images / open-flash-chart.swf.
- * For instance, http://localhost:8080/pentaho-style/images/open-flash-chart.swf.
+ * chart_template-----optional,
+ * chart_template_string-----optional,Contains the open flash chart template for this chart, along with the required tokens for replacing values in the chart with values from the dataset
+ * chart_dataset (required),
+ * chart_width,
+ * chart_height,
+ * ofc_url. It is the directory URL of the open flash chart .swf file.  Defaults to the pentaho base URL (style deployment)/images.
+ * For instance, /pentaho-style/images. 
  *
  * @author tom qin
  *
@@ -74,15 +59,7 @@ public class OpenFlashChartComponent extends ChartComponent {
 	protected static String flashFragment;
 	static
 	{
-		flashFragment ="<object classid='clsid:d27cdb6e-ae6d-11cf-96b8-444553540000'"+
-		"codebase='http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0'"+
-		"width='{chart-width}' height='{chart-height}' id='graph-2' align='middle'>"+
-		"<param name='allowScriptAccess' value='sameDomain' />"+
-		"<param name='movie' value='{ofc-url}?width={chart-width}&height={chart-height}&data={data}' />"+
-		"<param name='quality' value='high' /><param name='bgcolor' value='#FFFFFF' /> "+
-		"<embed src='{ofc-url}?width={chart-width}&height={chart-height}&data={data}' quality='high' bgcolor='#FFFFFF'"+
-		"width='{chart-width}' height='{chart-height}' name='open-flash-chart' align='middle' allowScriptAccess='sameDomain'"+
-		"type='application/x-shockwave-flash' pluginspage='http://www.macromedia.com/go/getflashplayer' /> </object>";
+		flashFragment =" <script type='text/javascript' src='{ofc-url}/js/swfobject.js'></script> <script type='text/javascript'>swfobject.embedSWF('{ofc-url}/open-flash-chart.swf', 'my_chart', '{chart-width}','{chart-height}','9.0.0', 'expressInstall.swf',{'data-file':'{data}'});</script><div id='my_chart'></div>";
 	}
 	
 	
@@ -121,6 +98,7 @@ public class OpenFlashChartComponent extends ChartComponent {
 	}
 	
 	protected boolean executeAction() {
+		log.debug("start to run open flash chart component......");
 		//get the input datas
 		IPentahoResultSet data = (IPentahoResultSet) getInputValue(CHART_DATA_PROP);
 		String chartTemplateString = getInputStringValue(CHART_TEMPLATE_STRING);
@@ -148,11 +126,11 @@ public class OpenFlashChartComponent extends ChartComponent {
 			chartHeight= Integer.valueOf(input2);
 		}
 		
-		IActionResource  fileResource=null;
+		IActionSequenceResource  fileResource=null;
 		String ofcURL =  getInputStringValue(OFC_URL);
 		if(ofcURL==null||"".equals(ofcURL) )
 		{
-			ofcURL= "/pentaho-style/images/open-flash-chart.swf";
+			ofcURL= "/pentaho-style/images";
 		}
 		
 		if(chartTemplateString==null||chartTemplateString.equals(""))
@@ -168,12 +146,14 @@ public class OpenFlashChartComponent extends ChartComponent {
 				return false;
 			}			
 		}
+		log.debug("chartTemplateString before replacing:"+chartTemplateString);
 		//parse the chart Template String and get the parsed tokens
 		map = parseString(chartTemplateString);
 		chartTemplateString = replaceChartDefParams(chartTemplateString,data);
 		
 		//replace the custom variables
 		ArrayList<String> customs = map.get("customs");
+		log.debug("customs:"+customs);
 		Set inputNames=this.getInputNames();
 		for (Iterator iterator = inputNames.iterator(); iterator.hasNext();) 
 		{
@@ -181,8 +161,16 @@ public class OpenFlashChartComponent extends ChartComponent {
 			if(customs.contains(name))
 			{
 				Object value = this.getInputValue(name);
-				chartTemplateString=replaceLongStr(chartTemplateString, "{"+name+"}", ""+value);
+				chartTemplateString=replaceLongStr(chartTemplateString, "${"+name+"}", ""+value);
+				customs.remove(name);
 			}
+			
+		}
+		
+		if(customs!=null&&customs.contains("pie_values"))
+		{
+			chartTemplateString=replacePieValues(chartTemplateString,data);
+			
 		}
 		
 		log.debug("chartTemplateString after replacing:"+chartTemplateString);
@@ -233,12 +221,44 @@ public class OpenFlashChartComponent extends ChartComponent {
 	}
 	
 	/**
-	 * 1.? {colN} will be replaced with a comma separated list of values of the column in N in the dataset.
+	 * The data must obey the rule: the first column in the data2 should be the value column,
+	 * the second column should be the label column. For instance,
+	 *  select sum(actual) as "Actuals", region  from quadrant_actuals group by region
+	 * @param chartTemplateString
+	 * @param data2
+	 */
+	private String  replacePieValues(String chartTemplateString,
+			IPentahoResultSet data2) {
+		int rowCount = data2.getRowCount();
+		StringBuffer sb = new StringBuffer();
+		for (int j = 0; j < rowCount; j++) 
+		{
+			sb.append("{");
+			Object value = data2.getValueAt(j,0);
+			Object label = data2.getValueAt(j,1);
+			sb.append("\"value\":").append(value);
+			sb.append(",");
+			sb.append("\"label\":\"").append(label).append("\"");
+			sb.append("}");
+	
+			if(j<rowCount-1)
+			{
+				sb.append(",");
+			}
+		}
+		log.debug("replace pie_values:"+sb.toString());
+		log.debug("chartTemplateString="+chartTemplateString);
+		return replaceLongStr(chartTemplateString, "${pie_values}", sb.toString());
+		
+	}
+
+	/**
+	 * 1. ${colN} will be replaced with a comma separated list of values of the column in N in the dataset.
 	 * For instance,x_values={col1}could be replaced with the values in the FIRST column of the data set
 	 * x_values=2039,193,8930,3839,1023
- 	 * ?2. {minN} will be replaced with the minimum value in the column N in the dataset.
- 	 * 3. ?{maxN} will be replaced with the maximum value in the column N in the dataset.
- 	 * 4. ?{headN} will be replaced with the ¡°header value¡± for the column N in the dataset.
+ 	 * 2. ${minN} will be replaced with the minimum value in the column N in the dataset.
+ 	 * 3. ${maxN} will be replaced with the maximum value in the column N in the dataset.
+ 	 * 4. ${headN} will be replaced with the ¡°header value¡± for the column N in the dataset.
 	 * @param chartTemplateString 
 	 * @return the clear chart definition string.
 	 */
@@ -251,10 +271,10 @@ public class OpenFlashChartComponent extends ChartComponent {
 		ArrayList<String> mins = map.get("minN");
 		
 		
-		if(columns.size()==0)
-		{
-			return chartTemplateString;
-		}
+//		if(columns.size()==0)
+//		{
+//			return chartTemplateString;
+//		}
 		
 
 		String[] colValues = new String[columns.size()];
@@ -269,6 +289,7 @@ public class OpenFlashChartComponent extends ChartComponent {
 		int rowCount = data.getRowCount();
 		Object max =null;
 		Object min = null;
+		Object[][] objs = data.getMetaData().getColumnHeaders();
 		for (int j = 0; j < rowCount; j++) 
 		{
 			for (int i = 0; i < columns.size(); i++) 
@@ -282,15 +303,30 @@ public class OpenFlashChartComponent extends ChartComponent {
 				{
 					continue;
 				}
-				colValues[i]=colValues[i]+obj;
+				if((obj instanceof String)) // for the string value, we add "" for enclosing it
+				{
+					boolean isString = false;
+					try 
+					{
+						Double.valueOf((String)obj);
+					} catch (NumberFormatException e) 
+					{
+						colValues[i]=colValues[i]+"\""+obj+"\"";
+						isString = true;
+					}
+					
+					if(!isString)
+						colValues[i]=colValues[i]+obj;
+				}
+				else
+					colValues[i]=colValues[i]+obj;
 			
 				if(j<rowCount-1)
 				{
 					colValues[i]=colValues[i]+",";
 				}
 			}
-			
-			
+						
 			//maxN can have more than one
 			//minN can have more than one
 			for (int i = 0; i < maxs.size(); i++) {
@@ -304,8 +340,7 @@ public class OpenFlashChartComponent extends ChartComponent {
 				}
 				if(j==0)
 				{
-//					max = obj;
-//					min = obj;
+
 					if(maxValues.length>0)
 					{
 						maxValues[i]=obj;
@@ -319,16 +354,6 @@ public class OpenFlashChartComponent extends ChartComponent {
 				}
 				if(obj instanceof Comparable)
 				{
-					
-//					if(((Comparable)obj).compareTo(max)>0)
-//					{
-//						max = obj;
-//					}
-//					else if(((Comparable)obj).compareTo(min)<0)
-//					{
-//						min = obj;
-//					}
-					
 					if(maxValues.length>0&&((Comparable)obj).compareTo(maxValues[i])>0)
 					{
 						maxValues[i] = obj;
@@ -339,30 +364,29 @@ public class OpenFlashChartComponent extends ChartComponent {
 					}
 				}
 			}
-			
-			
-			
+	
 		}
 		
 		for (int i = 0; i < colValues.length; i++) {
 			String values = colValues[i];
-			chartTemplateString=replaceLongStr(chartTemplateString, "{"+columns.get(i)+"}", values);
+			chartTemplateString=replaceLongStr(chartTemplateString, "${"+columns.get(i)+"}", values);
 		}
 		
 		
 		//replace the maxN and minN
 		for (int i = 0; i < maxs.size(); i++) {
-			chartTemplateString=replaceLongStr(chartTemplateString,"{"+maxs.get(i)+"}" , ""+maxValues[i]);
+			chartTemplateString=replaceLongStr(chartTemplateString,"${"+maxs.get(i)+"}" , ""+maxValues[i]);
 		}
 		
 		for (int i = 0; i < mins.size(); i++) {
-			chartTemplateString=replaceLongStr(chartTemplateString,"{"+mins.get(i)+"}" , ""+minValues[i]);
+			chartTemplateString=replaceLongStr(chartTemplateString,"${"+mins.get(i)+"}" , ""+minValues[i]);
 		}
 		
 		//replace headers
-		Object[][] objs = data.getMetaData().getColumnHeaders();
+		
 		if(null==objs)
 		{
+			log.debug("headers get null from dataset. we do not change the template.");
 			return chartTemplateString;
 		}	
 		Object headers[] = objs[0];
@@ -373,7 +397,8 @@ public class OpenFlashChartComponent extends ChartComponent {
 			String head =  heads.get(i);
 			// k is from 1 to N
 			int k = Integer.valueOf(head.substring(head.indexOf("head")+"head".length()));
-			chartTemplateString=replaceLongStr(chartTemplateString,"{"+head+"}" , ""+headers[k-1]);
+			log.debug("header:"+head+" is replaced by "+headers[k-1]);
+			chartTemplateString=replaceLongStr(chartTemplateString,"${"+head+"}" , ""+headers[k-1]);
 		}
 					
 		return chartTemplateString;
@@ -454,7 +479,12 @@ public class OpenFlashChartComponent extends ChartComponent {
 	    return true;
 	 }
 	
-	
+	/**
+	 * replace the tokens in the template.
+	 * The tokens should be enclosed with "${" and "}". For instance, ${col1},${head1}
+	 * @param template
+	 * @return
+	 */
 	public static Map<String,ArrayList<String>> parseString(final String template)
 	{
 		Map<String,ArrayList<String>> map = new HashMap<String,ArrayList<String>>();
@@ -464,14 +494,20 @@ public class OpenFlashChartComponent extends ChartComponent {
 		ArrayList<String> mins = new ArrayList<String>();
 		ArrayList<String> customs = new ArrayList<String>();
 		
-		String token1 = "{";
+		String token1 = "${";
 		String token2 = "}";
 		String tmpTemplate = template;
+		tmpTemplate = tmpTemplate.trim();
+		
 
 		int index = tmpTemplate.indexOf(token1);
-		int index2 = tmpTemplate.indexOf(token2);
+		
+//		int index2 = tmpTemplate.indexOf(token2);
 		while(index!=-1)
 		{
+			tmpTemplate= tmpTemplate.substring(index);
+			index=1;
+			int index2 = tmpTemplate.indexOf(token2);
 			String tmpStr = tmpTemplate.substring(index+1,index2);
 			//check the illegal token
 			if(tmpStr.indexOf(":")!=-1||tmpStr.indexOf(";")!=-1)
@@ -528,32 +564,43 @@ public class OpenFlashChartComponent extends ChartComponent {
 	        result.append(str.substring(0, str.indexOf(fromStr)));
 	        result.append(toStr);
 	        str = str.substring(str.indexOf(fromStr)+fromStr.length());
-	        System.out.println(str);
+//	        System.out.println(str);
 	      }
 	      result.append(str);
 	    }
+	    log.debug("fromStr:"+fromStr+",toStr:"+toStr+"\n\r result:"+result.toString());
 	    return result.toString();
 	 }
+	
+	
+
 
 	
 	
-//	public static void main(String[] args) {
-//		OpenFlashChartComponent test = new OpenFlashChartComponent();
-//		String a = "<![CDATA[&is_thousand_separator_disabled=false&&title=Actuals By Region,{font-size:18px; color: #d01f3c}& &x_axis_steps=1& &y_ticks=5,10,5& &line=3,#87421F& &y_min=0& &y_max=20& &pie=60,#505050,{font-size: 12px; color: #404040;}& &values={col1}& &pie_labels={head1}{head1}& &colours=#d01f3c,#356aa0,#C79810& &links=& &tool_tip=%23val%23&]]></default-value>";
-//		String token1 = "{";
+	public static void main(String[] args) {
+		OpenFlashChartComponent test = new OpenFlashChartComponent();
+		String a = "<![CDATA[&is_thousand_separator_disabled=false&&title=Actuals By Region,{font-size:18px; color: #d01f3c}& &x_axis_steps=1& &y_ticks=5,10,5& &line=3,#87421F& &y_min=0& &y_max=20& &pie=60,#505050,{font-size: 12px; color: #404040;}& &values=${col1}& &pie_labels=${head1}${head1}& &colours=#d01f3c,#356aa0,#C79810& &links=& &tool_tip=%23val%23&${pie_values}]]></default-value>";
+//		String token1 = "${";
 //		String token2 = "}";
-//		int index = a.indexOf(token1);
-//		int index2 = a.indexOf(token2);
+////		int index = a.indexOf(token1);
+		
+//		int index2 = 0;
+//		if(index!=-1)
+//		{
+//			a=a.substring(index);
+//		}
+//		index2=a.indexOf(token2);
 //		String tmpStr = a.substring(index+1,index2);
-////		System.out.println(tmpStr);
-////		System.out.println(a.substring(0,index-1>=0?index-1:0)+a.substring(index2+1));
+//		System.out.println(tmpStr);
+//		System.out.println(a.substring(0,index-1>=0?index-1:0)+a.substring(index2+1));
 //		System.out.println(parseString(a));
-//		String t = "col1";
+		String t = "col1";
 //		System.out.println(t.substring(t.indexOf("col")+"col".length()));
-//		System.out.println(replaceLongStr(a,"{head1}","Header1"));
-////		System.out.println(test.replaceByToken(new StringBuffer(a),"{head1}","Header1"));
-//		
-//		
-//	}
+		System.out.println(replaceLongStr(a,"${pie_values}","abc"));
+//		System.out.println(test.replaceByToken(new StringBuffer(a),"{head1}","Header1"));
+		File f = new File("D:\\docs\\openflashchart\\data.json");
+		
+		
+	}
 
 }
