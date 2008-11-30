@@ -6,6 +6,8 @@ Starting with PentahoFlashChart 0.2.x and higher, the method to create charts fo
 
 This document covers how to use Pentaho's existing [http://wiki.pentaho.com/display/ServerDoc2x/Chart+Properties+Reference Chart Definition XML] to create flash charts in Pentaho.
 
+Most charts that are built for Pentaho Charts will work with the PentahoFlashChart repository.  Same XML, Same Data should produce a similar chart.
+
 = Example = 
 
 At a very basic level, the PentahoFlashChart component will do precisely what the PentahoChartComponent does, except it will output an OFC HTML Fragment along with a JSON text file.  
