@@ -1,6 +1,6 @@
 #summary How to make Chart Templates
 
-IMPORTANT:  This document is relevant for PentahoFlashChart 0.1.x.  Version 0.2.x templating is covered in XMLTemplates.
+IMPORTANT:  This document is relevant for PentahoFlashChart 0.1.x.  Version 0.2.x templating is covered in [XMLTemplates].
 = Introduction =
 
 First off - 95% of the chart template examples and magic is provided by Open Flash Chart.  You should visit their web site for examples on Open Flash Chart datafiles to see how to build Open Flash Charts. 
