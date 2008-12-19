@@ -4,7 +4,7 @@
 
 Starting with PentahoFlashChart 0.2.x and higher, the method to create charts for Open Flash Chart has changed.  While previously you created the OFC1.0 template and PFC did replacements, the JSON object model of OFC2.0 makes that approach nearly impossible.  
 
-This document covers how to use Pentaho's existing [http://wiki.pentaho.com/display/ServerDoc2x/Chart+Properties+Reference Chart Definition XML] to create flash charts in Pentaho.
+This document covers how to use Pentaho's existing [http://wiki.pentaho.com/display/ServerDoc2x/Chart+Properties+Reference Chart Definition XML] to create flash charts in Pentaho.  PentahoFlashChart will implement a subset of these things (not all the XMLTags in the PentahoReference will be applicable).  Unknown/unimplemented tags will simply be ignored by PFC.
 
 Most charts that are built for Pentaho Charts will work with the PentahoFlashChart repository.  Same XML, Same Data should produce a similar chart.
 
