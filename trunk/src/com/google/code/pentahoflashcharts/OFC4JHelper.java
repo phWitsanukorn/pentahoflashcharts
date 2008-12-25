@@ -19,6 +19,8 @@ import org.pentaho.commons.connection.IPentahoResultSet;
 
 
 public class OFC4JHelper {
+	public static final String DEFAULT_WIDTH="500";
+	public static final String DEFAULT_HEIGHT="300";
 	
 	public Chart generateChart()
 	{
@@ -50,6 +52,9 @@ public class OFC4JHelper {
 		Element root =doc.getRootElement();
 		Node chartType=root.selectSingleNode("/chart/chart-type");
 		String cType = chartType.getText().trim();
+		Node titleNode = root.selectSingleNode("/chart/title");
+		Node heightNode = root.selectSingleNode("/chart/height");
+		Node widthNode = root.selectSingleNode("/chart/width");
 		if(cType.equalsIgnoreCase("BarChart"))
 		{
 			BarChart e = new BarChart();
@@ -68,6 +73,17 @@ public class OFC4JHelper {
 		{
 			LineChart e = new LineChart();
 			int rowCount = data.getRowCount();
+			if(widthNode!=null)
+			{
+				String width = widthNode.getText();
+				if(width==null||width.length()==0)
+				{
+					width=DEFAULT_WIDTH;
+				}
+				else
+					width = width.trim();
+				e.setWidth(Integer.valueOf(width));
+			}
 			e.addValues(9,8,7,6,5,4,3,2,1);
 			c.addElements(e);
 		}
