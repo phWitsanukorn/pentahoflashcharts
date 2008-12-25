@@ -9,8 +9,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import ofc4j.model.Chart;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Document;
+import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoResultSet;
 import org.pentaho.platform.api.engine.IActionSequenceResource;
 import org.pentaho.platform.api.engine.IPentahoSession;
@@ -18,10 +22,12 @@ import org.pentaho.platform.api.repository.IContentItem;
 import org.pentaho.platform.api.repository.IContentLocation;
 import org.pentaho.platform.api.repository.IContentRepository;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.engine.services.solution.PentahoEntityResolver;
 import org.pentaho.platform.plugin.action.jfreechart.ChartComponent;
 import org.pentaho.platform.repository.content.ContentRepository;
 import org.pentaho.platform.util.UUIDUtil;
 import org.pentaho.platform.util.messages.LocaleHelper;
+import org.pentaho.platform.util.xml.dom4j.XmlDom4JHelper;
 
 /**
  * To integrate the open-flash-chart, we write this component.
@@ -147,6 +153,10 @@ public class OpenFlashChartComponent extends ChartComponent {
 			}			
 		}
 		log.debug("chartTemplateString before replacing:"+chartTemplateString);
+		//get the xml node
+		Document chartDocument = XmlDom4JHelper.getDocFromString(chartTemplateString, new PentahoEntityResolver());
+		Chart c =OFC4JHelper.convert(chartDocument,data);
+		
 		//parse the chart Template String and get the parsed tokens
 		map = parseString(chartTemplateString);
 		chartTemplateString = replaceChartDefParams(chartTemplateString,data);
