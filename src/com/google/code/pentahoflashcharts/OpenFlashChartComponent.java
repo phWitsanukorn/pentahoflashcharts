@@ -205,7 +205,8 @@ public class OpenFlashChartComponent extends ChartComponent {
 		try {
 			//get the  outputstream and write the content into the repository.
 			OutputStream os = citem.getOutputStream(this.getActionName());
-			os.write(chartTemplateString.getBytes(LocaleHelper.getSystemEncoding()));
+//			os.write(chartTemplateString.getBytes(LocaleHelper.getSystemEncoding()));
+			os.write(c.toString().getBytes(LocaleHelper.getSystemEncoding()));
 			os.close();
 		} catch (IOException e) {
 			error(e.getLocalizedMessage());

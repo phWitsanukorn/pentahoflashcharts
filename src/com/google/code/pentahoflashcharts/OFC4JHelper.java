@@ -5,8 +5,10 @@ import java.util.Date;
 import ofc4j.model.Chart;
 import ofc4j.model.axis.XAxis;
 import ofc4j.model.axis.YAxis;
+import ofc4j.model.elements.AreaHollowChart;
 import ofc4j.model.elements.BarChart;
 import ofc4j.model.elements.LineChart;
+import ofc4j.model.elements.PieChart;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -44,41 +46,41 @@ public class OFC4JHelper {
 	}
 
 	public static Chart convert(Document doc,IPentahoResultSet data) {
-		Chart c = new Chart();
+		Chart c = new Chart(new Date().toString());
 		Element root =doc.getRootElement();
 		Node chartType=root.selectSingleNode("/chart/chart-type");
 		String cType = chartType.getText().trim();
 		if(cType.equalsIgnoreCase("BarChart"))
 		{
-			ofc4j.model.elements.Element e = new BarChart();
+			BarChart e = new BarChart();
 			int rowCount = data.getRowCount();
 			
 			c.addElements(e);
 		}
 		else if(cType.equalsIgnoreCase("AreaChart"))
 		{
-			ofc4j.model.elements.Element e = new BarChart();
+			AreaHollowChart e = new AreaHollowChart();
 			int rowCount = data.getRowCount();
 			
 			c.addElements(e);
 		}
 		else if(cType.equalsIgnoreCase("LineChart"))
 		{
-			ofc4j.model.elements.Element e = new BarChart();
+			LineChart e = new LineChart();
 			int rowCount = data.getRowCount();
-			
+			e.addValues(9,8,7,6,5,4,3,2,1);
 			c.addElements(e);
 		}
 		else if(cType.equalsIgnoreCase("PieChart"))
 		{
-			ofc4j.model.elements.Element e = new BarChart();
+			PieChart e = new PieChart();
 			int rowCount = data.getRowCount();
 			
 			c.addElements(e);
 		}
 		else if(cType.equalsIgnoreCase("BarLineChart"))
 		{
-			ofc4j.model.elements.Element e = new BarChart();
+			BarChart e = new BarChart();
 			int rowCount = data.getRowCount();
 			
 			c.addElements(e);
