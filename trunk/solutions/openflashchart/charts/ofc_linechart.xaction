@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<action-sequence> 
+  <title>Open Flash Chart Component - Pie Chart</title>
+  <version>1</version>
+  <logging-level>DEBUG</logging-level>
+  <documentation> 
+    <author>Bayon Technologies</author>  
+    <description>Animated, simple Pie Chart based on a Relational Data source. Includes an example of drill thru links.</description>  
+    <help/>  
+    <result-type/>  
+    <icon>HelloWorld.png</icon> 
+  </documentation>
+
+  <inputs> 
+    <chart_template_string type="string"> 
+      <sources> 
+        <request>chart_template_string</request> 
+      </sources>  
+      <default-value><![CDATA[<chart><chart-type>LineChart</chart-type>	<title>Sample Chart</title></chart>]]></default-value> 
+    </chart_template_string> 
+  </inputs>
+
+  <outputs> 
+    <html_fragment type="string"> 
+      <destinations> 
+        <response>content</response> 
+      </destinations> 
+    </html_fragment> 
+  </outputs>
+
+  <resources/>
+  
+  <actions> 
+    <action-definition> 
+      <component-name>SQLLookupRule</component-name>
+      <action-type>Relational</action-type>
+      <action-outputs> 
+        <query-result type="result-set" mapping="chart_dataset"/> 
+      </action-outputs>
+      <component-definition> 
+        <jndi><![CDATA[SampleData]]></jndi>  
+        <query><![CDATA[select sum(actual) as "Actuals", region, 'http://www.google.com/search?q='|| region as "URL"  from quadrant_actuals group by region]]></query>  
+        <live><![CDATA[true]]></live> 
+      </component-definition> 
+    </action-definition>
+  
+    <action-definition> 
+      <component-name>JavascriptRule</component-name>
+      <action-type>JavaScript</action-type>
+      <action-inputs> 
+        <chart_dataset type="result-set"/> 
+      </action-inputs>
+      <action-outputs> 
+        <head3 type="string"/> 
+      </action-outputs>
+      <component-definition> 
+        <script><![CDATA[var rowCount = chart_dataset.getRowCount();
+var head3 ="";
+for (j = 0; j < rowCount; j++) 
+{
+head3+="{";
+var obj1 = chart_dataset.getValueAt(j,0);
+var obj2 = chart_dataset.getValueAt(j,1);
+head3+="\"value\":"+obj1;
+head3+=",";
+head3+="\"label\":"+"\""+obj2+"\"";
+head3+="}";
+
+if(j<rowCount-1)
+{
+	head3+=",";
+}
+}]]></script> 
+      </component-definition> 
+    </action-definition>
+  
+    <action-definition> 
+      <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+      <action-type>Open Flash Chart</action-type>
+      <action-inputs> 
+        <chart_template_string type="string"/>  
+        <chart_dataset type="result-set"/>  
+        <pie_head type="string" mapping="head3"/> 
+      </action-inputs>
+      <action-outputs> 
+        <html_fragment type="string"/>  
+        <content_url type="string"/> 
+      </action-outputs>
+      <component-definition/> 
+    </action-definition>
+ 
+  </actions> 
+</action-sequence>
