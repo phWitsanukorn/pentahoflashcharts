@@ -16,7 +16,7 @@
       <sources> 
         <request>chart_template_string</request> 
       </sources>  
-      <default-value><![CDATA[<chart><chart-type>LineChart</chart-type><title>OFC Line Sample Chart</title></chart>]]></default-value> 
+      <default-value><![CDATA[<chart><chart-type>PieChart</chart-type><title>OFC Pie Sample Chart</title></chart>]]></default-value> 
     </chart_template_string> 
   </inputs>
 
