@@ -16,16 +16,13 @@
       <sources> 
         <request>chart_template_string</request> 
       </sources>  
-      <default-value><![CDATA[<chart><chart-type>LineChart</chart-type><title>OFC Line Sample Chart</title></chart>]]></default-value> 
+      <default-value><![CDATA[<chart><chart-type>LineChart</chart-type><title>OFC Line Sample Chart</title><x-steps>1000</x-steps><x-max>20000</x-max></chart>]]></default-value> 
     </chart_template_string> 
   </inputs>
 
   <outputs> 
-    <html_fragment type="string"> 
-      <destinations> 
-        <response>content</response> 
-      </destinations> 
-    </html_fragment> 
+    <html_fragment type="string"/>  
+    <content_url type="string"/> 
   </outputs>
 
   <resources/>
@@ -39,38 +36,14 @@
       </action-outputs>
       <component-definition> 
         <jndi><![CDATA[SampleData]]></jndi>  
-        <query><![CDATA[select sum(actual) as "Actuals", region, 'http://www.google.com/search?q='|| region as "URL"  from quadrant_actuals group by region]]></query>  
-        <live><![CDATA[true]]></live> 
-      </component-definition> 
-    </action-definition>
-  
-    <action-definition> 
-      <component-name>JavascriptRule</component-name>
-      <action-type>JavaScript</action-type>
-      <action-inputs> 
-        <chart_dataset type="result-set"/> 
-      </action-inputs>
-      <action-outputs> 
-        <head3 type="string"/> 
-      </action-outputs>
-      <component-definition> 
-        <script><![CDATA[var rowCount = chart_dataset.getRowCount();
-var head3 ="";
-for (j = 0; j < rowCount; j++) 
-{
-head3+="{";
-var obj1 = chart_dataset.getValueAt(j,0);
-var obj2 = chart_dataset.getValueAt(j,1);
-head3+="\"value\":"+obj1;
-head3+=",";
-head3+="\"label\":"+"\""+obj2+"\"";
-head3+="}";
-
-if(j<rowCount-1)
-{
-	head3+=",";
-}
-}]]></script> 
+        <live><![CDATA[true]]></live>  
+        <query><![CDATA[SELECT  ORDERS.ORDERDATE, SUM(ORDERDETAILS.QUANTITYORDERED*ORDERDETAILS.PRICEEACH) SOLD_PRICE 
+FROM ORDERS INNER JOIN ORDERDETAILS ON ORDERS.ORDERNUMBER = ORDERDETAILS.ORDERNUMBER INNER JOIN PRODUCTS ON ORDERDETAILS.PRODUCTCODE =PRODUCTS.PRODUCTCODE INNER JOIN CUSTOMERS ON ORDERS.CUSTOMERNUMBER =CUSTOMERS.CUSTOMERNUMBER  
+INNER JOIN EMPLOYEES ON CUSTOMERS.SALESREPEMPLOYEENUMBER = EMPLOYEES.EMPLOYEENUMBER
+INNER JOIN OFFICES ON EMPLOYEES.OFFICECODE=OFFICES.OFFICECODE
+WHERE (ORDERS.ORDERDATE >= '2005-01-01' AND ORDERS.ORDERDATE <= '2005-06-30') AND PRODUCTNAME = '1948 Porsche 356-A Roadster'
+GROUP BY  PRODUCTLINE, PRODUCTNAME, CUSTOMERNAME, ORDERS.ORDERDATE
+ORDER BY  PRODUCTLINE desc, PRODUCTNAME, CUSTOMERNAME, ORDERS.ORDERDATE]]></query>
       </component-definition> 
     </action-definition>
   
@@ -79,8 +52,7 @@ if(j<rowCount-1)
       <action-type>Open Flash Chart</action-type>
       <action-inputs> 
         <chart_template_string type="string"/>  
-        <chart_dataset type="result-set"/>  
-        <pie_head type="string" mapping="head3"/> 
+        <chart_dataset type="result-set"/> 
       </action-inputs>
       <action-outputs> 
         <html_fragment type="string"/>  
