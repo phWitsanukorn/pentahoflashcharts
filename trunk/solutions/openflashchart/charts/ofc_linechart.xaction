@@ -16,13 +16,12 @@
       <sources> 
         <request>chart_template_string</request> 
       </sources>  
-      <default-value><![CDATA[<chart><chart-type>LineChart</chart-type><title>OFC Line Sample Chart</title><x-steps>1000</x-steps><x-max>20000</x-max></chart>]]></default-value> 
+      <default-value><![CDATA[<chart><chart-type>LineChart</chart-type><title>OFC Line Sample Chart</title><x-steps>1000</x-steps><x-max>20000</x-max><domain-title>Day</domain-title><range-title>Sold Price</range-title></chart>]]></default-value> 
     </chart_template_string> 
   </inputs>
 
   <outputs> 
-    <html_fragment type="string"/>  
-    <content_url type="string"/> 
+    <html_fragment type="string"/> 
   </outputs>
 
   <resources/>
