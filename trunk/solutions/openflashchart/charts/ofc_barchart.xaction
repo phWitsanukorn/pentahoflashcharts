@@ -16,7 +16,7 @@
       <sources> 
         <request>chart_template_string</request> 
       </sources>  
-      <default-value><![CDATA[<chart><chart-type>BarChart</chart-type><title>OFC Bar Sample Chart</title></chart>]]></default-value> 
+      <default-value><![CDATA[<chart><chart-type>BarChart</chart-type><title>OFC Bar Sample Chart</title><x-steps>200000</x-steps><x-max>2000000</x-max><domain-title>Month</domain-title><range-title>Sold Price</range-title></chart>]]></default-value> 
     </chart_template_string> 
   </inputs>
 
@@ -39,38 +39,26 @@
       </action-outputs>
       <component-definition> 
         <jndi><![CDATA[SampleData]]></jndi>  
-        <query><![CDATA[select sum(actual) as "Actuals", region, 'http://www.google.com/search?q='|| region as "URL"  from quadrant_actuals group by region]]></query>  
-        <live><![CDATA[true]]></live> 
-      </component-definition> 
-    </action-definition>
-  
-    <action-definition> 
-      <component-name>JavascriptRule</component-name>
-      <action-type>JavaScript</action-type>
-      <action-inputs> 
-        <chart_dataset type="result-set"/> 
-      </action-inputs>
-      <action-outputs> 
-        <head3 type="string"/> 
-      </action-outputs>
-      <component-definition> 
-        <script><![CDATA[var rowCount = chart_dataset.getRowCount();
-var head3 ="";
-for (j = 0; j < rowCount; j++) 
-{
-head3+="{";
-var obj1 = chart_dataset.getValueAt(j,0);
-var obj2 = chart_dataset.getValueAt(j,1);
-head3+="\"value\":"+obj1;
-head3+=",";
-head3+="\"label\":"+"\""+obj2+"\"";
-head3+="}";
+        <live><![CDATA[true]]></live>  
+        <query><![CDATA[select 
+ 
+case  
+ when month(orderdate) = 1 then 'Jan'
+when  month(orderdate) = 2 then 'Feb'
+when  month(orderdate) = 3 then 'Mar'
+when  month(orderdate) = 4 then 'Apr'
+when  month(orderdate) = 5 then 'May'
+when  month(orderdate) = 6 then 'Jun'
+when  month(orderdate) = 7 then 'Jul'
+when  month(orderdate) = 8 then 'Aug'
+when  month(orderdate) = 9 then 'Sep'
+when  month(orderdate) = 10 then 'Oct'
+when  month(orderdate) = 11 then 'Nov'
+when  month(orderdate) = 12 then 'Dec'
 
-if(j<rowCount-1)
-{
-	head3+=",";
-}
-}]]></script> 
+else 'Blah'
+end as "Month",sum(quantityordered * priceeach) as "Revenue"
+from orderfact group by month(orderdate) order by month(orderdate)]]></query>
       </component-definition> 
     </action-definition>
   
@@ -79,8 +67,7 @@ if(j<rowCount-1)
       <action-type>Open Flash Chart</action-type>
       <action-inputs> 
         <chart_template_string type="string"/>  
-        <chart_dataset type="result-set"/>  
-        <pie_head type="string" mapping="head3"/> 
+        <chart_dataset type="result-set"/> 
       </action-inputs>
       <action-outputs> 
         <html_fragment type="string"/>  
