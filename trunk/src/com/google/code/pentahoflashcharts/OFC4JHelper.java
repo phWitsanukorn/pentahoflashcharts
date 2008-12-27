@@ -75,7 +75,10 @@ public class OFC4JHelper {
 		Node chartBackGround = root.selectSingleNode("/chart/chart-background");
 		Node stepsNode=root.selectSingleNode("/chart/x-steps");
 		Node xMaxNode=root.selectSingleNode("/chart/x-max");
-		Node valuesNode = root.selectSingleNode("/chart/values");;
+		Node valuesNode = root.selectSingleNode("/chart/values");
+		//in the Pentaho chart, range-title equals yLengend title
+		Node yLengendNode = root.selectSingleNode("/chart/range-title");
+		Node xLengendNode = root.selectSingleNode("/chart/domain-title");
 		if(cType.equalsIgnoreCase("BarChart"))
 		{
 			BarChart e = new BarChart();
@@ -148,7 +151,6 @@ public class OFC4JHelper {
 					labels[j]= (data.getValueAt(j, 0)).toString();
 				}
 				c.setXAxis(new XAxis().addLabels(labels));
-//				c.setXAxis(new XAxis().setTickHeight(5).addLabels("one", "two", "three", "four", "five"));
 				
 			}
 			else
@@ -183,21 +185,7 @@ public class OFC4JHelper {
 			}
 			
 
-			YAxis yaxis = new YAxis();
-			int x_max = 10000;
-			int step=10;
-			if(stepsNode!=null&&stepsNode.getText().length()>0)
-			{
-				step = Integer.parseInt(stepsNode.getText().trim());
-			}
 			
-			if(xMaxNode!=null&&xMaxNode.getText().length()>0)
-			{
-				x_max =Integer.parseInt(xMaxNode.getText().trim());
-			}
-			yaxis.setRange(0, x_max, step);
-
-			c.setYAxis(yaxis);
 			
 			c.addElements(elements);
 		}
@@ -223,6 +211,37 @@ public class OFC4JHelper {
 			c.addElements(e);
 		}
 		
+		YAxis yaxis = new YAxis();
+		int x_max = 10000;
+		int step=10;
+		if(stepsNode!=null&&stepsNode.getText().length()>0)
+		{
+			step = Integer.parseInt(stepsNode.getText().trim());
+		}
+		
+		if(xMaxNode!=null&&xMaxNode.getText().length()>0)
+		{
+			x_max =Integer.parseInt(xMaxNode.getText().trim());
+		}
+		yaxis.setRange(0, x_max, step);
+
+		c.setYAxis(yaxis);
+		
+		if(yLengendNode!=null&&yLengendNode.getText().length()>0)
+		{
+			Text text = new Text();
+			text.setText(yLengendNode.getText().trim());
+			text.setStyle("color: #736AFF; font-size: 14px;");
+			c.setYLegend(text);
+		}
+		
+		if(xLengendNode!=null&&xLengendNode.getText().length()>0)
+		{
+			Text text = new Text();
+			text.setText(xLengendNode.getText().trim());
+			text.setStyle("color: #736AFF; font-size: 14px;");
+			c.setXLegend(text);
+		}
 		return c;
 	}
 
