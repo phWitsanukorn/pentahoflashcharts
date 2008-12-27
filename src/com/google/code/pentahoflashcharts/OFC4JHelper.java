@@ -1,6 +1,7 @@
 package com.google.code.pentahoflashcharts;
 
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.pentaho.commons.connection.IPentahoResultSet;
 public class OFC4JHelper {
 	public static final String DEFAULT_WIDTH="500";
 	public static final String DEFAULT_HEIGHT="300";
+	private static SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
 	
 	public Chart generateChart()
 	{
@@ -81,11 +83,56 @@ public class OFC4JHelper {
 		Node xLengendNode = root.selectSingleNode("/chart/domain-title");
 		if(cType.equalsIgnoreCase("BarChart"))
 		{
-			BarChart e = new BarChart();
+			
+			BarChart[] values = null;
 			int rowCount = data.getRowCount();
 			int columnCount=data.getMetaData().getColumnCount();
-			e.addValues(9,8,7,6,5,4,3,2,1);
-			c.addElements(e);
+			if(columnCount>1)
+			{
+				values =new BarChart[columnCount-1];
+				for (int i = 1; i <=columnCount-1; i++) 
+				{
+					BarChart e = new BarChart();
+					Number[] datas = new Number[rowCount];
+					if(valuesNode!=null&&valuesNode.getText().length()>0)
+					{
+						String valueStr = valuesNode.getText().trim();
+						StringTokenizer st = new StringTokenizer(valueStr,",");
+						while(st.hasMoreTokens())
+						{
+							String value = st.nextToken();
+							e.addValues(Double.parseDouble(value));
+						}
+						
+					}
+					else
+					{
+						for (int j= 0; j < rowCount; j++) 
+						{
+							datas[j]= (Number)data.getValueAt(j, i);
+							e.addValues(datas[j].doubleValue());
+						}
+						
+					}
+					values[i-1]=e;
+				}
+				String[] labels = new String[rowCount];
+				for (int j= 0; j < rowCount; j++) 
+				{
+					Object obj = data.getValueAt(j, 0);
+					if(obj instanceof java.sql.Timestamp||obj instanceof java.util.Date)
+					{
+						labels[j]= sf.format(obj);
+					}
+					else
+					{
+						labels[j]= obj.toString();
+					}
+				}
+				c.setXAxis(new XAxis().addLabels(labels));
+			}
+//			e.addValues(9,8,7,6,5,4,3,2,1);
+			c.addElements(values);
 		}
 		else if(cType.equalsIgnoreCase("AreaChart"))
 		{
@@ -148,7 +195,15 @@ public class OFC4JHelper {
 				String[] labels = new String[rowCount];
 				for (int j= 0; j < rowCount; j++) 
 				{
-					labels[j]= (data.getValueAt(j, 0)).toString();
+					Object obj = data.getValueAt(j, 0);
+					if(obj instanceof java.sql.Timestamp||obj instanceof java.util.Date)
+					{
+						labels[j]= sf.format(obj);
+					}
+					else
+					{
+						labels[j]= obj.toString();
+					}
 				}
 				c.setXAxis(new XAxis().addLabels(labels));
 				
