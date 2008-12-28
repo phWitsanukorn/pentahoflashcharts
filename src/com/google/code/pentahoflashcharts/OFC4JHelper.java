@@ -3,7 +3,6 @@ package com.google.code.pentahoflashcharts;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -16,6 +15,7 @@ import ofc4j.model.elements.AreaHollowChart;
 import ofc4j.model.elements.BarChart;
 import ofc4j.model.elements.LineChart;
 import ofc4j.model.elements.PieChart;
+import ofc4j.model.elements.PieChart.Slice;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -137,6 +137,7 @@ public class OFC4JHelper {
 			}
 
 			c.addElements(values);
+			setYAixsRange(c, stepsNode, xMaxNode);
 		}
 		else if(cType.equalsIgnoreCase("AreaChart"))
 		{
@@ -243,18 +244,44 @@ public class OFC4JHelper {
 				
 			}
 			c.addElements(elements);
+			
+			setYAixsRange(c, stepsNode, xMaxNode);
 		}
 		else if(cType.equalsIgnoreCase("PieChart"))
 		{
 			PieChart e = new PieChart();
 			int rowCount = data.getRowCount();
 			e.setAnimate(true);
-			e.setStartAngle(35);
+			Node startAngleNode = root.selectSingleNode("/chart/start-angle");
+			if(startAngleNode!=null&&startAngleNode.getText().length()>0)
+			{
+				e.setStartAngle(Integer.parseInt(startAngleNode.getText().trim()) );
+			}
+			else
+				e.setStartAngle(35);
 			e.setBorder(2);
+			
+			int columnCount=data.getMetaData().getColumnCount();
+			
+			for (int j= 0; j < rowCount; j++) 
+			{
+				Object obj = data.getValueAt(j, 0);
+				Number value= (Number)data.getValueAt(j, 1);
+				if(obj instanceof java.sql.Timestamp||obj instanceof java.util.Date)
+				{
+					e.addSlice(value.doubleValue(), sf.format(obj));
+				}
+				else
+				{
+					Slice s = new Slice(value.doubleValue(), obj.toString());
+					e.addSlices(s);
+//					e.addValues(value);
+				}
+			}
 			e.setAlpha(0.6f);
-			e.addValues(2, 3);
-			e.addSlice(6.5f, "hello (6.5)");
-			e.setColours("#d01f3c", "#356aa0", "#C79810");
+//			e.addValues(2, 3);
+//			e.addSlice(6.5f, "hello (6.5)");
+			e.setColours("#d01f3c", "#356aa0", "#C79810","#C79810");
 			e.setTooltip("#val# of #total#<br>#percent# of 100%");
 			c.addElements(e);
 		}
@@ -266,21 +293,7 @@ public class OFC4JHelper {
 			c.addElements(e);
 		}
 		
-		YAxis yaxis = new YAxis();
-		int x_max = 10000;
-		int step=10;
-		if(stepsNode!=null&&stepsNode.getText().length()>0)
-		{
-			step = Integer.parseInt(stepsNode.getText().trim());
-		}
 		
-		if(xMaxNode!=null&&xMaxNode.getText().length()>0)
-		{
-			x_max =Integer.parseInt(xMaxNode.getText().trim());
-		}
-		yaxis.setRange(0, x_max, step);
-
-		c.setYAxis(yaxis);
 		
 		if(yLengendNode!=null&&yLengendNode.getText().length()>0)
 		{
@@ -298,6 +311,26 @@ public class OFC4JHelper {
 			c.setXLegend(text);
 		}
 		return c;
+	}
+
+
+
+	private static void setYAixsRange(Chart c, Node stepsNode, Node xMaxNode) {
+		YAxis yaxis = new YAxis();
+		int x_max = 10000;
+		int step=10;
+		if(stepsNode!=null&&stepsNode.getText().length()>0)
+		{
+			step = Integer.parseInt(stepsNode.getText().trim());
+		}
+		
+		if(xMaxNode!=null&&xMaxNode.getText().length()>0)
+		{
+			x_max =Integer.parseInt(xMaxNode.getText().trim());
+		}
+		yaxis.setRange(0, x_max, step);
+
+		c.setYAxis(yaxis);
 	}
 	
 	
