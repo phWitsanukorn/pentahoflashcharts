@@ -48,11 +48,12 @@ public class OFC4JHelper {
 	
 	//
 	public static void main(String[] args) {
-		//render the chart
-		Chart c=new Chart(new Date().toString())
-		  .addElements(new LineChart()
-		    .addValues(9,8,7,6,5,4,3,2,1));
-		System.out.println(c);
+		double t = 123456789.06;
+		System.out.println(t);
+		 java.text.NumberFormat nf = java.text.NumberFormat.getNumberInstance  ();
+		 nf.setGroupingUsed(false);
+		 System.out.println(nf.format(t));
+
 	}
 	
 	/**
@@ -110,10 +111,13 @@ public class OFC4JHelper {
 						for (int j= 0; j < rowCount; j++) 
 						{
 							datas[j]= (Number)data.getValueAt(j, i);
-							e.addValues(datas[j].doubleValue());
+							e.addBars( new BarChart.Bar(datas[j].doubleValue()));
+//							e.addValues(datas[j].doubleValue());
 						}
 						
 					}
+					if(i==2)
+					e.setColour("FFEF3F");
 					values[i-1]=e;
 				}
 				String[] labels = new String[rowCount];
@@ -131,7 +135,7 @@ public class OFC4JHelper {
 				}
 				c.setXAxis(new XAxis().addLabels(labels));
 			}
-//			e.addValues(9,8,7,6,5,4,3,2,1);
+
 			c.addElements(values);
 		}
 		else if(cType.equalsIgnoreCase("AreaChart"))
@@ -238,10 +242,6 @@ public class OFC4JHelper {
 				elements[0]=e;
 				
 			}
-			
-
-			
-			
 			c.addElements(elements);
 		}
 		else if(cType.equalsIgnoreCase("PieChart"))
@@ -299,5 +299,6 @@ public class OFC4JHelper {
 		}
 		return c;
 	}
-
+	
+	
 }
