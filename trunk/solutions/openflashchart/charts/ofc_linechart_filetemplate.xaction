@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<action-sequence> 
+  <title>Open Flash Chart Component - Pie Chart</title>
+  <version>1</version>
+  <logging-level>DEBUG</logging-level>
+  <documentation> 
+    <author>Bayon Technologies</author>  
+    <description>Animated, simple Pie Chart based on a Relational Data source. Includes an example of drill thru links.</description>  
+    <help/>  
+    <result-type/>  
+    <icon>HelloWorld.png</icon> 
+  </documentation>
+
+  <inputs/>
+
+  <outputs> 
+    <html_fragment type="string"/> 
+  </outputs>
+
+  <resources>
+    <chart_template>
+      <solution-file>
+        <location>ofc_line_chart.txt</location>
+        <mime-type>text/plain</mime-type>
+      </solution-file>
+    </chart_template>
+  </resources>
+  
+  <actions> 
+    <action-definition> 
+      <component-name>SQLLookupRule</component-name>
+      <action-type>Relational</action-type>
+      <action-outputs> 
+        <query-result type="result-set" mapping="chart_dataset"/> 
+      </action-outputs>
+      <component-definition> 
+        <jndi><![CDATA[SampleData]]></jndi>  
+        <live><![CDATA[true]]></live>  
+        <query><![CDATA[SELECT  ORDERS.ORDERDATE, SUM(ORDERDETAILS.QUANTITYORDERED*ORDERDETAILS.PRICEEACH) SOLD_PRICE 
+FROM ORDERS INNER JOIN ORDERDETAILS ON ORDERS.ORDERNUMBER = ORDERDETAILS.ORDERNUMBER INNER JOIN PRODUCTS ON ORDERDETAILS.PRODUCTCODE =PRODUCTS.PRODUCTCODE INNER JOIN CUSTOMERS ON ORDERS.CUSTOMERNUMBER =CUSTOMERS.CUSTOMERNUMBER  
+INNER JOIN EMPLOYEES ON CUSTOMERS.SALESREPEMPLOYEENUMBER = EMPLOYEES.EMPLOYEENUMBER
+INNER JOIN OFFICES ON EMPLOYEES.OFFICECODE=OFFICES.OFFICECODE
+WHERE (ORDERS.ORDERDATE >= '2005-01-01' AND ORDERS.ORDERDATE <= '2005-06-30') AND PRODUCTNAME = '1948 Porsche 356-A Roadster'
+GROUP BY  PRODUCTLINE, PRODUCTNAME,  ORDERS.ORDERDATE
+ORDER BY  PRODUCTLINE desc, PRODUCTNAME, ORDERS.ORDERDATE]]></query> 
+      </component-definition> 
+    </action-definition>
+  
+    <action-definition> 
+      <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+      <action-type>Open Flash Chart</action-type>
+      <action-inputs> 
+        <chart_dataset type="result-set"/> 
+      </action-inputs>
+      <action-resources> 
+        <chart_template type="resource"/> 
+      </action-resources>
+      <action-outputs> 
+        <html_fragment type="string"/>  
+        <content_url type="string"/> 
+      </action-outputs>
+      <component-definition/> 
+    </action-definition>
+ 
+  </actions> 
+</action-sequence>

@@ -1,0 +1,1 @@
+<chart><chart-type>LineChart</chart-type><title>Line Chart--Product "1948 Porsche 356-A Roadster"</title><x-steps>1000</x-steps><x-max>20000</x-max><domain-title>Day</domain-title><range-title>Sold Price</range-title></chart>
