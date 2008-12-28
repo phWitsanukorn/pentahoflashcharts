@@ -16,7 +16,7 @@
       <sources> 
         <request>chart_template_string</request> 
       </sources>  
-      <default-value><![CDATA[<chart><chart-type>BarChart</chart-type><title>Actual vs Budget  by Region</title><x-steps>1000</x-steps><x-max>4000</x-max></chart>]]></default-value> 
+      <default-value><![CDATA[<chart><chart-type>BarChart</chart-type><title>Actual vs Budget  by Region</title><x-steps>10000000</x-steps><x-max>40000000</x-max><domain-title>Region</domain-title><range-title>USD</range-title></chart>]]></default-value> 
     </chart_template_string> 
   </inputs>
 
@@ -37,7 +37,7 @@
       <component-definition> 
         <jndi><![CDATA[SampleData]]></jndi>  
         <live><![CDATA[true]]></live>  
-        <query><![CDATA[select  region, sum(actual)/10000 as "Actuals",sum(budget)/10000 as "Budget" from quadrant_actuals group by region]]></query> 
+        <query><![CDATA[select  region, sum(actual) as "Actuals",sum(budget) as "Budget" from quadrant_actuals group by region]]></query> 
       </component-definition> 
     </action-definition>
   
