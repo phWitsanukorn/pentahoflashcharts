@@ -236,7 +236,7 @@ public class OFC4JHelper {
 		}
 		c.addElements(elements);
 
-		setYAixsRange(c, stepsNode, xMaxNode);
+		setYAxisRange(c, stepsNode, xMaxNode);
 	}
 
 	private static void createBarChart(IPentahoResultSet data, Chart c,
@@ -249,11 +249,16 @@ public class OFC4JHelper {
 		for (int i = 0; i < barNum; i++) {
 			Node bar = (Node) bars.get(i);
 			Node colorNode = bar.selectSingleNode("color");
+			Node textNode = bar.selectSingleNode("text");
 			BarChart e = new BarChart(style);
 			Number[] datas = new Number[rowCount];
 			if (colorNode != null && colorNode.getText().length() > 2) {
 				String str = colorNode.getText().trim();
 				e.setColour(str);
+			}
+			if(textNode!=null&&textNode.getText().length()>0)
+			{
+				e.setText(textNode.getText().trim());
 			}
 			Node colIndexNode = bar.selectSingleNode("sql-column-index");
 			if (colIndexNode != null && colIndexNode.getText().length() > 0) {
@@ -269,57 +274,16 @@ public class OFC4JHelper {
 
 		// set the x-axis
 		setXAxis(c,root, data);
-		if (columnCount > 1) {
-			// values =new BarChart[columnCount-1];
-			//			
-			// for (int i = 1; i <=columnCount-1; i++)
-			// {
-			// BarChart e = new BarChart(style);
-			// Number[] datas = new Number[rowCount];
-			// if(valuesNode!=null&&valuesNode.getText().length()>0)
-			// {
-			// String valueStr = valuesNode.getText().trim();
-			// StringTokenizer st = new StringTokenizer(valueStr,",");
-			// while(st.hasMoreTokens())
-			// {
-			// String value = st.nextToken();
-			// e.addValues(Double.parseDouble(value));
-			// }
-			//					
-			// }
-			// else
-			// {
-			//					
-			// for (int j= 0; j < rowCount; j++)
-			// {
-			// datas[j]= (Number)data.getValueAt(j, i);
-			// e.addBars( new BarChart.Bar(datas[j].doubleValue()));
-			// // e.addValues(datas[j].doubleValue());
-			// }
-			//					
-			// }
-			// if(i==2)
-			// e.setColour("FFEF3F");
-			// values[i-1]=e;
-			// }
-//			String[] labels = new String[rowCount];
-//			for (int j = 0; j < rowCount; j++) {
-//				Object obj = data.getValueAt(j, 0);
-//				if (obj instanceof java.sql.Timestamp
-//						|| obj instanceof java.util.Date) {
-//					labels[j] = sf.format(obj);
-//				} else {
-//					labels[j] = obj.toString();
-//				}
-//			}
-//			c.setXAxis(new XAxis().addLabels(labels));
-		}
-
+		//set the y-axis
+		setYAxis(c, root);
 		c.addElements(values);
+	}
+
+	private static void setYAxis(Chart c, Node root) {
 		Node stepsNode = root.selectSingleNode("/chart/x-steps");
 		Node xMaxNode = root.selectSingleNode("/chart/x-max");
 		
-		setYAixsRange(c, stepsNode, xMaxNode);
+		setYAxisRange(c, stepsNode, xMaxNode);
 	}
 
 	private static void setXAxis(Chart c,Node root, IPentahoResultSet data) {
@@ -354,7 +318,7 @@ public class OFC4JHelper {
 		}
 	}
 
-	private static void setYAixsRange(Chart c, Node stepsNode, Node xMaxNode) {
+	private static void setYAxisRange(Chart c, Node stepsNode, Node xMaxNode) {
 		YAxis yaxis = new YAxis();
 		int y_max = 10000;
 		int y_step = 10;
