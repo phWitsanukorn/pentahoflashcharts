@@ -1,0 +1,12 @@
+<chart>
+<chart-type>BarChart</chart-type>
+<is-3D>false</is-3D>
+<is-stacked>false</is-stacked>
+<is-glass>true</is-glass>
+<is-filled>false</is-filled>
+<title>Bar Chart--Product "1948 Porsche 356-A Roadster"</title>
+<domain-title>Day</domain-title>
+<range-title>Sold Price</range-title>
+<x-steps>200000</x-steps>
+<x-max>2000000</x-max>
+</chart>
