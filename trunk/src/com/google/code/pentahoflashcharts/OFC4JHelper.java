@@ -27,23 +27,10 @@ import org.pentaho.commons.connection.IPentahoResultSet;
 
 
 public class OFC4JHelper {
-	public static final String DEFAULT_WIDTH="500";
-	public static final String DEFAULT_HEIGHT="300";
+
 	private static SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
 	
-	public Chart generateChart()
-	{
-		Chart c = new Chart("test");
-		XAxis x_axis = new XAxis();
-		x_axis.setLabels(new String[]{"2003","2004"});
-		x_axis.setSteps(Integer.valueOf(1));
-		c.setXAxis(x_axis);
-		
-		YAxis y_axis=new YAxis ();
-		y_axis.addLabels(new String[]{"2003","3000"});
-		c.setYAxis(y_axis);
-		return c;
-	}
+
 	
 	
 	
@@ -74,8 +61,7 @@ public class OFC4JHelper {
 		{
 			c.setTitle(t.setText( titleNode.getText()));
 		}
-		Node heightNode = root.selectSingleNode("/chart/height");
-		Node widthNode = root.selectSingleNode("/chart/width");
+
 		Node chartBackGround = root.selectSingleNode("/chart/chart-background");
 		Node stepsNode=root.selectSingleNode("/chart/x-steps");
 		Node xMaxNode=root.selectSingleNode("/chart/x-max");
@@ -135,7 +121,7 @@ public class OFC4JHelper {
 		}
 		else if(cType.equalsIgnoreCase("LineChart"))
 		{
-			createLineChart(data, c, widthNode, chartBackGround, stepsNode,
+			createLineChart(data, c,  chartBackGround, stepsNode,
 					xMaxNode, valuesNode);
 		}
 		else if(cType.equalsIgnoreCase("PieChart"))
@@ -228,7 +214,7 @@ public class OFC4JHelper {
 
 
 	private static void createLineChart(IPentahoResultSet data, Chart c,
-			Node widthNode, Node chartBackGround, Node stepsNode,
+			 Node chartBackGround, Node stepsNode,
 			Node xMaxNode, Node valuesNode) {
 		int columnCount=data.getMetaData().getColumnCount();
 		LineChart[] elements = null;
@@ -284,17 +270,7 @@ public class OFC4JHelper {
 			elements=new LineChart[columnCount];
 			LineChart e = new LineChart(LineChart.Style.DOT);
 			
-			if(widthNode!=null)
-			{
-				String width = widthNode.getText();
-				if(width==null||width.length()==0)
-				{
-					width=DEFAULT_WIDTH;
-				}
-				else
-					width = width.trim();
-				e.setWidth(Integer.valueOf(width));
-			}
+		
 			if(chartBackGround!=null)
 			{
 				
