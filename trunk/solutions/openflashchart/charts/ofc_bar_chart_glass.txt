@@ -7,8 +7,7 @@
 <title>Bar Chart--Product "1948 Porsche 356-A Roadster"</title>
 <domain-title>Day</domain-title>
 <range-title>Sold Price</range-title>
-<x-steps>200000</x-steps>
-<x-max>2000000</x-max>
+
 <x-axis>
 <labels>
 <sql-column-index>1</sql-column-index>
@@ -18,6 +17,15 @@
 </steps>
 <color>#909090</color>
 </x-axis>
+<y-axis>
+<labels>
+</labels>
+<y-steps>
+200000
+</y-steps>
+<y-max>2000000</y-max>
+<color>#909090</color>
+</y-axis>
 <bars>
 <bar>
 <color></color>
