@@ -52,10 +52,6 @@ public class OFC4JHelper {
 			c.setTitle(t.setText(titleNode.getText()));
 		}
 
-		Node chartBackGround = root.selectSingleNode("/chart/chart-background");
-		Node stepsNode = root.selectSingleNode("/chart/x-steps");
-		Node xMaxNode = root.selectSingleNode("/chart/x-max");
-		Node valuesNode = root.selectSingleNode("/chart/values");
 		// in the Pentaho chart, range-title equals yLengend title
 		Node yLengendNode = root.selectSingleNode("/chart/range-title");
 		// in the Pentaho chart, domain-title equals xLengend title
@@ -106,8 +102,7 @@ public class OFC4JHelper {
 			c.setXAxis(xaxis);
 			c.addElements(e);
 		} else if (cType.equalsIgnoreCase("LineChart")) {
-			createLineChart(data, c, chartBackGround, stepsNode, xMaxNode,
-					valuesNode);
+			createLineChart(data, c, root);
 		} else if (cType.equalsIgnoreCase("PieChart")) {
 			createPieChart(data, c, root);
 		} else if (cType.equalsIgnoreCase("BarLineChart")) {
@@ -178,7 +173,7 @@ public class OFC4JHelper {
 	}
 
 	private static void createLineChart(IPentahoResultSet data, Chart c,
-			Node chartBackGround, Node stepsNode, Node xMaxNode, Node valuesNode) {
+			Node root) {
 		int columnCount = data.getMetaData().getColumnCount();
 		LineChart[] elements = null;
 		if (columnCount > 1) {
@@ -188,21 +183,13 @@ public class OFC4JHelper {
 				LineChart e = new LineChart(LineChart.Style.DOT);
 				Number[] datas = new Number[rowCount];
 
-				if (valuesNode != null && valuesNode.getText().length() > 0) {
-					String valueStr = valuesNode.getText().trim();
-					StringTokenizer st = new StringTokenizer(valueStr, ",");
-					while (st.hasMoreTokens()) {
-						String value = st.nextToken();
-						e.addValues(Double.parseDouble(value));
-					}
-
-				} else {
+				
 					for (int j = 0; j < rowCount; j++) {
 						datas[j] = (Number) data.getValueAt(j, i);
 						e.addValues(datas[j].doubleValue());
 					}
 
-				}
+				
 				elements[i - 1] = e;
 			}
 			String[] labels = new String[rowCount];
@@ -221,6 +208,7 @@ public class OFC4JHelper {
 			elements = new LineChart[columnCount];
 			LineChart e = new LineChart(LineChart.Style.DOT);
 
+			Node chartBackGround=root.selectSingleNode("/chart/chart-background");
 			if (chartBackGround != null) {
 
 				e.setColour(chartBackGround.getText());
@@ -236,7 +224,9 @@ public class OFC4JHelper {
 		}
 		c.addElements(elements);
 
-		setYAxisRange(c, stepsNode, xMaxNode);
+		Node stepsNode = root.selectSingleNode("/chart/y-axis/y-steps");
+		Node yMaxNode = root.selectSingleNode("/chart/y-axis/y-max");
+		setYAxisRange(c, stepsNode, yMaxNode);
 	}
 
 	private static void createBarChart(IPentahoResultSet data, Chart c,
@@ -280,8 +270,8 @@ public class OFC4JHelper {
 	}
 
 	private static void setYAxis(Chart c, Node root) {
-		Node stepsNode = root.selectSingleNode("/chart/x-steps");
-		Node xMaxNode = root.selectSingleNode("/chart/x-max");
+		Node stepsNode = root.selectSingleNode("/chart/y-axis/y-steps");
+		Node xMaxNode = root.selectSingleNode("/chart/y-axis/y-max");
 		
 		setYAxisRange(c, stepsNode, xMaxNode);
 	}
