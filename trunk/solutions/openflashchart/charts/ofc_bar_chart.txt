@@ -4,11 +4,7 @@
 <is-stacked>false</is-stacked>
 <is-glass>false</is-glass>
 <is-filled>false</is-filled>
-<title>Bar Chart--Product "1948 Porsche 356-A Roadster"</title>
-<domain-title>Day</domain-title>
-<range-title>Sold Price</range-title>
-<x-steps>200000</x-steps>
-<x-max>2000000</x-max>
+<title>Line Chart--Product "1948 Porsche 356-A Roadster"</title>
 <x-axis>
 <labels>
 <sql-column-index>1</sql-column-index>
@@ -18,9 +14,11 @@
 </steps>
 <color>#909090</color>
 </x-axis>
+<domain-title>Day</domain-title>
+<range-title>Sold Price</range-title>
 <bars>
 <bar>
-<color>#D54C78</color>
+<color>#909090</color>
 <sql-column-index>2</sql-column-index>
 <values>{col2}</values>
 </bar>

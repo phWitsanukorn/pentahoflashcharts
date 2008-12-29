@@ -11,21 +11,20 @@
     <icon>HelloWorld.png</icon> 
   </documentation>
 
-  <inputs> 
-    <chart_template_string type="string"> 
-      <sources> 
-        <request>chart_template_string</request> 
-      </sources>  
-      <default-value><![CDATA[<chart><chart-type>BarChart</chart-type><title>Actual vs Budget  by Region</title><x-steps>10000000</x-steps><x-max>40000000</x-max><domain-title>Region</domain-title><range-title>USD</range-title></chart>]]></default-value> 
-    </chart_template_string> 
-  </inputs>
+  <inputs/>
 
   <outputs> 
-    <content_url type="string"/>  
     <html_fragment type="string"/> 
   </outputs>
 
-  <resources/>
+  <resources> 
+    <chart_template> 
+      <solution-file> 
+        <location>ofc_bar_chart_two_series.txt</location>  
+        <mime-type>text/plain</mime-type> 
+      </solution-file> 
+    </chart_template> 
+  </resources>
   
   <actions> 
     <action-definition> 
@@ -45,9 +44,11 @@
       <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
       <action-type>Open Flash Chart</action-type>
       <action-inputs> 
-        <chart_template_string type="string"/>  
         <chart_dataset type="result-set"/> 
       </action-inputs>
+      <action-resources> 
+        <chart_template type="resource"/> 
+      </action-resources>
       <action-outputs> 
         <html_fragment type="string"/>  
         <content_url type="string"/> 
