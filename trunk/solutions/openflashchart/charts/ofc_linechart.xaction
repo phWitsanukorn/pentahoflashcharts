@@ -16,7 +16,7 @@
       <sources> 
         <request>chart_template_string</request> 
       </sources>  
-      <default-value><![CDATA[<chart><chart-type>LineChart</chart-type><title>Line Chart--Product "1948 Porsche 356-A Roadster"</title><x-steps>1000</x-steps><x-max>20000</x-max><domain-title>Day</domain-title><range-title>Sold Price</range-title></chart>]]></default-value> 
+      <default-value><![CDATA[<chart><chart-type>LineChart</chart-type><title>Line Chart--Product "1948 Porsche 356-A Roadster"</title><x-steps>1000</x-steps><x-max>20000</x-max><domain-title>Day</domain-title><range-title>Sold Price</range-title><y-axis><labels></labels><y-steps>1000</y-steps><y-max>10000</y-max><color>#909090</color></y-axis></chart>]]></default-value> 
     </chart_template_string> 
   </inputs>
 
@@ -42,7 +42,7 @@ INNER JOIN EMPLOYEES ON CUSTOMERS.SALESREPEMPLOYEENUMBER = EMPLOYEES.EMPLOYEENUM
 INNER JOIN OFFICES ON EMPLOYEES.OFFICECODE=OFFICES.OFFICECODE
 WHERE (ORDERS.ORDERDATE >= '2005-01-01' AND ORDERS.ORDERDATE <= '2005-06-30') AND PRODUCTNAME = '1948 Porsche 356-A Roadster'
 GROUP BY  PRODUCTLINE, PRODUCTNAME,  ORDERS.ORDERDATE
-ORDER BY  PRODUCTLINE desc, PRODUCTNAME, ORDERS.ORDERDATE]]></query>
+ORDER BY  PRODUCTLINE desc, PRODUCTNAME, ORDERS.ORDERDATE]]></query> 
       </component-definition> 
     </action-definition>
   
