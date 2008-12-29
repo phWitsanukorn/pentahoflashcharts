@@ -22,6 +22,7 @@
 <bars>
 <bar>
 <color>#C31812</color>
+<text>Actuals</text>
 <sql-column-index>2</sql-column-index>
 <values></values>
 </bar>
@@ -29,6 +30,7 @@
 <color>#424581</color>
 <sql-column-index>3</sql-column-index>
 <values></values>
+<text>Budget</text>
 </bar>
 </bars>
 </chart>
