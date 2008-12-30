@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <action-sequence> 
-  <title>Open Flash Chart Component - Pie Chart</title>
+  <title>Open Flash Chart Component - Area Chart</title>
   <version>1</version>
   <logging-level>DEBUG</logging-level>
   <documentation> 

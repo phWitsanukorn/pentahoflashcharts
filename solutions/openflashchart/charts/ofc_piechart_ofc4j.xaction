@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <action-sequence> 
-  <title>Open Flash Chart Component - Pie Chart</title>
+  <title>Open Flash Chart Component - Pie Chart Test</title>
   <version>1</version>
   <logging-level>DEBUG</logging-level>
   <documentation> 
@@ -11,21 +11,21 @@
     <icon>HelloWorld.png</icon> 
   </documentation>
 
-  <inputs> 
-    <chart_template_string type="string"> 
-      <sources> 
-        <request>chart_template_string</request> 
-      </sources>  
-      <default-value><![CDATA[<chart><chart-type>PieChart</chart-type><title>OFC Pie Sample Chart</title></chart>]]></default-value> 
-    </chart_template_string> 
-  </inputs>
+  <inputs/>
 
   <outputs> 
+    <html_fragment type="string"/>  
     <content_url type="string"/>
-    <html_fragment type="string"/>
   </outputs>
 
-  <resources/>
+  <resources> 
+    <chart_template> 
+      <solution-file> 
+        <location>ofc-piechar.txt</location>  
+        <mime-type>text/plain</mime-type> 
+      </solution-file> 
+    </chart_template> 
+  </resources>
   
   <actions> 
     <action-definition> 
@@ -45,9 +45,11 @@
       <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
       <action-type>Open Flash Chart</action-type>
       <action-inputs> 
-        <chart_template_string type="string"/>  
         <chart_dataset type="result-set"/> 
       </action-inputs>
+      <action-resources> 
+        <chart_template type="resource"/> 
+      </action-resources>
       <action-outputs> 
         <html_fragment type="string"/>  
         <content_url type="string"/> 

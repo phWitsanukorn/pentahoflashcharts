@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <action-sequence> 
-  <title>Open Flash Chart Component - Pie Chart</title>
+  <title>Open Flash Chart Component -Bar Glass Chart</title>
   <version>1</version>
   <logging-level>DEBUG</logging-level>
   <documentation> 
@@ -27,7 +27,7 @@
   </inputs>
 
   <outputs> 
-    <html_fragment type="string"/>
+    <html_fragment type="string"/> 
   </outputs>
 
   <resources> 
@@ -67,7 +67,7 @@ when  month(orderdate) = 12 then 'Dec'
 
 else 'Blah'
 end as "Month",sum(quantityordered * priceeach) as "Revenue"
-from orderfact group by month(orderdate) order by month(orderdate)]]></query>
+from orderfact group by month(orderdate) order by month(orderdate)]]></query> 
       </component-definition> 
     </action-definition>
   

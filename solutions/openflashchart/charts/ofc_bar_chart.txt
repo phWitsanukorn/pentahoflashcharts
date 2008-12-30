@@ -18,6 +18,7 @@
 <range-title>Sold Price</range-title>
 <bars>
 <bar>
+<text></text>
 <color>#909090</color>
 <sql-column-index>2</sql-column-index>
 <values>{col2}</values>
