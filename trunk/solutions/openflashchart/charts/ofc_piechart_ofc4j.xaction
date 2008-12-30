@@ -14,8 +14,7 @@
   <inputs/>
 
   <outputs> 
-    <html_fragment type="string"/>  
-    <content_url type="string"/>
+    <html_fragment type="string"/> 
   </outputs>
 
   <resources> 
