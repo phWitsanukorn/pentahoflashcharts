@@ -150,8 +150,8 @@ public class OFC4JHelper {
 			e.setStartAngle(Integer.parseInt(startAngleNode.getText().trim()));
 		} else
 			e.setStartAngle(35);
-
-		int columnCount = data.getMetaData().getColumnCount();
+		
+	
 
 		for (int j = 0; j < rowCount; j++) {
 			Object obj = data.getValueAt(j, 0);
@@ -164,11 +164,44 @@ public class OFC4JHelper {
 				e.addSlices(s);
 			}
 		}
+		
 		e.setAlpha(0.6f);
 		e.setBorder(2);
-		e.setAnimate(true);
-		e.setColours("#d01f3c", "#356aa0", "#C79810", "#C79810");
-		e.setTooltip("#val# of #total#<br>#percent# of 100%");
+		Node isAnimateNode = root.selectSingleNode("/chart/isAnimate");
+		if (isAnimateNode != null && isAnimateNode.getText().length() > 0) {
+			String str = isAnimateNode.getText().trim();
+			if("true".equalsIgnoreCase(str))
+			{
+				e.setAnimate(true);
+			}
+			else
+				e.setAnimate(false);
+		} 
+		//
+		Node colorsNode = root.selectSingleNode("/chart/slice/colors");
+		if(colorsNode!=null&&colorsNode.getText().length()>0)
+		{
+			String str = colorsNode.getText().trim();
+			StringTokenizer st = new StringTokenizer(str,",");
+			String[] colors = new String[st.countTokens()];
+			int i =0;
+			while(st.hasMoreTokens())
+			{
+				String color = st.nextToken();
+				colors[i]=color.trim();
+				i++;
+
+			}
+			e.setColours(colors);
+		}
+		Node tooltipNode = root.selectSingleNode("/chart/tooltip");
+		if (tooltipNode!=null&&tooltipNode.getText().length()>0) {
+			String tooltip = tooltipNode.getText().trim();
+			e.setTooltip(tooltip);
+		} else {
+			e.setTooltip("#val# of #total#<br>#percent# of 100%");
+		}
+		
 		c.addElements(e);
 	}
 
