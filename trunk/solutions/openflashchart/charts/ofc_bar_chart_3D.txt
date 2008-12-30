@@ -29,7 +29,7 @@
 <bar>
 <color>#D54C78</color>
 <sql-column-index>2</sql-column-index>
-<values>{col2}</values>
+<values></values>
 </bar>
 </bars>
 </chart>
