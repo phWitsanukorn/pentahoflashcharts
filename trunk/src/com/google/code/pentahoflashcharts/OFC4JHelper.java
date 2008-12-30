@@ -169,17 +169,7 @@ public class OFC4JHelper {
 				}
 			}
 		}
-//		for (int j = 0; j < rowCount; j++) {
-//			Object obj = data.getValueAt(j, 0);
-//			Number value = (Number) data.getValueAt(j, 1);
-//			if (obj instanceof java.sql.Timestamp
-//					|| obj instanceof java.util.Date) {
-//				e.addSlice(value.doubleValue(), sf.format(obj));
-//			} else {
-//				Slice s = new Slice(value.doubleValue(), obj.toString());
-//				e.addSlices(s);
-//			}
-//		}
+
 		
 		e.setAlpha(0.6f);
 		e.setBorder(2);
@@ -282,7 +272,7 @@ public class OFC4JHelper {
 			Node root, List bars, Style style) {
 		BarChart[] values = null;
 		int rowCount = data.getRowCount();
-		int columnCount = data.getMetaData().getColumnCount();
+
 		int barNum = bars.size();
 		values = new BarChart[barNum];
 		for (int i = 0; i < barNum; i++) {
