@@ -16,7 +16,7 @@
       <sources> 
         <request>chart_template_string</request> 
       </sources>  
-      <default-value><![CDATA[{"title":{"text":  "${head1} vs ${head2}" ,"style": "{font-size:18px; color: #d01f3c}"},"elements":[{"type":      "pie","colours":   ["#d01f3c","#356aa0","#C79810"],  "alpha":     0.6,      "border":    2,      "animate":   0,      "start-angle": 60,      "tip":         "#label#<br>$#val# (#percent#)",      "values" :   [{pie_head}]    }  ]}]]></default-value> 
+      <default-value><![CDATA[<chart><chart-type>PieChart</chart-type>	<title>Sample Chart</title></chart>]]></default-value> 
     </chart_template_string> 
   </inputs>
 
