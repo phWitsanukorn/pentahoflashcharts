@@ -152,18 +152,34 @@ public class OFC4JHelper {
 			e.setStartAngle(35);
 		
 	
-
-		for (int j = 0; j < rowCount; j++) {
-			Object obj = data.getValueAt(j, 0);
-			Number value = (Number) data.getValueAt(j, 1);
-			if (obj instanceof java.sql.Timestamp
-					|| obj instanceof java.util.Date) {
-				e.addSlice(value.doubleValue(), sf.format(obj));
-			} else {
-				Slice s = new Slice(value.doubleValue(), obj.toString());
-				e.addSlices(s);
+		Node colIndexNode = root.selectSingleNode("/chart/slice/datas/sql-column-index");
+		Node labelIndexNode = root.selectSingleNode("/chart/slice/labels/sql-column-index");
+		if (colIndexNode != null && colIndexNode.getText().length() > 0) {
+			int index = Integer.parseInt(colIndexNode.getText().trim())  ;
+			int labelindex = Integer.parseInt(labelIndexNode.getText().trim())  ;
+			for (int j = 0; j < rowCount; j++) {
+				Object obj = data.getValueAt(j, labelindex-1);
+				Number value = (Number) data.getValueAt(j, index-1);
+				if (obj instanceof java.sql.Timestamp
+						|| obj instanceof java.util.Date) {
+					e.addSlice(value.doubleValue(), sf.format(obj));
+				} else {
+					Slice s = new Slice(value.doubleValue(), obj.toString());
+					e.addSlices(s);
+				}
 			}
 		}
+//		for (int j = 0; j < rowCount; j++) {
+//			Object obj = data.getValueAt(j, 0);
+//			Number value = (Number) data.getValueAt(j, 1);
+//			if (obj instanceof java.sql.Timestamp
+//					|| obj instanceof java.util.Date) {
+//				e.addSlice(value.doubleValue(), sf.format(obj));
+//			} else {
+//				Slice s = new Slice(value.doubleValue(), obj.toString());
+//				e.addSlices(s);
+//			}
+//		}
 		
 		e.setAlpha(0.6f);
 		e.setBorder(2);
