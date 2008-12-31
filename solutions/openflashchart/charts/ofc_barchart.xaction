@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <action-sequence> 
-  <title>Open Flash Chart Component - Pie Chart</title>
+  <title>Open Flash Chart Component - Bar Chart normal</title>
   <version>1</version>
   <logging-level>DEBUG</logging-level>
   <documentation> 
@@ -12,12 +12,18 @@
   </documentation>
 
   <inputs> 
-    <chart_template_string type="string"> 
+    <chart_height type="string"> 
       <sources> 
-        <request>chart_template_string</request> 
+        <request>chart_height</request> 
       </sources>  
-      <default-value><![CDATA[<chart><chart-type>BarChart</chart-type><title>OFC Bar Sample Chart</title><x-steps>200000</x-steps><x-max>2000000</x-max><domain-title>Month</domain-title><range-title>Sold Price</range-title></chart>]]></default-value> 
-    </chart_template_string> 
+      <default-value><![CDATA[600]]></default-value> 
+    </chart_height>  
+    <chart_width type="string"> 
+      <sources> 
+        <request>chart_width</request> 
+      </sources>  
+      <default-value><![CDATA[800]]></default-value> 
+    </chart_width> 
   </inputs>
 
   <outputs> 
@@ -28,7 +34,14 @@
     </html_fragment> 
   </outputs>
 
-  <resources/>
+  <resources> 
+    <chart_template> 
+      <solution-file> 
+        <location>ofc_bar_chart_normal.txt</location>  
+        <mime-type>text/plain</mime-type> 
+      </solution-file> 
+    </chart_template> 
+  </resources>
   
   <actions> 
     <action-definition> 
@@ -58,7 +71,7 @@ when  month(orderdate) = 12 then 'Dec'
 
 else 'Blah'
 end as "Month",sum(quantityordered * priceeach) as "Revenue"
-from orderfact group by month(orderdate) order by month(orderdate)]]></query>
+from orderfact group by month(orderdate) order by month(orderdate)]]></query> 
       </component-definition> 
     </action-definition>
   
@@ -66,9 +79,13 @@ from orderfact group by month(orderdate) order by month(orderdate)]]></query>
       <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
       <action-type>Open Flash Chart</action-type>
       <action-inputs> 
-        <chart_template_string type="string"/>  
-        <chart_dataset type="result-set"/> 
+        <chart_dataset type="result-set"/>  
+        <chart_height type="string"/>  
+        <chart_width type="string"/> 
       </action-inputs>
+      <action-resources> 
+        <chart_template type="resource"/> 
+      </action-resources>
       <action-outputs> 
         <html_fragment type="string"/>  
         <content_url type="string"/> 
