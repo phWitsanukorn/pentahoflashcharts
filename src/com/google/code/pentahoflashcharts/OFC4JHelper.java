@@ -14,6 +14,7 @@ import ofc4j.model.elements.AreaHollowChart;
 import ofc4j.model.elements.BarChart;
 import ofc4j.model.elements.LineChart;
 import ofc4j.model.elements.PieChart;
+import ofc4j.model.elements.SketchBarChart;
 import ofc4j.model.elements.BarChart.Style;
 import ofc4j.model.elements.PieChart.Slice;
 
@@ -58,6 +59,7 @@ public class OFC4JHelper {
 		Node xLengendNode = root.selectSingleNode("/chart/domain-title");
 		Node is_3DNode = root.selectSingleNode("/chart/is-3D");
 		Node is_glassNode = root.selectSingleNode("/chart/is-glass");
+		Node is_sketchNode = root.selectSingleNode("/chart/is-sketch");
 		List bars = root.selectNodes("/chart/bars/bar");
 		if (cType.equalsIgnoreCase("BarChart")) {
 			boolean isDone = false;
@@ -74,6 +76,15 @@ public class OFC4JHelper {
 				String str = is_glassNode.getText().trim();
 				if (str.equalsIgnoreCase("true")) {
 					createGlassBarChart(data, c, root, bars);
+					isDone = true;
+				}
+			}
+			
+			if (isDone != true && is_sketchNode != null
+					&& is_sketchNode.getText().length() > 0) {
+				String str = is_sketchNode.getText().trim();
+				if (str.equalsIgnoreCase("true")) {
+					createSketchBarChart(data, c, root, bars);
 					isDone = true;
 				}
 			}
@@ -126,6 +137,41 @@ public class OFC4JHelper {
 			c.setXLegend(text);
 		}
 		return c;
+	}
+
+	private static void createSketchBarChart(IPentahoResultSet data, Chart c,
+			Element root, List bars) {
+		
+		BarChart[] values = null;
+		int rowCount = data.getRowCount();
+
+		int barNum = bars.size();
+		values = new BarChart[barNum];
+		int functor = 5;
+		for (int i = 0; i < barNum; i++) {
+			Node bar = (Node) bars.get(i);
+		
+			Node textNode = bar.selectSingleNode("text");
+			Node colorNode = bar.selectSingleNode("color");
+			Node outlineColorNode = bar.selectSingleNode("outlineColor");
+			String color="";
+			String outlineColor="";
+			if (colorNode != null && colorNode.getText().length() > 0) {
+				color= colorNode.getText().trim();
+			}
+			if (outlineColorNode != null && outlineColorNode.getText().length() > 0) {
+				outlineColor=outlineColorNode.getText().trim();
+			}
+			BarChart e = new SketchBarChart(color,outlineColor,functor);
+			setBarchartData(data, rowCount, bar, colorNode, textNode, e);
+			values[i] = e;
+		}
+
+		// set the x-axis
+		setXAxis(c,root, data);
+		//set the y-axis
+		setYAxis(c, root);
+		c.addElements(values);
 	}
 
 	private static void createGlassBarChart(IPentahoResultSet data, Chart c,
@@ -280,24 +326,7 @@ public class OFC4JHelper {
 			Node colorNode = bar.selectSingleNode("color");
 			Node textNode = bar.selectSingleNode("text");
 			BarChart e = new BarChart(style);
-			Number[] datas = new Number[rowCount];
-			if (colorNode != null && colorNode.getText().length() > 2) {
-				String str = colorNode.getText().trim();
-				e.setColour(str);
-			}
-			if(textNode!=null&&textNode.getText().length()>0)
-			{
-				e.setText(textNode.getText().trim());
-			}
-			Node colIndexNode = bar.selectSingleNode("sql-column-index");
-			if (colIndexNode != null && colIndexNode.getText().length() > 0) {
-				int index = Integer.parseInt(colIndexNode.getText().trim());
-				for (int j = 0; j < rowCount; j++) {
-					datas[j] = (Number) data.getValueAt(j, index - 1);
-					e.addBars(new BarChart.Bar(datas[j].doubleValue()));
-					// e.addValues(datas[j].doubleValue());
-				}
-			}
+			setBarchartData(data, rowCount, bar, colorNode, textNode, e);
 			values[i] = e;
 		}
 
@@ -306,6 +335,28 @@ public class OFC4JHelper {
 		//set the y-axis
 		setYAxis(c, root);
 		c.addElements(values);
+	}
+
+	private static void setBarchartData(IPentahoResultSet data, int rowCount,
+			Node bar, Node colorNode, Node textNode, BarChart e) {
+		Number[] datas = new Number[rowCount];
+		if (colorNode != null && colorNode.getText().length() > 2) {
+			String str = colorNode.getText().trim();
+			e.setColour(str);
+		}
+		if(textNode!=null&&textNode.getText().length()>0)
+		{
+			e.setText(textNode.getText().trim());
+		}
+		Node colIndexNode = bar.selectSingleNode("sql-column-index");
+		if (colIndexNode != null && colIndexNode.getText().length() > 0) {
+			int index = Integer.parseInt(colIndexNode.getText().trim());
+			for (int j = 0; j < rowCount; j++) {
+				datas[j] = (Number) data.getValueAt(j, index - 1);
+				e.addBars(new BarChart.Bar(datas[j].doubleValue()));
+				// e.addValues(datas[j].doubleValue());
+			}
+		}
 	}
 
 	private static void setYAxis(Chart c, Node root) {
