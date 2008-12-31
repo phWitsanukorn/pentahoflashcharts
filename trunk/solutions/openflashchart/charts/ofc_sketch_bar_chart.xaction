@@ -43,7 +43,7 @@
   <resources> 
     <chart_template> 
       <solution-file> 
-        <location>ofc_sketch_chart.json</location>  
+        <location>ofc_bar_chart_sketch.txt</location>  
         <mime-type>text/plain</mime-type> 
       </solution-file> 
     </chart_template> 
@@ -60,7 +60,7 @@
         <jndi><![CDATA[SampleData]]></jndi>  
         <live><![CDATA[true]]></live>  
         <query><![CDATA[select 
-sum(quantityordered * priceeach) as "Revenue", 
+ 
 case  
  when month(orderdate) = 1 then 'Jan'
 when  month(orderdate) = 2 then 'Feb'
@@ -76,29 +76,8 @@ when  month(orderdate) = 11 then 'Nov'
 when  month(orderdate) = 12 then 'Dec'
 
 else 'Blah'
-end as "Month"
-from orderfact group by month(orderdate) order by month(orderdate)]]></query> 
-      </component-definition> 
-    </action-definition>
-  
-    <action-definition> 
-      <component-name>JavascriptRule</component-name>
-      <action-type>JavaScript</action-type>
-      <action-inputs> 
-        <chart_dataset type="result-set"/> 
-      </action-inputs>
-      <action-outputs> 
-        <header1 type="string"/> 
-      </action-outputs>
-      <component-definition> 
-        <script><![CDATA[var header1;
-
-var objs = chart_dataset.getMetaData().getColumnHeaders();
-var headers = objs[0];
-
-header1 = headers[0];
-
-/* header1 should be "Revenue" */]]></script> 
+end as "Month",sum(quantityordered * priceeach) as "Revenue"
+from orderfact group by month(orderdate) order by month(orderdate)]]></query>
       </component-definition> 
     </action-definition>
   
