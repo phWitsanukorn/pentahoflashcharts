@@ -35,18 +35,18 @@
   </outputs>
 
   <resources> 
-    <catalog> 
-      <solution-file> 
-        <location>./../../samples/steel-wheels/analysis/steelwheels.mondrian.xml</location>  
-        <mime-type>text/plain</mime-type> 
-      </solution-file> 
-    </catalog>  
     <chart_template> 
       <solution-file> 
-        <location>ofc_bar_olap.json</location>  
+        <location>ofc_bar_olap.txt</location>  
         <mime-type>text/plain</mime-type> 
       </solution-file> 
-    </chart_template> 
+    </chart_template>  
+    <catalog>
+      <solution-file>
+        <location>steelwheels.mondrian.xml</location>
+        <mime-type>text/plain</mime-type>
+      </solution-file>
+    </catalog>
   </resources>
   
   <actions> 
@@ -54,7 +54,7 @@
       <component-name>MDXLookupRule</component-name>
       <action-type>OLAP</action-type>
       <action-resources> 
-        <catalog type="resource"/> 
+        <catalog type="resource"/>
       </action-resources>
       <action-outputs> 
         <query-results type="result-set" mapping="query_result"/> 
