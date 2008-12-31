@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <action-sequence> 
-  <title>Open Flash Chart Component - Bar from OLAP</title>
+  <title>Open Flash Chart Component - Bar Chart from OLAP</title>
   <version>1</version>
   <logging-level>DEBUG</logging-level>
   <documentation> 
