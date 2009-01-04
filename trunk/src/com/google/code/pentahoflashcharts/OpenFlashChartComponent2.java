@@ -218,6 +218,13 @@ public class OpenFlashChartComponent2 extends ChartComponent {
 		return true;
 	}
 
+	/**
+	 * For some complicated chart, we can override this method and generate the ofc string.
+	 * @param chartTemplateString
+	 * @param userSession
+	 * @param data
+	 * @return
+	 */
 	protected String getChartTemplateString(String chartTemplateString,
 			IPentahoSession userSession,IPentahoResultSet data) {
 		IActionSequenceResource fileResource;
