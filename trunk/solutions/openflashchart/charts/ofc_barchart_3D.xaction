@@ -27,7 +27,11 @@
   </inputs>
 
   <outputs> 
-    <html_fragment type="string"/> 
+    <html_fragment type="string">
+      <destinations>
+        <response>content</response>
+      </destinations>
+    </html_fragment> 
   </outputs>
 
   <resources> 
