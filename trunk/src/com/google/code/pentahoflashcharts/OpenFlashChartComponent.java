@@ -14,7 +14,6 @@ import ofc4j.model.Chart;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
-import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoResultSet;
 import org.pentaho.platform.api.engine.IActionSequenceResource;
 import org.pentaho.platform.api.engine.IPentahoSession;
@@ -144,7 +143,7 @@ public class OpenFlashChartComponent extends ChartComponent {
 		{
 			fileResource = this.getResource(CHART_TEMPLATE);
 			try {
-				
+				// TODO Sort out deprecated method
 				chartTemplateString =PentahoSystem.getSolutionRepository(userSession).getResourceAsString(fileResource);
 				
 				
