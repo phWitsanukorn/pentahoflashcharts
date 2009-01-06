@@ -21,6 +21,7 @@ import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.repository.IContentItem;
 import org.pentaho.platform.api.repository.IContentLocation;
 import org.pentaho.platform.api.repository.IContentRepository;
+import org.pentaho.platform.api.util.XmlParseException;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.services.solution.PentahoEntityResolver;
 import org.pentaho.platform.plugin.action.jfreechart.ChartComponent;
@@ -154,7 +155,13 @@ public class OpenFlashChartComponent extends ChartComponent {
 		}
 		log.debug("chartTemplateString before replacing:"+chartTemplateString);
 		//get the xml node
-		Document chartDocument = XmlDom4JHelper.getDocFromString(chartTemplateString, new PentahoEntityResolver());
+		Document chartDocument = null;
+		try {
+			chartDocument = XmlDom4JHelper.getDocFromString(chartTemplateString, new PentahoEntityResolver());
+		} catch (XmlParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		Chart c =OFC4JHelper.convert(chartDocument,data);
 		
 		//parse the chart Template String and get the parsed tokens
