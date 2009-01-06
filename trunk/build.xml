@@ -1,0 +1,54 @@
+<project default="jar">
+
+	<property name="base.dir" location="." />
+	<property name="src.dir" location="${base.dir}/src" />
+	<property name="class.dir" location="${base.dir}/classes" />
+	<property name="lib.dir" location="${base.dir}/lib" />
+	<property name="build.dir" location="${base.dir}/build" />
+	<property name="pentaho.pci.webapp" location="/Users/ngoodman/pentaho/biserver-ce-2.0.0.stable" />
+
+
+	<path id="project.classpath">
+		<pathelement location="${class.dir}" />
+		<fileset dir="${lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init" depends="">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.dir}/classes" />
+		<mkdir dir="${build.dir}/dist" />
+	</target>
+	<!-- ================================= 
+          target: jar              
+         ================================= -->
+	<target name="jar" depends="compile" description="jar">
+		<jar destfile="${build.dir}/pentahoflashchart.jar">
+			<fileset dir="${class.dir}" />
+		</jar>
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: compile                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="compile" depends="init">
+		<javac debug="on" fork="false" destdir="${build.dir}/classes" srcdir="${src.dir}" classpathref="project.classpath" />
+
+	</target>
+
+	<target name="copyjars" depends="jar">
+		<!-- copy pentahoflashchart.jar into PCI  -->
+
+		<copy toDir="${pentaho.pci.webapp}/tomcat/webapps/pentaho/WEB-INF/lib" overwrite="true" failonerror="false">
+			<fileset dir="${build.dir}">
+				<include name="**/*.jar" />
+			</fileset>
+			<fileset dir="${lib.dir}">
+				<include name="xstream*"/>
+				<include name="ofc*"/>
+			</fileset>
+		</copy>
+	</target>
+
+</project>
