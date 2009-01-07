@@ -1,0 +1,62 @@
+<table align="center" style="border: 0px solid #000;">
+	<tr>
+		<td align="center" colspan="2"><p><div id="titleObject"></div></p></td>
+	</tr>
+	<tr>
+		<td>
+			<div id="barchart3d"></div>
+		</td>
+		<td>
+			<div id="barchartOLAP"></div>
+		</td>
+	</tr>
+</table>
+
+<script language="javascript" type="text/javascript">
+
+
+
+barchart3d = 
+{
+  name: "barchart3d",
+  type: "xaction",
+  solution: "openflashchart",
+  path: "charts",
+  action: "ofc_barchart_3D.xaction",
+  listeners:[],
+  parameters: [["chart_height", "300"], ["chart_width", "400"]],
+  htmlObject: "barchart3d",
+  executeAtStart: true,
+  preExecution:function(){},
+  postExecution:function(){}
+}
+
+barchartOLAP = 
+{
+  name: "barchartOLAP",
+  type: "xaction",
+  solution: "openflashchart",
+  path: "charts",
+  action: "ofc_bar_olap.xaction",
+  listeners:[],
+  parameters: [["chart_height", "300"], ["chart_width", "600"]],
+  htmlObject: "barchartOLAP",
+  executeAtStart: true,
+  preExecution:function(){},
+  postExecution:function(){}
+}
+
+
+var components = [barchart3d, barchartOLAP];
+
+</script>
+
+<script language="javascript" type="text/javascript">
+
+function load(){
+	Dashboards.init(components);
+}
+
+load();
+
+</script>
