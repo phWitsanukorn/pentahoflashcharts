@@ -4,7 +4,7 @@
 <is-stacked>false</is-stacked>
 <is-glass>true</is-glass>
 <is-filled>false</is-filled>
-<title>Product Sales by Region (OLAP)</title>
+<title>Product Sales by Region ${myvalue}</title>
 <domain-title>Region</domain-title>
 <range-title>USD Sales</range-title>
 <x-steps>10000000</x-steps>
@@ -29,26 +29,26 @@
 <bar>
 <color>#FFB900</color>
 <sql-column-index>2</sql-column-index>
-<text>APAC</text>
+<text>${head2}</text>
 <values></values>
 </bar>
 <bar>
 <color>#28A0DC</color>
 <sql-column-index>4</sql-column-index>
 <values></values>
-<text>EMEA</text>
+<text>${head4}</text>
 </bar>
 <bar>
 <color>#B90000</color>
 <sql-column-index>6</sql-column-index>
 <values></values>
-<text>Japan</text>
+<text>${head6}</text>
 </bar>
 <bar>
 <color>#28B900</color>
 <sql-column-index>8</sql-column-index>
 <values></values>
-<text>NA</text>
+<text>${head8}</text>
 </bar>
 </bars>
 </chart>
