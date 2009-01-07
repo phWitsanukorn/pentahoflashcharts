@@ -65,7 +65,16 @@ public class OpenFlashChartComponent extends ChartComponent {
 	protected static String flashFragment;
 	static
 	{
-		flashFragment =" <script type='text/javascript' src='{ofc-url}/js/swfobject.js'></script> <script type='text/javascript'>swfobject.embedSWF('{ofc-url}/open-flash-chart.swf', 'my_chart', '{chart-width}','{chart-height}','9.0.0', 'expressInstall.swf',{'data-file':'{data}'});</script><div id='my_chart'></div>";
+//		flashFragment =" <script type='text/javascript' src='{ofc-url}/js/swfobject.js'></script> <script type='text/javascript'>swfobject.embedSWF('{ofc-url}/open-flash-chart.swf', 'my_chart', '{chart-width}','{chart-height}','9.0.0', 'expressInstall.swf',{'data-file':'{data}'});</script><div id='my_chart'></div>";
+		flashFragment ="<object classid=\"clsid:d27cdb6e-ae6d-11cf-96b8-444553540000\" " + 
+			"codebase=\"http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0\"" +
+			"width=\"{chart-width}\" height=\"{chart-height}\" id=\"graph-2\" align=\"middle\"> " +
+			"<param name=\"allowScriptAccess\" value=\"sameDomain\" />" +
+			"<param name=\"movie\" value=\"{ofc-url}?data-file={data}\" />" +
+			"<param name=\"quality\" value=\"high\" />" +
+			"<embed src=\"{ofc-url}/open-flash-chart.swf?data-file={data}\" quality=\"high\" bgcolor=\"#FFFFFF\"" +
+            "width=\"{chart-width}\" height=\"{chart-height}\" name=\"open-flash-chart\" align=\"middle\" allowScriptAccess=\"sameDomain\" type=\"application/x-shockwave-flash\"" +
+            "pluginspage=\"http://www.macromedia.com/go/getflashplayer\" /></object>";
 	}
 	
 	
