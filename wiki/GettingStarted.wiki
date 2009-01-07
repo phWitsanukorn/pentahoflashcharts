@@ -11,7 +11,6 @@
 
   * Download and unzip the "pentahoflashchartcomponent-VERSION.zip" somewhere.  We'll now refer to this as $OFC_HOME
   * Copy $OFC_HOME/open-flash-chart.swf to $PENTAHO_HOME/jboss/server/default/deploy/pentaho-styles.war/images/ (Pentaho 2.x: $PENTAHO_HOME/tomcat/webapps/pentaho-styles/images/)
-  * (only for OFC 2.0)Unzip the js.zip into the open-flash-chart.swf file directory. We use the swfobject.js and the json2.js for calling the open flash chart . You should unzip the js.zip without change the directory in this zip. For Instance, under Pentaho PCI 2.0M3, we would place *.js  into  /pentaho-style/images/js.
   * Copy the directory "openflashchart" of $OFC_HOME/solutions/ to $PENTAHO_HOME/pentaho-solutions/.  End result is that there should be a directory (with files at $PENTAHO_HOME/pentaho-solutions/openflashchart
   * Copy the file $OFC_HOME/pentahoflashchartcomponent-VERSION.jar" to $PENTAHO_HOME/jboss/server/default/deploy/pentaho.war/WEB-INF/lib (Pentaho 2.x: $PENTAHO_HOME/tomcat/webapps/pentaho/WEB-INF/lib/)
   * Copy the file $OFC_HOME/xstream-1.3.jar and ofc4j105.jar" to $PENTAHO_HOME/jboss/server/default/deploy/pentaho.war/WEB-INF/lib (Pentaho 2.x: $PENTAHO_HOME/tomcat/webapps/pentaho/WEB-INF/lib/)
