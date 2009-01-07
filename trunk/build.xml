@@ -33,7 +33,7 @@
           target: compile                      
          - - - - - - - - - - - - - - - - - -->
 	<target name="compile" depends="init">
-		<javac debug="on" fork="false" destdir="${build.dir}/classes" srcdir="${src.dir}" classpathref="project.classpath" />
+		<javac debug="on" fork="false" destdir="${class.dir}" srcdir="${src.dir}" classpathref="project.classpath" />
 
 	</target>
 
