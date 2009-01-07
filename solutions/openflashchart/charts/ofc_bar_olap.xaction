@@ -23,15 +23,21 @@
         <request>chart_height</request> 
       </sources>  
       <default-value><![CDATA[600]]></default-value> 
-    </chart_height> 
+    </chart_height>  
+    <myvalue type="string">
+      <sources>
+        <request>myvalue</request>
+      </sources>
+      <default-value><![CDATA[(All Regions)]]></default-value>
+    </myvalue>
   </inputs>
 
   <outputs> 
-    <html_fragment type="string"> 
-      <destinations> 
-        <response>content</response> 
-      </destinations> 
-    </html_fragment> 
+    <html_fragment type="string">
+      <destinations>
+        <response>content</response>
+      </destinations>
+    </html_fragment>
   </outputs>
 
   <resources> 
@@ -41,12 +47,12 @@
         <mime-type>text/plain</mime-type> 
       </solution-file> 
     </chart_template>  
-    <catalog>
-      <solution-file>
-        <location>steelwheels.mondrian.xml</location>
-        <mime-type>text/plain</mime-type>
-      </solution-file>
-    </catalog>
+    <catalog> 
+      <solution-file> 
+        <location>steelwheels.mondrian.xml</location>  
+        <mime-type>text/plain</mime-type> 
+      </solution-file> 
+    </catalog> 
   </resources>
   
   <actions> 
@@ -54,7 +60,7 @@
       <component-name>MDXLookupRule</component-name>
       <action-type>OLAP</action-type>
       <action-resources> 
-        <catalog type="resource"/>
+        <catalog type="resource"/> 
       </action-resources>
       <action-outputs> 
         <query-results type="result-set" mapping="query_result"/> 
@@ -76,13 +82,15 @@ from [SteelWheelsSales]]]></query>
       <action-inputs> 
         <chart_dataset type="string" mapping="query_result"/>  
         <chart_height type="string"/>  
-        <chart_width type="string"/> 
+        <chart_width type="string"/>  
+        <myvalue type="string"/>
       </action-inputs>
       <action-resources> 
         <chart_template type="resource"/> 
       </action-resources>
       <action-outputs> 
-        <html_fragment type="string"/> 
+        <html_fragment type="string"/>  
+        <content_url type="string"/>
       </action-outputs>
       <component-definition/> 
     </action-definition>
