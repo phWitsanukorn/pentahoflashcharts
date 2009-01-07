@@ -153,15 +153,7 @@ public class OpenFlashChartComponent extends ChartComponent {
 			}			
 		}
 		log.debug("chartTemplateString before replacing:"+chartTemplateString);
-		//get the xml node
-		Document chartDocument = null;
-		try {
-			chartDocument = XmlDom4JHelper.getDocFromString(chartTemplateString, new PentahoEntityResolver());
-		} catch (XmlParseException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		Chart c =OFC4JHelper.convert(chartDocument,data);
+		
 		
 		//parse the chart Template String and get the parsed tokens
 		map = parseString(chartTemplateString);
@@ -191,7 +183,15 @@ public class OpenFlashChartComponent extends ChartComponent {
 		
 		log.debug("chartTemplateString after replacing:"+chartTemplateString);
 		
-		
+//		get the xml node
+		Document chartDocument = null;
+		try {
+			chartDocument = XmlDom4JHelper.getDocFromString(chartTemplateString, new PentahoEntityResolver());
+		} catch (XmlParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		Chart c =OFC4JHelper.convert(chartDocument,data);
 		
 		String solutionName = this.getSolutionName();
 		//uuid 
@@ -211,9 +211,8 @@ public class OpenFlashChartComponent extends ChartComponent {
 		try {
 			//get the  outputstream and write the content into the repository.
 			OutputStream os = citem.getOutputStream(this.getActionName());
-//			os.write(chartTemplateString.getBytes(LocaleHelper.getSystemEncoding()));
 			os.write(c.toString().getBytes(LocaleHelper.getSystemEncoding()));
-			os.close();
+			citem.closeOutputStream();
 		} catch (IOException e) {
 			error(e.getLocalizedMessage());
 			return false;
@@ -392,11 +391,11 @@ public class OpenFlashChartComponent extends ChartComponent {
 		
 		//replace the maxN and minN
 		for (int i = 0; i < maxs.size(); i++) {
-			chartTemplateString=replaceLongStr(chartTemplateString,"${"+maxs.get(i)+"}" , ""+maxValues[i]);
+			chartTemplateString=replaceLongStr(chartTemplateString,"${"+maxs.get(i)+"}" , ""+((Number) maxValues[i]).intValue());
 		}
 		
 		for (int i = 0; i < mins.size(); i++) {
-			chartTemplateString=replaceLongStr(chartTemplateString,"${"+mins.get(i)+"}" , ""+minValues[i]);
+			chartTemplateString=replaceLongStr(chartTemplateString,"${"+mins.get(i)+"}" , ""+((Number) minValues[i]).intValue());
 		}
 		
 		//replace headers
@@ -586,6 +585,7 @@ public class OpenFlashChartComponent extends ChartComponent {
 	      result.append(str);
 	    }
 	    log.debug("fromStr:"+fromStr+",toStr:"+toStr+"\n\r result:"+result.toString());
+	    System.out.println("fromStr:"+fromStr+",toStr:"+toStr+"\n\r result:"+result.toString());
 	    return result.toString();
 	 }
 	
