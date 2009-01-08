@@ -14,11 +14,11 @@
   <inputs/>
 
   <outputs> 
-    <html_fragment type="string">
+    <content_url type="string">
       <destinations>
-        <response>content</response>
+        <response>redirect</response>
       </destinations>
-    </html_fragment> 
+    </content_url>
   </outputs>
 
   <resources> 
