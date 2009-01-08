@@ -3,6 +3,7 @@ package com.google.code.pentahoflashcharts;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -66,14 +67,14 @@ public class OpenFlashChartComponent extends ChartComponent {
 	static
 	{
 //		flashFragment =" <script type='text/javascript' src='{ofc-url}/js/swfobject.js'></script> <script type='text/javascript'>swfobject.embedSWF('{ofc-url}/open-flash-chart.swf', 'my_chart', '{chart-width}','{chart-height}','9.0.0', 'expressInstall.swf',{'data-file':'{data}'});</script><div id='my_chart'></div>";
-		flashFragment ="<object classid=\"clsid:d27cdb6e-ae6d-11cf-96b8-444553540000\" " + 
-			"codebase=\"http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0\"" +
-			"width=\"{chart-width}\" height=\"{chart-height}\" id=\"graph-2\" align=\"middle\"> " +
-			"<param name=\"allowScriptAccess\" value=\"sameDomain\" />" +
-			"<param name=\"movie\" value=\"{ofc-url}/open-flash-chart.swf?data-file={data}\" />" +
-			"<param name=\"quality\" value=\"high\" />" +
-			"<embed src=\"{ofc-url}/open-flash-chart.swf?data-file={data}\" quality=\"high\" bgcolor=\"#FFFFFF\"" +
-            "width=\"{chart-width}\" height=\"{chart-height}\" name=\"open-flash-chart\" align=\"middle\" allowScriptAccess=\"sameDomain\" type=\"application/x-shockwave-flash\"" +
+		flashFragment ="<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" " + 
+			"codebase=\"http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0\" " +
+			"width=\"{chart-width}\" height=\"{chart-height}\" align=\"middle\"> " +
+			"<param name=\"allowScriptAccess\" value=\"sameDomain\" /> " +
+			"<param name=\"movie\" value=\"{ofc-url}/open-flash-chart.swf?data-file={data}\" /> " +
+			"<param name=\"quality\" value=\"high\" /> " +
+			"<embed src=\"{ofc-url}/open-flash-chart.swf?data-file={data}\" quality=\"high\" bgcolor=\"#FFFFFF\" " +
+            "width=\"{chart-width}\" height=\"{chart-height}\" align=\"middle\" allowScriptAccess=\"sameDomain\" type=\"application/x-shockwave-flash\" " +
             "pluginspage=\"http://www.macromedia.com/go/getflashplayer\" /></object>";
 	}
 	
@@ -461,14 +462,15 @@ public class OpenFlashChartComponent extends ChartComponent {
 		replaceByToken( buff,ofcURL,token);
 		
 		//replace the {data}
+		String encodedDataLocation = URLEncoder.encode(getTmpContentURL(id));
 		token = "{data}";
 		index = buff.lastIndexOf(token);
-		buff.replace(index, index+token.length(), getTmpContentURL(id));
+		buff.replace(index, index+token.length(), encodedDataLocation);
 		//replace the {data} again
 		index = buff.lastIndexOf(token);
 		if(index!=-1)
 		{
-			buff.replace(index, index+token.length(), getTmpContentURL(id));
+			buff.replace(index, index+token.length(), encodedDataLocation);
 
 		}
 		
