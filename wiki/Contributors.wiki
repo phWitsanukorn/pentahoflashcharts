@@ -8,4 +8,4 @@
 
 = Projects =
 
-  * [http://code.google.com/p/ofc4j OFC4J]
+  * [http://code.google.com/p/ofcj OFC4J]
