@@ -9,7 +9,7 @@
 		
 	<property name="pentaho.pci.webapp" location="/Users/ngoodman/pentaho/biserver-ce-2.0.0.stable" />
 	<property name="pfc.version" value="0.1"/>
-	<property name="pfc.revision" value="104"/>
+	<property name="pfc.revision" value="105"/>
 	<property name="pfc.jar.name" value="pentahoflashchart-${pfc.version}-r${pfc.revision}.jar"/>
 	<property name="pfc.samples.name" value="pentahoflashchart-samples-${pfc.version}-r${pfc.revision}.zip"/>
 			
