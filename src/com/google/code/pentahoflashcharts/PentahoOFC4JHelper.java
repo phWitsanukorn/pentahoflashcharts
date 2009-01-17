@@ -435,7 +435,7 @@ public class PentahoOFC4JHelper {
 				double d = ((Number) data.getValueAt(i, n)).doubleValue();
 				bc.addBars(new BarChart.Bar(d));
 			}
-			
+			// TODO wrap around the set of colors if bars.length > colors.length
 			bc.setColour(colors.get(n));
 	
 			e = bc;
