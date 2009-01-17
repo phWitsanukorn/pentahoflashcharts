@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import ofc4j.model.Chart;
 import ofc4j.model.Text;
@@ -20,6 +21,8 @@ import org.pentaho.commons.connection.IPentahoResultSet;
 import org.pentaho.commons.connection.IPentahoMetaData;
 
 import org.pentaho.commons.connection.memory.MemoryResultSet;
+
+import com.sun.tools.javac.util.List;
 
 public class PentahoOFC4JHelper {
 	
@@ -45,6 +48,11 @@ public class PentahoOFC4JHelper {
 	public static String ISSKETCH_NODE_LOC = "is-sketch";
 	public static String DATASET_TYPE_NODE_LOC = "dataset-type";
 	public static String CHART_TYPE_NODE_LOC = "chart-type";
+	public static String COLOR_PALETTE_NODE_LOC = "color-palette";
+	
+	// assume starting at "color-palette" node
+	// /color-palette/color
+	public static String COLOR_NODE_LOC = "color";
 	
 	// assume starting at a "*-title-font" node
 	public static String FONT_FAMILY_NODE_LOC = "font-family";
@@ -60,6 +68,38 @@ public class PentahoOFC4JHelper {
 	public static String CSS_FONT_STYLE_DEFAULT = "normal";
 	public static String CHART_TYPE_DEFAULT = "BarChart";
 	public static Style BARCHART_STYLE_DEFAULT = BarChart.Style.NORMAL;
+	public static String [] COLORS_DEFAULT = {
+		"#006666",
+		"#0066CC",
+		"#009999",
+		"#336699",
+		"#339966",
+		"#3399FF",
+		"#663366",
+		"#666666",
+		"#666699",
+		"#669999",
+		"#6699CC",
+		"#66CCCC",
+		"#993300",
+		"#999933",
+		"#999966",
+		"#999999",
+		"#9999CC",
+		"#9999FF",
+		"#99CC33",
+		"#99CCCC",
+		"#99CCFF",
+		"#CC6600",
+		"#CC9933",
+		"#CCCC33",
+		"#CCCC66",
+		"#CCCC99",
+		"#CCCCCC",
+		"#FF9900",
+		"#FFCC00",
+		"#FFCC66"
+	};
 	
 	// Chart Type Values
 	public static String BARCHART_TYPE = "BarChart";
@@ -77,6 +117,7 @@ public class PentahoOFC4JHelper {
 	private String datasetType;
 	private String chartType;
 	private ArrayList <Element> elements;
+	private ArrayList <String> colors;
 	private BarChart.Style barchartstyle;
 	
 	
@@ -127,7 +168,7 @@ public class PentahoOFC4JHelper {
 		Chart testChart = testing.convert();
 		try{
 		    // Create file 
-		    FileWriter fstream = new FileWriter("solutions/openflashchart/charts/testoutput1.json");
+		    FileWriter fstream = new FileWriter("/Users/ngoodman/pentaho/biserver-ce-2.0.0.stable/tomcat/webapps/ofc/testoutput1.json");
 		        BufferedWriter out = new BufferedWriter(fstream);
 		    out.write(testChart.toString());
 		    //Close the output stream
@@ -148,6 +189,7 @@ public class PentahoOFC4JHelper {
 		this.data = data;
 		this.c = new Chart();
 		elements = new ArrayList<Element>();
+		colors = new ArrayList<String>();
 		
 		this.chartNode = doc.selectSingleNode(this.CHART_NODE_LOC);
 			
@@ -180,8 +222,8 @@ public class PentahoOFC4JHelper {
 		if ( getValue(domainTitle) != null ) {
 			domainText.setText(getValue(domainTitle));
 		} else {
-			// TODO set it to the first column header
-			domainText.setText("Domain Title");
+			// TODO figure out what to do if the header isn't CategoryDataset
+			domainText.setText(data.getMetaData().getColumnHeaders()[0][0].toString());
 		}
 		domainText.setStyle(buildCSSStringFromNode(domainTitleFont));
 		
@@ -289,16 +331,36 @@ public class PentahoOFC4JHelper {
 		
 		
 	}
+	
+	public void setupColors() {
+		
+		Node temp = chartNode.selectSingleNode(COLOR_PALETTE_NODE_LOC);
+		if ( temp != null ) {
+			Object [] colorNodes =  temp.selectNodes(COLOR_NODE_LOC).toArray();
+
+			for (int j = 0 ; j < colorNodes.length; j++ ) {
+				colors.add(getValue((Node) colorNodes[j]));
+			}
+						
+		} else {
+			for (int i = 0 ; i < COLORS_DEFAULT.length; i ++) {
+				colors.add(COLORS_DEFAULT[i]);
+			}
+		}
+	}
 
 	public Chart convert() {
 		
 		
 		setupDataAndType();
+		setupColors();
 		setupBarStyles();
 		createElements();
+		
 		setLabels();
 		setupTitles();
 		
+		c.addElements(elements);
 		
 		return c;		
 
@@ -319,7 +381,6 @@ public class PentahoOFC4JHelper {
 		
 		
 		
-		
 	}
 	
 	public void createElements() {
@@ -333,7 +394,7 @@ public class PentahoOFC4JHelper {
 			}
 		}
 		
-		c.addElements(elements);
+		//c.addElements(elements);
 
 	}
 	
@@ -374,6 +435,8 @@ public class PentahoOFC4JHelper {
 				double d = ((Number) data.getValueAt(i, n)).doubleValue();
 				bc.addBars(new BarChart.Bar(d));
 			}
+			
+			bc.setColour(colors.get(n));
 	
 			e = bc;
 
@@ -382,6 +445,7 @@ public class PentahoOFC4JHelper {
 		String text = (String) data.getMetaData().getColumnHeaders()[0][n];
 		
 		e.setText(text);
+		
 		
 		return e;
 		
