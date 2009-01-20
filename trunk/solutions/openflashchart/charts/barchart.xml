@@ -1,9 +1,14 @@
 <chart>
 
 	<!-- This file defines the bar chart that shows the actual-to-budget variance for each department -->
-
+	<is-3D>false</is-3D>
 	<!-- Define the chart type -->	
 	<chart-type>BarChart</chart-type>
+	
+	<range-minimum>0</range-minimum>
+	<range-maximum>15</range-maximum>
+	
+	<range-title>USD</range-title>
 
 	<!-- Specify the title of the chart -->
 	<title>Headcount Variance</title>

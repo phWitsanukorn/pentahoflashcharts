@@ -6,10 +6,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import ofc4j.model.Chart;
 import ofc4j.model.Text;
+import ofc4j.model.axis.Axis;
 import ofc4j.model.axis.XAxis;
 import ofc4j.model.axis.YAxis;
 import ofc4j.model.elements.BarChart;
 import ofc4j.model.elements.Element;
+import ofc4j.model.elements.HorizontalBarChart;
+import ofc4j.model.elements.LineChart;
+import ofc4j.model.elements.PieChart;
 import ofc4j.model.elements.BarChart.Style;
 
 import org.dom4j.Document;
@@ -46,6 +50,7 @@ public class PentahoOFC4JHelper {
 	public static String COLOR_PALETTE_NODE_LOC = "color-palette";
 	public static String RANGE_MAXIMUM_NODE_LOC = "range-maximum";
 	public static String RANGE_MINIMUM_NODE_LOC = "range-minimum";
+	public static String ORIENTATION_NODE_LOC = "orientation";
 	
 	
 	// assume starting at "color-palette" node
@@ -66,6 +71,10 @@ public class PentahoOFC4JHelper {
 	public static String CSS_FONT_STYLE_DEFAULT = "normal";
 	public static String CHART_TYPE_DEFAULT = "BarChart";
 	public static Style BARCHART_STYLE_DEFAULT = BarChart.Style.NORMAL;
+	public static LineChart.Style LINECHART_STYLE_DEFAULT = LineChart.Style.NORMAL;
+	public static String ORIENTATION_DEFAULT = "vertical";
+	
+	
 	public static String [] COLORS_DEFAULT = {
 		"#006666",
 		"#0066CC",
@@ -99,8 +108,14 @@ public class PentahoOFC4JHelper {
 		"#FFCC66"
 	};
 	
-	// Chart Type Values
+	// Chart Type Values (CHARTTUPE_NODE_LOC)
 	public static String BARCHART_TYPE = "BarChart";
+	public static String LINECHART_TYPE = "LineChart";
+	public static String PIECHART_TYPE = "PieChart";
+	
+	// Orientation Type Values (ORIENTATION_NODE_LOC)
+	public static String HORIZONTAL_ORIENTATION = "horizontal";
+	public static String VERTICAL_ORIENTATION = "vertical";
 	
 	// Dataset Type Values
 	public static String CATEGORY_TYPE = "CategoryDataset";
@@ -114,9 +129,11 @@ public class PentahoOFC4JHelper {
 	private Chart c;
 	private String datasetType;
 	private String chartType;
+	private String orientation;
 	private ArrayList <Element> elements;
 	private ArrayList <String> colors;
 	private BarChart.Style barchartstyle;
+	private LineChart.Style linechartstyle;
 	
 	
 	public static IPentahoResultSet test_setupdata () {
@@ -177,6 +194,80 @@ public class PentahoOFC4JHelper {
 		
 		System.out.println(testChart.toString());
 		
+		// Line Chart
+		
+		try {
+			doc = xmlReader.read("/Users/ngoodman/dev/workspace/pentahoflashcharts/solutions/openflashchart/charts/linechart.xml");
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}
+		testing = new PentahoOFC4JHelper(doc, testdata);
+		
+		testChart = testing.convert();
+		try{
+		    // Create file 
+		    FileWriter fstream = new FileWriter("/Users/ngoodman/pentaho/biserver-ce-2.0.0.stable/tomcat/webapps/ofc/testoutput2.json");
+		        BufferedWriter out = new BufferedWriter(fstream);
+		    out.write(testChart.toString());
+		    //Close the output stream
+		    out.close();
+		    }catch (Exception e){//Catch exception if any
+		      System.err.println("Error: " + e.getMessage());
+		    }
+		
+		    System.out.println(testChart.toString());
+		    
+			// Pie Chart
+			
+			try {
+				doc = xmlReader.read("/Users/ngoodman/dev/workspace/pentahoflashcharts/solutions/openflashchart/charts/piechart.xml");
+			} catch (DocumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return;
+			}
+			testing = new PentahoOFC4JHelper(doc, testdata);
+			
+			testChart = testing.convert();
+			try{
+			    // Create file 
+			    FileWriter fstream = new FileWriter("/Users/ngoodman/pentaho/biserver-ce-2.0.0.stable/tomcat/webapps/ofc/testoutput3.json");
+			        BufferedWriter out = new BufferedWriter(fstream);
+			    out.write(testChart.toString());
+			    //Close the output stream
+			    out.close();
+			    }catch (Exception e){//Catch exception if any
+			      System.err.println("Error: " + e.getMessage());
+			    }
+			
+			    System.out.println(testChart.toString());
+			    
+//			  Horizontal Bar Chart
+				
+				try {
+					doc = xmlReader.read("/Users/ngoodman/dev/workspace/pentahoflashcharts/solutions/openflashchart/charts/barchart_horizontal.xml");
+				} catch (DocumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return;
+				}
+				testing = new PentahoOFC4JHelper(doc, testdata);
+				
+				testChart = testing.convert();
+				try{
+				    // Create file 
+				    FileWriter fstream = new FileWriter("/Users/ngoodman/pentaho/biserver-ce-2.0.0.stable/tomcat/webapps/ofc/testoutput4.json");
+				        BufferedWriter out = new BufferedWriter(fstream);
+				    out.write(testChart.toString());
+				    //Close the output stream
+				    out.close();
+				    }catch (Exception e){//Catch exception if any
+				      System.err.println("Error: " + e.getMessage());
+				    }
+				
+				    System.out.println(testChart.toString());
 		
 
 	}
@@ -353,11 +444,11 @@ public class PentahoOFC4JHelper {
 		setupDataAndType();
 		setupColors();
 		setupStyles();
+		setupLabels();
 		createElements();
 		
-		setLabels();
 		setupTitles();
-		setupYAxis();
+		setupRange();
 	
 		
 		c.addElements(elements);
@@ -371,11 +462,15 @@ public class PentahoOFC4JHelper {
 		if (BARCHART_TYPE.equals(chartType)) {
 			setupBarStyles();
 		}
+		if (LINECHART_TYPE.equals(chartType))  setupLineStyles();
+		//if (PIECHART_TYPE.equals(chartType)) setupPieStyles();
 	}
 	
-	public void setupYAxis() {
+	
+	
+	public void setupRange() {
 		
-		YAxis axis = new YAxis();
+		
 		
 		Node temp = chartNode.selectSingleNode(RANGE_MINIMUM_NODE_LOC);
 		Integer rangeMin = null;
@@ -399,8 +494,16 @@ public class PentahoOFC4JHelper {
 		// TODO Set range to 
 		Integer rangeSteps = new Integer(5);
 		
-		axis.setRange(rangeMin, rangeMax);
-		c.setYAxis(axis);
+		Axis a;
+		if ( HORIZONTAL_ORIENTATION.equals(orientation) ){
+			XAxis xaxis = new XAxis();
+			xaxis.setRange(rangeMin, rangeMax);
+			c.setXAxis(xaxis);
+		} else {
+			YAxis yaxis = new YAxis();
+			yaxis.setRange(rangeMin, rangeMax);
+			c.setYAxis(yaxis);
+		}
 		
 	}
 	
@@ -419,32 +522,48 @@ public class PentahoOFC4JHelper {
 			barchartstyle = BarChart.Style.GLASS;
 		}
 		
+		temp = chartNode.selectSingleNode(ORIENTATION_NODE_LOC);
+		if ( getValue(temp) != null )
+			orientation = getValue(temp);
+		else
+			orientation = ORIENTATION_DEFAULT;
+		
 	}
 	
-	public void createElements() {
+	public void setupLineStyles () {
 		
+		linechartstyle = LINECHART_STYLE_DEFAULT;
+		// TODO: Swap on Styles
 		
+	}
+	
+	
+	public void createElements() {	
 		
 		if ( CATEGORY_TYPE.equals(datasetType)){
 			
-			for (int i = 1; i < data.getColumnCount(); i ++ ) {
+			int columnCount;
+			
+			// Ignore additional columns for PieCharts
+			if (PIECHART_TYPE.equals(chartType)) columnCount = 2;
+			else columnCount = data.getColumnCount();
+			
+			// Create a "series" or element for each column past the first
+			for (int i = 1; i < columnCount; i ++ ) {
 				elements.add(getElementForColumn(i));
 			}
 		}
 		
-		//c.addElements(elements);
-
 	}
 	
-    public void setLabels() {
-		
-    	XAxis axis = new XAxis();
-    	
-    	
-		if ( CATEGORY_TYPE.equals(datasetType) ) {
+    public void setupLabels() {
+
+    	String[] labels = null;
+    
+    	if ( CATEGORY_TYPE.equals(datasetType) ) {
 			int index = 0;
 			int rowCount = data.getRowCount();
-			String[] labels = new String[rowCount];
+			labels = new String[rowCount];
 			for (int j = 0; j < rowCount; j++) {
 				Object obj = data.getValueAt(j, index);
 				if (obj instanceof java.sql.Timestamp
@@ -454,11 +573,22 @@ public class PentahoOFC4JHelper {
 					labels[j] = obj.toString();
 				}
 			}
-			axis.setLabels(labels);
-		}		
+			
+		}
+    	
+    	if ( HORIZONTAL_ORIENTATION.equals(orientation)) {
+    		YAxis yaxis = new YAxis();
+    		yaxis.addLabels(labels);
+    		c.setYAxis(yaxis);
+    	} else {
+    		XAxis xaxis = new XAxis();
+    		xaxis.addLabels(labels);
+    		c.setXAxis(xaxis);
+    	}
+    		
 		
-		c.setXAxis(axis);
 	}
+    
 	
 	public Element getElementForColumn(int n) {
 
@@ -466,7 +596,8 @@ public class PentahoOFC4JHelper {
 		
 		
 		
-		if ( BARCHART_TYPE.equals(chartType) ) {
+		if ( BARCHART_TYPE.equals(chartType) && VERTICAL_ORIENTATION.equals(orientation) ) {
+			
 			BarChart bc = new BarChart(this.barchartstyle);
 			
 			for (int i = 0; i < data.getRowCount(); i ++ ){
@@ -478,12 +609,46 @@ public class PentahoOFC4JHelper {
 	
 			e = bc;
 
+		} else if (BARCHART_TYPE.equals(chartType) && HORIZONTAL_ORIENTATION.equals(orientation)) {
+			HorizontalBarChart hbc = new HorizontalBarChart();
+			for (int i = 0; i < data.getRowCount(); i ++ ){
+				double d = ((Number) data.getValueAt(i, n)).doubleValue();
+				hbc.addBars(new HorizontalBarChart.Bar(d));
+			}
+			hbc.setColour(colors.get(n));
+			
+			e = hbc;
+			
+		} else if ( LINECHART_TYPE.equals(chartType)) { 
+			LineChart lc = new LineChart(this.linechartstyle);
+			
+			for (int i = 0 ; i < data.getRowCount(); i ++ ){
+				double d = ((Number) data.getValueAt(i, n)).doubleValue();
+				lc.addDots(new LineChart.Dot(d));
+			}
+//			 TODO wrap around the set of colors if bars.length > colors.length
+			lc.setColour(colors.get(n));
+			
+			e = lc;
+		} else if (PIECHART_TYPE.equals(chartType)){
+			PieChart pc = new PieChart();
+			PieChart.Slice[] slices = new PieChart.Slice[data.getRowCount()];
+			for (int i = 0 ; i < data.getRowCount(); i ++ ){
+				double d = ((Number) data.getValueAt(i, n)).doubleValue();
+				String label = (String) c.getXAxis().getLabels().getLabels().get(i);
+				slices[i] = new PieChart.Slice(d, label);
+			}
+			
+			pc.addSlices(slices);
+			pc.setColours(this.colors);
+			
+			e = pc;
+			
 		}
 		
 		String text = (String) data.getMetaData().getColumnHeaders()[0][n];
 		
 		e.setText(text);
-		
 		
 		return e;
 		
