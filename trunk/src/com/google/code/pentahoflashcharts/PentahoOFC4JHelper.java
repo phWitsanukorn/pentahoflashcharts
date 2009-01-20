@@ -9,6 +9,7 @@ import java.util.Iterator;
 import ofc4j.model.Chart;
 import ofc4j.model.Text;
 import ofc4j.model.axis.XAxis;
+import ofc4j.model.axis.YAxis;
 import ofc4j.model.elements.BarChart;
 import ofc4j.model.elements.Element;
 import ofc4j.model.elements.BarChart.Style;
@@ -49,6 +50,9 @@ public class PentahoOFC4JHelper {
 	public static String DATASET_TYPE_NODE_LOC = "dataset-type";
 	public static String CHART_TYPE_NODE_LOC = "chart-type";
 	public static String COLOR_PALETTE_NODE_LOC = "color-palette";
+	public static String RANGE_MAXIMUM_NODE_LOC = "range-maximum";
+	public static String RANGE_MINIMUM_NODE_LOC = "range-minimum";
+	
 	
 	// assume starting at "color-palette" node
 	// /color-palette/color
@@ -354,17 +358,59 @@ public class PentahoOFC4JHelper {
 		
 		setupDataAndType();
 		setupColors();
-		setupBarStyles();
+		setupStyles();
 		createElements();
 		
 		setLabels();
 		setupTitles();
+		setupYAxis();
+	
 		
 		c.addElements(elements);
 		
 		return c;		
 
 	}
+	
+	public void setupStyles() {
+		
+		if (BARCHART_TYPE.equals(chartType)) {
+			setupBarStyles();
+		}
+	}
+	
+	public void setupYAxis() {
+		
+		YAxis axis = new YAxis();
+		
+		Node temp = chartNode.selectSingleNode(RANGE_MINIMUM_NODE_LOC);
+		Integer rangeMin = null;
+		if ( getValue(temp) != null ){
+			rangeMin = new Integer(getValue(temp));
+		} else {
+			// TODO set RangeMin to minimum in dataset
+			rangeMin = 0;
+		}
+		
+		temp = chartNode.selectSingleNode(RANGE_MAXIMUM_NODE_LOC);
+		Integer rangeMax = null;
+		if ( getValue(temp) != null ){
+			rangeMax = new Integer(getValue(temp));
+		} else {
+			// TODO set RangeMax to minimum in dataset
+			rangeMax = 15;
+			
+		}
+		
+		// TODO Set range to 
+		Integer rangeSteps = new Integer(5);
+		
+		axis.setRange(rangeMin, rangeMax);
+		c.setYAxis(axis);
+		
+	}
+	
+	
 	
 	public void setupBarStyles () {
 		
@@ -378,8 +424,6 @@ public class PentahoOFC4JHelper {
 		if ( getValue(temp ) != null && "true".equals(getValue(temp))) {
 			barchartstyle = BarChart.Style.GLASS;
 		}
-		
-		
 		
 	}
 	
