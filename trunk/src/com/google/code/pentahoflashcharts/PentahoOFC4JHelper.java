@@ -4,8 +4,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
-
 import ofc4j.model.Chart;
 import ofc4j.model.Text;
 import ofc4j.model.axis.XAxis;
@@ -19,11 +17,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 import org.pentaho.commons.connection.IPentahoResultSet;
-import org.pentaho.commons.connection.IPentahoMetaData;
-
 import org.pentaho.commons.connection.memory.MemoryResultSet;
-
-import com.sun.tools.javac.util.List;
 
 public class PentahoOFC4JHelper {
 	
