@@ -55,6 +55,8 @@ public class OpenFlashChartComponent extends ChartComponent {
 	private static final String OFC_URL = "ofc_url"; 
 	private static final String CHART_TEMPLATE_STRING = "chart_template_string"; 
 	private static final String CHART_TEMPLATE = "chart_template"; 
+	private static final String USE_PENTAHO_XML = "use_pentaho_xml";
+	
 	
 
 	protected int width = 500;
@@ -201,7 +203,23 @@ public class OpenFlashChartComponent extends ChartComponent {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		Chart c =OFC4JHelper.convert(chartDocument,data);
+		
+		// Add support for PentahoFlashChart XML AND Pentaho XML
+		// Default is to use Pentaho XML format (PentahoOFC4JHelper)
+		// If one wants to use PentahoFlashChart XML format set input variable
+		// USE_PENTAHO_XML (use_pentaho_xml) to "false"
+		String usePentahoXML;
+		
+		usePentahoXML = getInputStringValue(USE_PENTAHO_XML);
+		
+		Chart c;
+		if ( "false".equals(usePentahoXML))
+			c =OFC4JHelper.convert(chartDocument,data);
+		else {
+			PentahoOFC4JHelper helper = new PentahoOFC4JHelper(chartDocument, data);
+			c = helper.convert();
+		}
+			
 		
 		String solutionName = this.getSolutionName();
 		//uuid 
