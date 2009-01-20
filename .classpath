@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/xstream-1.3.jar"/>
-	<classpathentry kind="lib" path="lib/ofc4j105.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/pentaho-bi-platform-api-2.0.0.stable.jar"/>
@@ -15,5 +14,6 @@
 	<classpathentry kind="lib" path="lib/pentaho-connections-2.0.0-SNAPSHOT.jar" sourcepath="/pentaho-commons-connections/src"/>
 	<classpathentry kind="lib" path="lib/pentaho-bi-platform-ui-foundation-2.0.0.stable.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/ofc4j105.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
