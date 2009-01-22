@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <action-sequence> 
-  <title>Open Flash Chart Component - Pie Chart Test</title>
+  <title>PFC XML - Pie Chart Test</title>
   <version>1</version>
   <logging-level>DEBUG</logging-level>
   <documentation> 
@@ -11,13 +11,20 @@
     <icon>HelloWorld.png</icon> 
   </documentation>
 
-  <inputs/>
+  <inputs> 
+    <use_pentaho_xml type="string"> 
+      <sources> 
+        <request>use_pentaho_xml</request> 
+      </sources>  
+      <default-value><![CDATA[false]]></default-value> 
+    </use_pentaho_xml> 
+  </inputs>
 
   <outputs> 
-    <html_fragment type="string">
-      <destinations>
-        <response>content</response>
-      </destinations>
+    <html_fragment type="string"> 
+      <destinations> 
+        <response>content</response> 
+      </destinations> 
     </html_fragment> 
   </outputs>
 

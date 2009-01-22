@@ -24,8 +24,8 @@
 		<is-italic>false</is-italic>
 	</title-font>
 
-	<chart-background type="color">#FFFFFF</chart-background>
-	<plot-background type="color">#EEEEEE</plot-background>
+	<!-- <chart-background type="color">#FFFFFF</chart-background> -->
+    <plot-background type="color">#996699</plot-background>
 
 	<!-- Specify the orientation of the bars -->
 	<orientation>vertical</orientation>

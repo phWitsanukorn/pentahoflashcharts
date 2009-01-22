@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <action-sequence> 
-  <title>Open Flash Chart Component - Line Chart</title>
+  <title>PFC XML - Line Chart</title>
   <version>1</version>
   <logging-level>DEBUG</logging-level>
   <documentation> 
@@ -17,14 +17,20 @@
         <request>chart_template_string</request> 
       </sources>  
       <default-value><![CDATA[<chart><chart-type>LineChart</chart-type><title>Line Chart--Product "1948 Porsche 356-A Roadster"</title><x-steps>1000</x-steps><x-max>20000</x-max><domain-title>Day</domain-title><range-title>Sold Price</range-title><y-axis><labels></labels><y-steps>1000</y-steps><y-max>10000</y-max><color>#909090</color></y-axis></chart>]]></default-value> 
-    </chart_template_string> 
+    </chart_template_string>  
+    <use_pentaho_xml type="string"> 
+      <sources> 
+        <request>use_pentaho_xml</request> 
+      </sources>  
+      <default-value><![CDATA[false]]></default-value> 
+    </use_pentaho_xml> 
   </inputs>
 
   <outputs> 
-    <html_fragment type="string">
-      <destinations>
-        <response>content</response>
-      </destinations>
+    <html_fragment type="string"> 
+      <destinations> 
+        <response>content</response> 
+      </destinations> 
     </html_fragment> 
   </outputs>
 
@@ -55,7 +61,8 @@ ORDER BY  PRODUCTLINE desc, PRODUCTNAME, ORDERS.ORDERDATE]]></query>
       <action-type>Open Flash Chart</action-type>
       <action-inputs> 
         <chart_template_string type="string"/>  
-        <chart_dataset type="result-set"/> 
+        <chart_dataset type="result-set"/>  
+        <use_pentaho_xml type="string"/> 
       </action-inputs>
       <action-outputs> 
         <html_fragment type="string"/>  

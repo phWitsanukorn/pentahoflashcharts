@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <action-sequence> 
-  <title>Open Flash Chart Component - Bar Chart from OLAP</title>
+  <title>PFC XML - Bar Chart from OLAP</title>
   <version>1</version>
   <logging-level>DEBUG</logging-level>
   <documentation> 
@@ -24,20 +24,26 @@
       </sources>  
       <default-value><![CDATA[600]]></default-value> 
     </chart_height>  
-    <myvalue type="string">
-      <sources>
-        <request>myvalue</request>
-      </sources>
-      <default-value><![CDATA[(All Regions)]]></default-value>
-    </myvalue>
+    <myvalue type="string"> 
+      <sources> 
+        <request>myvalue</request> 
+      </sources>  
+      <default-value><![CDATA[(All Regions)]]></default-value> 
+    </myvalue>  
+    <use_pentaho_xml type="string"> 
+      <sources> 
+        <request>use_pentaho_xml</request> 
+      </sources>  
+      <default-value><![CDATA[false]]></default-value> 
+    </use_pentaho_xml> 
   </inputs>
 
   <outputs> 
-    <html_fragment type="string">
-      <destinations>
-        <response>content</response>
-      </destinations>
-    </html_fragment>
+    <html_fragment type="string"> 
+      <destinations> 
+        <response>content</response> 
+      </destinations> 
+    </html_fragment> 
   </outputs>
 
   <resources> 
@@ -83,14 +89,15 @@ from [SteelWheelsSales]]]></query>
         <chart_dataset type="string" mapping="query_result"/>  
         <chart_height type="string"/>  
         <chart_width type="string"/>  
-        <myvalue type="string"/>
+        <myvalue type="string"/>  
+        <use_pentaho_xml type="string"/> 
       </action-inputs>
       <action-resources> 
         <chart_template type="resource"/> 
       </action-resources>
       <action-outputs> 
         <html_fragment type="string"/>  
-        <content_url type="string"/>
+        <content_url type="string"/> 
       </action-outputs>
       <component-definition/> 
     </action-definition>
