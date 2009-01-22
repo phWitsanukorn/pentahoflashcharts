@@ -51,6 +51,11 @@ public class PentahoOFC4JHelper {
 	public static String RANGE_MAXIMUM_NODE_LOC = "range-maximum";
 	public static String RANGE_MINIMUM_NODE_LOC = "range-minimum";
 	public static String ORIENTATION_NODE_LOC = "orientation";
+	public static String PLOT_BACKGROUND_NODE_LOC = "plot-background";
+	public static String PLOT_BACKGROUND_COLOR_XPATH = "@type"; //att of plot-background
+	public static String CHART_BACKGROUND_NODE_LOC = "chart-background";
+	public static String CHART_BACKGROUND_COLOR_XPATH = "@type"; //att of plot-background
+	
 	
 	
 	// assume starting at "color-palette" node
@@ -119,6 +124,9 @@ public class PentahoOFC4JHelper {
 	
 	// Dataset Type Values
 	public static String CATEGORY_TYPE = "CategoryDataset";
+	
+	// *-background Type Values
+	public static String COLOR_TYPE = "color";
 	
 	// Private static members
 	private static SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
@@ -420,7 +428,10 @@ public class PentahoOFC4JHelper {
 		
 		
 	}
-	
+	/**
+	 * Setup colors for the series and also background
+	 *
+	 */
 	public void setupColors() {
 		
 		Node temp = chartNode.selectSingleNode(COLOR_PALETTE_NODE_LOC);
@@ -436,6 +447,21 @@ public class PentahoOFC4JHelper {
 				colors.add(COLORS_DEFAULT[i]);
 			}
 		}
+		
+		// Use either chart-background or plot-background (chart takes precendence)
+		temp = chartNode.selectSingleNode(PLOT_BACKGROUND_NODE_LOC);
+		if ( getValue(temp) != null ){
+			String type = temp.valueOf(PLOT_BACKGROUND_COLOR_XPATH);
+			if ( type != null && COLOR_TYPE.equals(type) )
+				c.setBackgroundColour(getValue(temp));
+		}
+		temp = chartNode.selectSingleNode(CHART_BACKGROUND_NODE_LOC);
+		if ( getValue(temp) != null ){
+			String type = temp.valueOf(CHART_BACKGROUND_COLOR_XPATH);
+			if ( type != null && COLOR_TYPE.equals(type) )
+				c.setBackgroundColour(getValue(temp));
+		}
+			
 	}
 
 	public Chart convert() {
@@ -635,6 +661,7 @@ public class PentahoOFC4JHelper {
 			PieChart.Slice[] slices = new PieChart.Slice[data.getRowCount()];
 			for (int i = 0 ; i < data.getRowCount(); i ++ ){
 				double d = ((Number) data.getValueAt(i, n)).doubleValue();
+				// Labels are already set - use them
 				String label = (String) c.getXAxis().getLabels().getLabels().get(i);
 				slices[i] = new PieChart.Slice(d, label);
 			}
