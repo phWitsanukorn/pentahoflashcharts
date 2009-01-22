@@ -12,8 +12,8 @@
 	<classpathentry kind="lib" path="lib/pentaho-bi-platform-repository-2.0.0.stable.jar"/>
 	<classpathentry kind="lib" path="lib/pentaho-bi-platform-util-2.0.0.stable.jar"/>
 	<classpathentry kind="lib" path="lib/pentaho-connections-2.0.0-SNAPSHOT.jar" sourcepath="/pentaho-commons-connections/src"/>
-	<classpathentry kind="lib" path="lib/pentaho-bi-platform-ui-foundation-2.0.0.stable.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/ofc4j105.jar"/>
+	<classpathentry kind="lib" path="lib/pentaho-actionsequence-dom-2.0.3.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
