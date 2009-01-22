@@ -154,8 +154,8 @@ public class PentahoOFC4JHelper {
 		colHeaders.add(2, "BUDGET");
 		
 		ArrayList r1 = new ArrayList(); r1.add("Sales"); r1.add(11); r1.add(12);
-		ArrayList r2 = new ArrayList(); r2.add("Finance"); r2.add(11); r2.add(12);
-		ArrayList r3 = new ArrayList(); r3.add("Human Resource"); r3.add(11); r3.add(12);
+		ArrayList r2 = new ArrayList(); r2.add("Finance"); r2.add(14); r2.add(9);
+		ArrayList r3 = new ArrayList(); r3.add("Human Resource"); r3.add(7); r3.add(100);
 		
 		
 		ArrayList data = new ArrayList();  data.add(r1); data.add(r2); data.add(r3);
@@ -168,7 +168,7 @@ public class PentahoOFC4JHelper {
 		
 		return ips;
 	}
-	
+	 
 	public static void main(String[] args) {
 		SAXReader xmlReader = new SAXReader();
 		
@@ -496,38 +496,59 @@ public class PentahoOFC4JHelper {
 	
 	public void setupRange() {
 		
+		int rangeMin = 0;
+		int rangeMax = 100;
+		int steps = 9;
 		
 		
-		Node temp = chartNode.selectSingleNode(RANGE_MINIMUM_NODE_LOC);
-		Integer rangeMin = null;
-		if ( getValue(temp) != null ){
-			rangeMin = new Integer(getValue(temp));
-		} else {
-			// TODO set RangeMin to minimum in dataset
-			rangeMin = 0;
-		}
-		
-		temp = chartNode.selectSingleNode(RANGE_MAXIMUM_NODE_LOC);
-		Integer rangeMax = null;
-		if ( getValue(temp) != null ){
-			rangeMax = new Integer(getValue(temp));
-		} else {
-			// TODO set RangeMax to minimum in dataset
-			rangeMax = 15;
+		if (CATEGORY_TYPE.equals(datasetType)){
+			// Set to first number in our data set
+			rangeMin = ((Number) data.getValueAt(0,1)).intValue();
+			rangeMax = rangeMin;
+			// Iterate over columns 1+
+			for (int c = 1; c < data.getColumnCount(); c++ ){
+				for (int r = 0; r < data.getRowCount(); r++ ){
+					if ( rangeMin > ((Number)data.getValueAt(r,c)).intValue() )
+						rangeMin = ((Number)data.getValueAt(r,c)).intValue();
+					if ( rangeMax < ((Number)data.getValueAt(r,c)).intValue() )
+						rangeMax = ((Number)data.getValueAt(r,c)).intValue();
+				}
+			}
 			
 		}
 		
-		// TODO Set range to 
-		Integer rangeSteps = new Integer(5);
 		
-		Axis a;
+		Node temp = chartNode.selectSingleNode(RANGE_MINIMUM_NODE_LOC);
+		if ( getValue(temp) != null ){
+			rangeMin = new Integer(getValue(temp)).intValue();
+		} 
+		
+		temp = chartNode.selectSingleNode(RANGE_MAXIMUM_NODE_LOC);
+		if ( getValue(temp) != null ){
+			rangeMax = new Integer(getValue(temp)).intValue();
+		} 
+		
+		int diff = rangeMax - rangeMin;
+		
+		int chunksize = diff / steps;
+		
+		Integer stepforchart = null;
+		if ( chunksize > 0 )
+			stepforchart = new Integer(chunksize);
+		
+		rangeMin = rangeMin - chunksize;
+		rangeMax = rangeMax + chunksize;
+		
+		
+		
+		
 		if ( HORIZONTAL_ORIENTATION.equals(orientation) ){
 			XAxis xaxis = new XAxis();
-			xaxis.setRange(rangeMin, rangeMax);
+			xaxis.setRange(rangeMin, rangeMax, stepforchart);
 			c.setXAxis(xaxis);
 		} else {
 			YAxis yaxis = new YAxis();
-			yaxis.setRange(rangeMin, rangeMax);
+			yaxis.setRange(rangeMin, rangeMax, stepforchart);
 			c.setYAxis(yaxis);
 		}
 		
