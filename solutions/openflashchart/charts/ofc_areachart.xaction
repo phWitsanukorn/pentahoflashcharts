@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <action-sequence> 
-  <title>Open Flash Chart Component - Area Chart</title>
+  <title>PFC XML - Area Chart</title>
   <version>1</version>
   <logging-level>DEBUG</logging-level>
   <documentation> 
@@ -17,7 +17,13 @@
         <request>chart_template_string</request> 
       </sources>  
       <default-value><![CDATA[<chart><chart-type>AreaChart</chart-type><title>OFC Area Sample Chart</title></chart>]]></default-value> 
-    </chart_template_string> 
+    </chart_template_string>  
+    <use_pentaho_xml type="string"> 
+      <sources> 
+        <request>use_pentaho_xml</request> 
+      </sources>  
+      <default-value><![CDATA[false]]></default-value> 
+    </use_pentaho_xml> 
   </inputs>
 
   <outputs> 
@@ -80,7 +86,8 @@ if(j<rowCount-1)
       <action-inputs> 
         <chart_template_string type="string"/>  
         <chart_dataset type="result-set"/>  
-        <pie_head type="string" mapping="head3"/> 
+        <pie_head type="string" mapping="head3"/>  
+        <use_pentaho_xml type="string"/> 
       </action-inputs>
       <action-outputs> 
         <html_fragment type="string"/>  

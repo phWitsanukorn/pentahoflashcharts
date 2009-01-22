@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <action-sequence> 
-  <title>Open Flash Chart Component - Sketch Bar Chart</title>
+  <title>PFC XML - Sketch Bar Chart</title>
   <version>1</version>
   <logging-level>DEBUG</logging-level>
   <documentation> 
@@ -29,7 +29,13 @@
         <request>legendtext</request> 
       </sources>  
       <default-value><![CDATA[The Legend for the Chart!]]></default-value> 
-    </legendtext> 
+    </legendtext>  
+    <use_pentaho_xml type="string"> 
+      <sources> 
+        <request>use_pentaho_xml</request> 
+      </sources>  
+      <default-value><![CDATA[false]]></default-value> 
+    </use_pentaho_xml> 
   </inputs>
 
   <outputs> 
@@ -77,7 +83,7 @@ when  month(orderdate) = 12 then 'Dec'
 
 else 'Blah'
 end as "Month",sum(quantityordered * priceeach) as "Revenue"
-from orderfact group by month(orderdate) order by month(orderdate)]]></query>
+from orderfact group by month(orderdate) order by month(orderdate)]]></query> 
       </component-definition> 
     </action-definition>
   
@@ -88,7 +94,8 @@ from orderfact group by month(orderdate) order by month(orderdate)]]></query>
         <chart_dataset type="result-set"/>  
         <chart_width type="string"/>  
         <chart_height type="string"/>  
-        <legendtext type="string"/> 
+        <legendtext type="string"/>  
+        <use_pentaho_xml type="string"/>
       </action-inputs>
       <action-resources> 
         <chart_template type="resource"/> 
