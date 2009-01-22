@@ -16,6 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.pentaho.commons.connection.IPentahoResultSet;
+import org.pentaho.platform.engine.services.solution.ComponentBase;
 import org.pentaho.platform.api.engine.IActionSequenceResource;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.repository.IContentItem;
@@ -24,7 +25,6 @@ import org.pentaho.platform.api.repository.IContentRepository;
 import org.pentaho.platform.api.util.XmlParseException;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.services.solution.PentahoEntityResolver;
-import org.pentaho.platform.plugin.action.jfreechart.ChartComponent;
 import org.pentaho.platform.repository.content.ContentRepository;
 import org.pentaho.platform.util.UUIDUtil;
 import org.pentaho.platform.util.messages.LocaleHelper;
@@ -44,7 +44,7 @@ import org.pentaho.platform.util.xml.dom4j.XmlDom4JHelper;
  * @author tom qin
  *
  */
-public class OpenFlashChartComponent extends ChartComponent {
+public class OpenFlashChartComponent extends ComponentBase {
 	
 	public static final String LOCATION_DIR_PATH = "OpenFlashChart";
 	private static final long serialVersionUID = 825147871232129168L;
@@ -647,6 +647,16 @@ public class OpenFlashChartComponent extends ChartComponent {
 		File f = new File("D:\\docs\\openflashchart\\data.json");
 		
 		
+	}
+
+	public boolean validateSystemSettings() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	public Log getLogger() {
+		// TODO Auto-generated method stub
+		return log;
 	}
 
 }
