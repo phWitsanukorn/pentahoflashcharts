@@ -55,7 +55,8 @@
       <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
       <action-type>Open Flash Chart</action-type>
       <action-inputs> 
-        <chart_dataset type="result-set"/> 
+        <chart_dataset type="result-set"/>  
+        <use_pentaho_xml type="string"/>
       </action-inputs>
       <action-resources> 
         <chart_template type="resource"/> 
