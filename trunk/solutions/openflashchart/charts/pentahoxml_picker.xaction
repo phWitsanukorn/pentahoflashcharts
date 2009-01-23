@@ -20,31 +20,35 @@
       </sources> 
     </chart_type>  
     <chart_type_FILTER type="property-map-list"> 
-      <default-value type="property-map-list"> 
-        <property-map> 
-          <entry key="Display">Line</entry>  
-          <entry key="chart_type">line</entry> 
-        </property-map>  
-        <property-map> 
-          <entry key="Display">Bar</entry>  
-          <entry key="chart_type">bar</entry> 
-        </property-map>  
-        <property-map> 
-          <entry key="Display">Pie</entry>  
-          <entry key="chart_type">pie</entry> 
-        </property-map>  
-        <property-map> 
-          <entry key="Display">Bar Horizontal</entry>  
-          <entry key="chart_type">barchart_horizontal</entry> 
-        </property-map>  
-        <property-map> 
-          <entry key="Display">Bar 3D</entry>  
-          <entry key="chart_type">barchart_3d</entry> 
-        </property-map>  
-        <property-map> 
-          <entry key="Display">Bar Glass</entry>  
-          <entry key="chart_type">barchart_glass</entry> 
-        </property-map> 
+      <default-value type="property-map-list">
+        <property-map>
+          <entry key="Display">Line</entry>
+          <entry key="chart_type">line</entry>
+        </property-map>
+        <property-map>
+          <entry key="Display">Bar</entry>
+          <entry key="chart_type">bar</entry>
+        </property-map>
+        <property-map>
+          <entry key="Display">Pie</entry>
+          <entry key="chart_type">pie</entry>
+        </property-map>
+        <property-map>
+          <entry key="Display">Bar Horizontal</entry>
+          <entry key="chart_type">barchart_horizontal</entry>
+        </property-map>
+        <property-map>
+          <entry key="Display">Bar 3D</entry>
+          <entry key="chart_type">barchart_3d</entry>
+        </property-map>
+        <property-map>
+          <entry key="Display">Bar Glass</entry>
+          <entry key="chart_type">barchart_glass</entry>
+        </property-map>
+        <property-map>
+          <entry key="Display">Bar Sketch</entry>
+          <entry key="chart_type">barchart_sketch</entry>
+        </property-map>
       </default-value> 
     </chart_type_FILTER>  
     <component_name type="string"> 
@@ -107,18 +111,24 @@
         <mime-type>text/xml</mime-type> 
       </solution-file> 
     </barchart_horizontal>  
-    <barchart_3d>
-      <solution-file>
-        <location>barchart_3d.xml</location>
-        <mime-type>text/xml</mime-type>
-      </solution-file>
-    </barchart_3d>
-    <barchart_glass>
-      <solution-file>
-        <location>barchart_glass.xml</location>
-        <mime-type>text/xml</mime-type>
-      </solution-file>
-    </barchart_glass>
+    <barchart_3d> 
+      <solution-file> 
+        <location>barchart_3d.xml</location>  
+        <mime-type>text/xml</mime-type> 
+      </solution-file> 
+    </barchart_3d>  
+    <barchart_glass> 
+      <solution-file> 
+        <location>barchart_glass.xml</location>  
+        <mime-type>text/xml</mime-type> 
+      </solution-file> 
+    </barchart_glass>  
+    <barchart_sketch> 
+      <solution-file> 
+        <location>barchart_sketch.xml</location>  
+        <mime-type>text/xml</mime-type> 
+      </solution-file> 
+    </barchart_sketch> 
   </resources>
   
   <actions> 
@@ -289,6 +299,28 @@ ORDER BY
         </action-inputs>
         <action-resources> 
           <chart_template type="resource" mapping="barchart_glass"/> 
+        </action-resources>
+        <action-outputs> 
+          <html_fragment type="string"/>  
+          <content_url type="string"/> 
+        </action-outputs>
+        <component-definition/> 
+      </action-definition>
+ 
+    </actions>
+  
+    <actions> 
+      <condition><![CDATA[chart_type == 'barchart_sketch']]></condition>  
+      <action-definition> 
+        <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+        <action-type>Open Flash Chart</action-type>
+        <action-inputs> 
+          <chart_dataset type="string" mapping="query_result"/>  
+          <chart_height type="string"/>  
+          <chart_width type="string"/> 
+        </action-inputs>
+        <action-resources> 
+          <chart_template type="resource" mapping="barchart_sketch"/> 
         </action-resources>
         <action-outputs> 
           <html_fragment type="string"/>  

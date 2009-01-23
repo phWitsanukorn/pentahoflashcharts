@@ -14,6 +14,7 @@ import ofc4j.model.elements.Element;
 import ofc4j.model.elements.HorizontalBarChart;
 import ofc4j.model.elements.LineChart;
 import ofc4j.model.elements.PieChart;
+import ofc4j.model.elements.SketchBarChart;
 import ofc4j.model.elements.BarChart.Style;
 
 import org.dom4j.Document;
@@ -78,6 +79,7 @@ public class PentahoOFC4JHelper {
 	public static Style BARCHART_STYLE_DEFAULT = BarChart.Style.NORMAL;
 	public static LineChart.Style LINECHART_STYLE_DEFAULT = LineChart.Style.NORMAL;
 	public static String ORIENTATION_DEFAULT = "vertical";
+	public static int SKETCH_FUNFACTOR_DEFAULT = 5;
 	
 	
 	public static String [] COLORS_DEFAULT = {
@@ -142,6 +144,7 @@ public class PentahoOFC4JHelper {
 	private ArrayList <String> colors;
 	private BarChart.Style barchartstyle;
 	private LineChart.Style linechartstyle;
+	private boolean issketch; 
 	
 	
 	public static IPentahoResultSet test_setupdata () {
@@ -174,7 +177,7 @@ public class PentahoOFC4JHelper {
 		
 		Document doc = null;
 		try {
-			doc = xmlReader.read("/Users/ngoodman/dev/workspace/pentahoflashcharts/solutions/openflashchart/charts/barchart.xml");
+			doc = xmlReader.read("/Users/ngoodman/dev/workspace/pentahoflashcharts/solutions/openflashchart/charts/barchart_sketch.xml");
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -570,13 +573,22 @@ public class PentahoOFC4JHelper {
 		
 		barchartstyle = BARCHART_STYLE_DEFAULT;
 		
+		// 3d
 		Node temp = chartNode.selectSingleNode(IS3D_NODE_LOC);
 		if ( getValue(temp) != null && "true".equals(getValue(temp)) ) {
 			barchartstyle = BarChart.Style.THREED;
 		} 
+		// Glass
 		temp = chartNode.selectSingleNode(ISGLASS_NODE_LOC);
 		if ( getValue(temp ) != null && "true".equals(getValue(temp))) {
 			barchartstyle = BarChart.Style.GLASS;
+		}
+		// Sketch
+		temp = chartNode.selectSingleNode(ISSKETCH_NODE_LOC);
+		if ( getValue(temp ) != null && "true".equals(getValue(temp))) {
+			issketch = true;
+		} else {
+			issketch = false;
 		}
 		
 		temp = chartNode.selectSingleNode(ORIENTATION_NODE_LOC);
@@ -655,8 +667,15 @@ public class PentahoOFC4JHelper {
 		
 		if ( BARCHART_TYPE.equals(chartType) && VERTICAL_ORIENTATION.equals(orientation) ) {
 			
-			BarChart bc = new BarChart(this.barchartstyle);
-			
+			BarChart bc;
+			// Is Sketch?
+			if ( issketch ) {
+				bc = new SketchBarChart();	
+				((SketchBarChart) bc).setFunFactor(SKETCH_FUNFACTOR_DEFAULT);
+			} else {
+				bc = new BarChart(this.barchartstyle);
+			}
+				
 			for (int i = 0; i < data.getRowCount(); i ++ ){
 				double d = ((Number) data.getValueAt(i, n)).doubleValue();
 				bc.addBars(new BarChart.Bar(d));
@@ -665,7 +684,7 @@ public class PentahoOFC4JHelper {
 			bc.setColour(colors.get(n));
 	
 			e = bc;
-
+	
 		} else if (BARCHART_TYPE.equals(chartType) && HORIZONTAL_ORIENTATION.equals(orientation)) {
 			HorizontalBarChart hbc = new HorizontalBarChart();
 			for (int i = 0; i < data.getRowCount(); i ++ ){
