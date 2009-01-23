@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<action-sequence> 
+  <title>Pentaho XML - Denormalize Two Series Bar Chart</title>
+  <version>1</version>
+  <logging-level>DEBUG</logging-level>
+  <documentation> 
+    <author>Bayon Technologies</author>  
+    <description/>  
+    <help>%help</help>  
+    <result-type/>  
+    <icon>HelloWorld.png</icon> 
+  </documentation>
+
+  <inputs> 
+    <chart_height type="string"> 
+      <sources> 
+        <request>chart_height</request> 
+      </sources>  
+      <default-value><![CDATA[480]]></default-value> 
+    </chart_height>  
+    <chart_width type="string"> 
+      <sources> 
+        <request>chart_width</request> 
+      </sources>  
+      <default-value><![CDATA[680]]></default-value> 
+    </chart_width>  
+    <legendtext type="string"> 
+      <sources> 
+        <request>legendtext</request> 
+      </sources>  
+      <default-value><![CDATA[The Legend for the Chart!]]></default-value> 
+    </legendtext>  
+    <use_pentaho_xml type="string"> 
+      <sources> 
+        <request>use_pentaho_xml</request> 
+      </sources>  
+      <default-value><![CDATA[false]]></default-value> 
+    </use_pentaho_xml> 
+  </inputs>
+
+  <outputs> 
+    <html_fragment type="string">
+      <destinations>
+        <response>content</response>
+      </destinations>
+    </html_fragment>
+  </outputs>
+
+  <resources> 
+    <chart_template> 
+      <solution-file> 
+        <location>barchart.xml</location>  
+        <mime-type>text/plain</mime-type> 
+      </solution-file> 
+    </chart_template> 
+  </resources>
+  
+  <actions> 
+    <action-definition> 
+      <component-name>JavascriptRule</component-name>
+      <action-type>JavaScript</action-type>
+      <action-outputs> 
+        <chart_data_normalized type="result-set"/> 
+      </action-outputs>
+      <component-definition> 
+        <script><![CDATA[var chart_data_normalized = new JavaScriptResultSet();
+var aRow;
+var colHeaders = new Array();
+
+colHeaders[0] = 'Product';
+colHeaders[1] = 'Region';
+colHeaders[2] = 'Value';
+
+chart_data_normalized.setColumnHeaders(colHeaders);
+
+aRow = new Array(); aRow[0] = 'p1'; aRow[1] = 'r1'; aRow[2] = 1; chart_data_normalized.addRow(aRow);
+aRow = new Array(); aRow[0] = 'p1'; aRow[1] = 'r1'; aRow[2] = 1; chart_data_normalized.addRow(aRow);
+aRow = new Array(); aRow[0] = 'p2'; aRow[1] = 'r1'; aRow[2] = 5; chart_data_normalized.addRow(aRow);
+aRow = new Array(); aRow[0] = 'p3'; aRow[1] = 'r1'; aRow[2] = 9; chart_data_normalized.addRow(aRow);
+aRow = new Array(); aRow[0] = 'p1'; aRow[1] = 'r2'; aRow[2] = 2; chart_data_normalized.addRow(aRow);
+aRow = new Array(); aRow[0] = 'p2'; aRow[1] = 'r2'; aRow[2] = 6; chart_data_normalized.addRow(aRow);
+aRow = new Array(); aRow[0] = 'p3'; aRow[1] = 'r2'; aRow[2] = 10; chart_data_normalized.addRow(aRow);
+aRow = new Array(); aRow[0] = 'p1'; aRow[1] = 'r3'; aRow[2] = 3; chart_data_normalized.addRow(aRow);
+aRow = new Array(); aRow[0] = 'p2'; aRow[1] = 'r3'; aRow[2] = 7; chart_data_normalized.addRow(aRow);
+aRow = new Array(); aRow[0] = 'p3'; aRow[1] = 'r3'; aRow[2] = 11; chart_data_normalized.addRow(aRow);
+aRow = new Array(); aRow[0] = 'p1'; aRow[1] = 'r4'; aRow[2] = 4; chart_data_normalized.addRow(aRow);
+aRow = new Array(); aRow[0] = 'p2'; aRow[1] = 'r4'; aRow[2] = 8; chart_data_normalized.addRow(aRow);
+aRow = new Array(); aRow[0] = 'p3'; aRow[1] = 'r4'; aRow[2] = 12; chart_data_normalized.addRow(aRow);]]></script> 
+      </component-definition> 
+    </action-definition>
+  
+    <action-definition> 
+      <component-name>ResultSetCrosstabComponent</component-name>
+      <action-type>CrossTab it</action-type>
+      <action-inputs> 
+        <result_set type="result-set" mapping="chart_data_normalized"/> 
+      </action-inputs>
+      <action-outputs> 
+        <query-result2 type="result-set" mapping="chart_dataset"/> 
+      </action-outputs>
+      <component-definition> 
+        <pivot_column>1</pivot_column>  
+        <measures_column>3</measures_column>  
+        <sort_by_column>1</sort_by_column> 
+      </component-definition> 
+    </action-definition>
+  
+    <action-definition> 
+      <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+      <action-type>Open Flash Chartt</action-type>
+      <action-inputs> 
+        <chart_dataset type="result-set"/>  
+        <chart_height type="string"/>  
+        <chart_width type="string"/> 
+      </action-inputs>
+      <action-resources> 
+        <chart_template type="resource"/> 
+      </action-resources>
+      <action-outputs> 
+        <html_fragment type="string"/>  
+        <content_url type="string"/> 
+      </action-outputs>
+      <component-definition/> 
+    </action-definition>
+ 
+  </actions> 
+</action-sequence>
