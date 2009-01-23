@@ -154,7 +154,7 @@ public class PentahoOFC4JHelper {
 		colHeaders.add(2, "BUDGET");
 		
 		ArrayList r1 = new ArrayList(); r1.add("Sales"); r1.add(11); r1.add(12);
-		ArrayList r2 = new ArrayList(); r2.add("Finance"); r2.add(14); r2.add(9);
+		ArrayList r2 = new ArrayList(); r2.add("Finance"); r2.add(14); r2.add(-9);
 		ArrayList r3 = new ArrayList(); r3.add("Human Resource"); r3.add(7); r3.add(100);
 		
 		
@@ -517,15 +517,19 @@ public class PentahoOFC4JHelper {
 			
 		}
 		
+		boolean minDefined = false;
+		boolean maxDefined = false;
 		
 		Node temp = chartNode.selectSingleNode(RANGE_MINIMUM_NODE_LOC);
 		if ( getValue(temp) != null ){
 			rangeMin = new Integer(getValue(temp)).intValue();
+			minDefined = true;
 		} 
 		
 		temp = chartNode.selectSingleNode(RANGE_MAXIMUM_NODE_LOC);
 		if ( getValue(temp) != null ){
 			rangeMax = new Integer(getValue(temp)).intValue();
+			maxDefined = true;
 		} 
 		
 		int diff = rangeMax - rangeMin;
@@ -536,11 +540,17 @@ public class PentahoOFC4JHelper {
 		if ( chunksize > 0 )
 			stepforchart = new Integer(chunksize);
 		
-		rangeMin = rangeMin - chunksize;
-		rangeMax = rangeMax + chunksize;
-		
-		
-		
+		// Readjust mins/maxs only if they weren't specified
+		if ( !minDefined ) {
+			// If actual min is positive, don't go below ZERO
+			if ( rangeMin > 0 && rangeMin - chunksize < 0 )
+				rangeMin = 0;
+			else
+				rangeMin = rangeMin - chunksize;
+		}
+		if ( !maxDefined ) {
+			rangeMax = rangeMin + (chunksize * (steps+2));
+		}
 		
 		if ( HORIZONTAL_ORIENTATION.equals(orientation) ){
 			XAxis xaxis = new XAxis();
