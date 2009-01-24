@@ -95,6 +95,7 @@ public class OFC4JHelper {
 			AreaHollowChart e = new AreaHollowChart();
 			int rowCount = data.getRowCount();
 			List<Number> datas = new ArrayList<Number>(30);
+			
 			for (float i = 0; i < 6.2; i += 0.2) {
 				datas.add(new Float(Math.sin(i) * 1.9));
 			}
@@ -122,6 +123,9 @@ public class OFC4JHelper {
 
 			c.addElements(e);
 		}
+		 else if (cType.equalsIgnoreCase("BarLineChart")) {
+				createMixedChart(data, c, root);
+			}
 
 		if (yLengendNode != null && yLengendNode.getText().length() > 0) {
 			Text text = new Text();
@@ -137,6 +141,48 @@ public class OFC4JHelper {
 			c.setXLegend(text);
 		}
 		return c;
+	}
+
+	private static void createMixedChart(IPentahoResultSet data, Chart c,
+			Element root) {
+		List bars = root.selectNodes("/chart/bars/bar");
+		createBarChart(data, c, root, bars, BarChart.Style.NORMAL);
+		int columnCount = data.getMetaData().getColumnCount();
+		LineChart[] elements = null;
+		if (columnCount > 1) {
+			elements = new LineChart[columnCount - 1];
+			int rowCount = data.getRowCount();
+			for (int i = 1; i <= columnCount - 1; i++) {
+				LineChart e = new LineChart(LineChart.Style.DOT);
+				Number[] datas = new Number[rowCount];
+
+				
+					for (int j = 0; j < rowCount; j++) {
+						datas[j] = (Number) data.getValueAt(j, i);
+						e.addValues(datas[j].doubleValue());
+					}
+
+				
+				elements[i - 1] = e;
+			}
+			String[] labels = new String[rowCount];
+			for (int j = 0; j < rowCount; j++) {
+				Object obj = data.getValueAt(j, 0);
+				if (obj instanceof java.sql.Timestamp
+						|| obj instanceof java.util.Date) {
+					labels[j] = sf.format(obj);
+				} else {
+					labels[j] = obj.toString();
+				}
+			}
+			c.setXAxis(new XAxis().addLabels(labels));
+
+		} 
+		c.addElements(elements);
+
+		Node stepsNode = root.selectSingleNode("/chart/lines/line/y-axis/y-steps");
+		Node yMaxNode = root.selectSingleNode("/chart/lines/line/y-axis/y-max");
+		setYAxisRange(c, stepsNode, yMaxNode);
 	}
 
 	private static void createSketchBarChart(IPentahoResultSet data, Chart c,
@@ -230,7 +276,7 @@ public class OFC4JHelper {
 				e.setAnimate(false);
 		} 
 		//
-		Node colorsNode = root.selectSingleNode("/chart/slice/colors");
+		Node colorsNode = root.selectSingleNode("/chart/slice/color-palette");
 		if(colorsNode!=null&&colorsNode.getText().length()>0)
 		{
 			String str = colorsNode.getText().trim();
@@ -264,6 +310,7 @@ public class OFC4JHelper {
 		if (columnCount > 1) {
 			elements = new LineChart[columnCount - 1];
 			int rowCount = data.getRowCount();
+			List colors = root.selectNodes("/chart/color-palette/color");
 			for (int i = 1; i <= columnCount - 1; i++) {
 				LineChart e = new LineChart(LineChart.Style.DOT);
 				Number[] datas = new Number[rowCount];
@@ -273,7 +320,13 @@ public class OFC4JHelper {
 						datas[j] = (Number) data.getValueAt(j, i);
 						e.addValues(datas[j].doubleValue());
 					}
-
+					String colour;
+					if(colors!=null&&colors.size()>1)
+					{
+					colour= ((Node)colors.get(i-1)).getText().trim();
+					e.setColour(colour);
+					}
+					e.setText((String)data.getMetaData().getColumnHeaders()[0][i]);
 				
 				elements[i - 1] = e;
 			}
