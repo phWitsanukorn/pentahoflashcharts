@@ -117,14 +117,9 @@ public class OFC4JHelper {
 			createLineChart(data, c, root);
 		} else if (cType.equalsIgnoreCase("PieChart")) {
 			createPieChart(data, c, root);
-		} else if (cType.equalsIgnoreCase("BarLineChart")) {
-			BarChart e = new BarChart();
-			int rowCount = data.getRowCount();
-
-			c.addElements(e);
-		}
+		} 
 		 else if (cType.equalsIgnoreCase("BarLineChart")) {
-				createMixedChart(data, c, root);
+				createBarLineChart(data, c, root);
 			}
 
 		if (yLengendNode != null && yLengendNode.getText().length() > 0) {
@@ -143,46 +138,130 @@ public class OFC4JHelper {
 		return c;
 	}
 
-	private static void createMixedChart(IPentahoResultSet data, Chart c,
+	private static void createBarLineChart(IPentahoResultSet data, Chart c,
 			Element root) {
 		List bars = root.selectNodes("/chart/bars/bar");
-		createBarChart(data, c, root, bars, BarChart.Style.NORMAL);
-		int columnCount = data.getMetaData().getColumnCount();
-		LineChart[] elements = null;
-		if (columnCount > 1) {
-			elements = new LineChart[columnCount - 1];
-			int rowCount = data.getRowCount();
-			for (int i = 1; i <= columnCount - 1; i++) {
-				LineChart e = new LineChart(LineChart.Style.DOT);
-				Number[] datas = new Number[rowCount];
+		
+		BarChart[] values = null;
+		int rowCount = data.getRowCount();
 
-				
-					for (int j = 0; j < rowCount; j++) {
-						datas[j] = (Number) data.getValueAt(j, i);
-						e.addValues(datas[j].doubleValue());
-					}
+		int barNum = bars.size();
+		values = new BarChart[barNum];
+		for (int i = 0; i < barNum; i++) {
+			Node bar = (Node) bars.get(i);
+			Node colorNode = bar.selectSingleNode("color");
+			Node textNode = bar.selectSingleNode("text");
+			BarChart e = new BarChart(BarChart.Style.NORMAL);
+			setBarchartData(data, rowCount, bar, colorNode, textNode, e);
+			values[i] = e;
+		}
+		c.addElements(values);
+		
+		LineChart e = new LineChart(LineChart.Style.DOT);
 
-				
-				elements[i - 1] = e;
-			}
-			String[] labels = new String[rowCount];
+		Node colIndexNode = root.selectSingleNode("/chart/line/sql-column-index");
+		Node linetooltipNode = root.selectSingleNode("/chart/line/tooltip");
+		
+		if(getValue(linetooltipNode)!=null)
+		{
+			e.setTooltip(getValue(linetooltipNode));
+		}
+			
+		if (colIndexNode != null && colIndexNode.getText().length() > 0) {
+			int index = Integer.parseInt(colIndexNode.getText().trim());
+			
 			for (int j = 0; j < rowCount; j++) {
-				Object obj = data.getValueAt(j, 0);
-				if (obj instanceof java.sql.Timestamp
-						|| obj instanceof java.util.Date) {
-					labels[j] = sf.format(obj);
-				} else {
-					labels[j] = obj.toString();
-				}
+				double value = ((Number) data.getValueAt(j, index - 1)).doubleValue();
+				e.addValues(value) ;
+
 			}
-			c.setXAxis(new XAxis().addLabels(labels));
-
-		} 
-		c.addElements(elements);
-
-		Node stepsNode = root.selectSingleNode("/chart/lines/line/y-axis/y-steps");
-		Node yMaxNode = root.selectSingleNode("/chart/lines/line/y-axis/y-max");
+		}
+		else
+		{
+			for (int j = 0; j < rowCount; j++) {
+				double value = ((Number) data.getValueAt(j, data.getColumnCount() - 1)).doubleValue();
+				e.addValues(value) ;
+				
+			}
+		}
+		
+		Node colorNode = root.selectSingleNode("/chart/line/color");
+		if (colorNode != null && colorNode.getText().length() > 0) {
+			e.setColour(colorNode.getText().trim());
+		}
+		Node textNode = root.selectSingleNode("/chart/line/text");
+		if (textNode != null && textNode.getText().length() > 0) {
+			e.setText(textNode.getText().trim());
+		}
+		YAxis y_axis_right= new YAxis();
+		Node rightstepsNode = root.selectSingleNode("/chart/y-axis-right/y-steps");
+		Node rightyMaxNode = root.selectSingleNode("/chart/y-axis-right/y-max");
+		Node rightyMinNode = root.selectSingleNode("/chart/y-axis-right/y-min");
+		Node rightyLablesNode = root.selectSingleNode("/chart/y-axis-right/labels");
+		
+		if(getValue(rightyMaxNode)!=null)
+		{
+			y_axis_right.setMax(Integer.valueOf(getValue(rightyMaxNode)));
+		}
+		
+		
+		if(getValue(rightyMinNode)!=null)
+		{
+			y_axis_right.setMin(Integer.valueOf(getValue(rightyMinNode)));
+		}
+		
+		if(getValue(rightstepsNode)!=null)
+		{
+			y_axis_right.setSteps(Integer.valueOf(getValue(rightstepsNode)));
+		}
+		else
+			y_axis_right.setSteps(Integer.valueOf(10));
+		
+		if(getValue(rightyLablesNode)!=null)
+		{
+			addLabels(y_axis_right, rightyLablesNode);
+		}
+		
+		c.setYAxisRight(y_axis_right);
+		e.setYaxis("right");
+		c.addElements(e);
+		
+		String[] labels = new String[rowCount];
+		for (int j = 0; j < rowCount; j++) {
+			Object obj = data.getValueAt(j, 0);
+			if (obj instanceof java.sql.Timestamp
+					|| obj instanceof java.util.Date) {
+				labels[j] = sf.format(obj);
+			} else {
+				labels[j] = obj.toString();
+			}
+		}
+		c.setXAxis(new XAxis().addLabels(labels));
+		Node stepsNode = root.selectSingleNode("/chart/y-axis/y-steps");
+		Node yMaxNode = root.selectSingleNode("/chart/y-axis/y-max");
 		setYAxisRange(c, stepsNode, yMaxNode);
+	}
+
+	private static void addLabels(YAxis y_axis_right, Node rightstepsNode) {
+		String[] labels =null;
+		labels = fillLabels(rightstepsNode);
+		y_axis_right.addLabels(labels);
+	}
+
+	private static String[] fillLabels(Node rightstepsNode) {
+		String[] labels;
+		String labelStr = getValue(rightstepsNode);
+		StringTokenizer st = new StringTokenizer(labelStr,",");
+		labels = new String[st.countTokens()];
+		int i =0;
+		while(st.hasMoreTokens())
+		{
+			String label = st.nextToken();
+			labels[i]=label.trim();
+			i++;
+
+		}
+		return labels;
 	}
 
 	private static void createSketchBarChart(IPentahoResultSet data, Chart c,
@@ -263,7 +342,7 @@ public class OFC4JHelper {
 		}
 
 		
-		e.setAlpha(0.6f);
+		e.setAlpha(0.3f);
 		e.setBorder(2);
 		Node isAnimateNode = root.selectSingleNode("/chart/isAnimate");
 		if (isAnimateNode != null && isAnimateNode.getText().length() > 0) {
@@ -279,18 +358,21 @@ public class OFC4JHelper {
 		Node colorsNode = root.selectSingleNode("/chart/slice/color-palette");
 		if(colorsNode!=null&&colorsNode.getText().length()>0)
 		{
-			String str = colorsNode.getText().trim();
-			StringTokenizer st = new StringTokenizer(str,",");
-			String[] colors = new String[st.countTokens()];
-			int i =0;
-			while(st.hasMoreTokens())
-			{
-				String color = st.nextToken();
-				colors[i]=color.trim();
-				i++;
-
-			}
+			String[] colors=null;
+//			String str = colorsNode.getText().trim();
+//			StringTokenizer st = new StringTokenizer(str,",");
+//			colors = new String[st.countTokens()];
+//			int i =0;
+//			while(st.hasMoreTokens())
+//			{
+//				String color = st.nextToken();
+//				colors[i]=color.trim();
+//				i++;
+//
+//			}
+			colors=fillLabels(colorsNode);
 			e.setColours(colors);
+
 		}
 		Node tooltipNode = root.selectSingleNode("/chart/tooltip");
 		if (tooltipNode!=null&&tooltipNode.getText().length()>0) {
@@ -465,6 +547,16 @@ public class OFC4JHelper {
 		yaxis.setRange(0, y_max, y_step);
 
 		c.setYAxis(yaxis);
+	}
+	
+	public static String getValue(Node n) {
+		
+		if (n != null && n.getText() != null && n.getText().length() > 0 ) {
+			return n.getText().trim();
+		} else {
+			return null;
+		}
+		
 	}
 
 }
