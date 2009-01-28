@@ -53,14 +53,14 @@ public class OpenFlashChartComponent2 extends OpenFlashChartComponent {
 	static
 	{
 		flashFragment ="<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" " + 
-			"codebase=\"http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0\" " +
-			"width=\"{chart-width}\" height=\"{chart-height}\" align=\"middle\"> " +
-			"<param name=\"allowScriptAccess\" value=\"sameDomain\" /> " +
-			"<param name=\"movie\" value=\"{ofc-url}/open-flash-chart-full-embedded-font.swf?data-file={data}\" /> " +
-			"<param name=\"quality\" value=\"high\" /> " +
-			"<embed src=\"{ofc-url}/open-flash-chart-full-embedded-font.swf?data-file={data}\" quality=\"high\" bgcolor=\"#FFFFFF\" " +
-            "width=\"{chart-width}\" height=\"{chart-height}\" align=\"middle\" allowScriptAccess=\"sameDomain\" type=\"application/x-shockwave-flash\" " +
-            "pluginspage=\"http://www.macromedia.com/go/getflashplayer\" /></object>";
+		"codebase=\"http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0\" " +
+		"width=\"{chart-width}\" height=\"{chart-height}\" align=\"middle\"> " +
+		"<param name=\"allowScriptAccess\" value=\"sameDomain\" /> " +
+		"<param name=\"movie\" value=\"{ofc-url}/open-flash-chart-full-embedded-font.swf?data-file={data}\" /> " +
+		"<param name=\"quality\" value=\"high\" /> " +
+		"<embed src=\"{ofc-url}/open-flash-chart-full-embedded-font.swf?data-file={data}\" quality=\"high\" bgcolor=\"#FFFFFF\" " +
+        "width=\"{chart-width}\" height=\"{chart-height}\" align=\"middle\" allowScriptAccess=\"sameDomain\" type=\"application/x-shockwave-flash\" " +
+        "pluginspage=\"http://www.macromedia.com/go/getflashplayer\" /></object>";
 	}
 	
 	protected boolean executeAction() {
