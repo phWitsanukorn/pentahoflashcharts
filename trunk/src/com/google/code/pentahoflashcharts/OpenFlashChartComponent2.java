@@ -40,7 +40,7 @@ import org.pentaho.platform.util.xml.dom4j.XmlDom4JHelper;
  * chart_height,
  * ofc_url. It is the directory URL of the open flash chart .swf file.  Defaults to the pentaho base URL (style deployment)/images.
  * For instance, /pentaho-style/images. 
- * This component will use the Open Flash Chart 2 patch flash.(http://ofc.x10hosting.com/index.html). It can support the right y_axit, then we can use Bar Line chart. 
+ * This component will use the Open Flash Chart 2 patch flash.(came from http://ofc.x10hosting.com/index.html). It can support the dual y_axis, then we can use Bar Line chart. 
  *
  * @author tom qin
  *
@@ -64,10 +64,16 @@ public class OpenFlashChartComponent2 extends OpenFlashChartComponent {
 	}
 	
 	protected boolean executeAction() {
-		super.flashFragment =flashFragment;
+
 		return super.executeAction();
 	}
 	
+	/**
+	 * override the super codes
+	 */
+	protected String getFlashFragment() {
+		return flashFragment;
+	}
 	
 	
 }

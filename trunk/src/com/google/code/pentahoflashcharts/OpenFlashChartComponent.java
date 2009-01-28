@@ -246,8 +246,8 @@ public class OpenFlashChartComponent extends ComponentBase {
 			return false;
 		}
         //replace the parameters in the flashFragment
-		String flashContent = replace( flashFragment,citem.getId(),chartWidth,chartHeight,ofcURL);
-        
+		String flashContent = replace( getFlashFragment(),citem.getId(),chartWidth,chartHeight,ofcURL);
+        log.debug("json string:"+c.toString());
 		log.debug("html_fragment="+flashContent);
 		Set outputNames = this.getOutputNames();
 		if(outputNames.contains("html_fragment"))
@@ -262,6 +262,10 @@ public class OpenFlashChartComponent extends ComponentBase {
 		
 
 		return true;
+	}
+
+	protected String getFlashFragment() {
+		return flashFragment;
 	}
 	
 	/**
