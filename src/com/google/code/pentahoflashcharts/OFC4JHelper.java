@@ -289,6 +289,8 @@ public class OFC4JHelper {
 			}
 			BarChart e = new SketchBarChart(color,outlineColor,functor);
 			setBarchartData(data, rowCount, bar, colorNode, textNode, e);
+			setOnClick(e,root,"/chart/bars/bar/on-click");
+			setLink(e, root, "/chart/bars/bar/link");
 			values[i] = e;
 		}
 
@@ -340,8 +342,10 @@ public class OFC4JHelper {
 				}
 			}
 		}
-
 		
+		
+		setOnClick(e,root,"/chart/on-click");
+		setLink(e, root, "/chart/link");
 		e.setAlpha(0.3f);
 		e.setBorder(2);
 		Node isAnimateNode = root.selectSingleNode("/chart/isAnimate");
@@ -359,17 +363,7 @@ public class OFC4JHelper {
 		if(colorsNode!=null&&colorsNode.getText().length()>0)
 		{
 			String[] colors=null;
-//			String str = colorsNode.getText().trim();
-//			StringTokenizer st = new StringTokenizer(str,",");
-//			colors = new String[st.countTokens()];
-//			int i =0;
-//			while(st.hasMoreTokens())
-//			{
-//				String color = st.nextToken();
-//				colors[i]=color.trim();
-//				i++;
-//
-//			}
+
 			colors=fillLabels(colorsNode);
 			e.setColours(colors);
 
@@ -383,6 +377,22 @@ public class OFC4JHelper {
 		}
 		
 		c.addElements(e);
+	}
+
+	private static void setOnClick(ofc4j.model.elements.Element e,Node root ,String xpath) {
+		if(getValue(root.selectSingleNode(xpath))!=null)
+		{
+			e.setOn_click(getValue(root.selectSingleNode(xpath)).trim());
+		}
+		
+	}
+	
+	private static void setLink(ofc4j.model.elements.Element e,Node root ,String xpath) {
+		if(getValue(root.selectSingleNode(xpath))!=null)
+		{
+			e.setLink(getValue(root.selectSingleNode(xpath)).trim());
+		}
+		
 	}
 
 	private static void createLineChart(IPentahoResultSet data, Chart c,
@@ -409,7 +419,7 @@ public class OFC4JHelper {
 					e.setColour(colour);
 					}
 					e.setText((String)data.getMetaData().getColumnHeaders()[0][i]);
-				
+					setLink(e, root, "/chart/link");
 				elements[i - 1] = e;
 			}
 			String[] labels = new String[rowCount];
@@ -440,6 +450,7 @@ public class OFC4JHelper {
 			}
 			e.addValues(datas);
 			elements[0] = e;
+			setLink(e, root, "/chart/link");
 
 		}
 		c.addElements(elements);
@@ -462,6 +473,8 @@ public class OFC4JHelper {
 			Node textNode = bar.selectSingleNode("text");
 			BarChart e = new BarChart(style);
 			setBarchartData(data, rowCount, bar, colorNode, textNode, e);
+			setOnClick(e,root,"/chart/bars/bar/on-click");
+			setLink(e, root, "/chart/bars/bar/link");
 			values[i] = e;
 		}
 
@@ -469,6 +482,7 @@ public class OFC4JHelper {
 		setXAxis(c,root, data);
 		//set the y-axis
 		setYAxis(c, root);
+		
 		c.addElements(values);
 	}
 
