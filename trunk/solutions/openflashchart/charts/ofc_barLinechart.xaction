@@ -29,7 +29,13 @@
         <request>chart_height</request> 
       </sources>  
       <default-value><![CDATA[500]]></default-value> 
-    </chart_height> 
+    </chart_height>  
+    <ofc_lib_name type="string">
+      <sources>
+        <request>ofc_lib_name</request>
+      </sources>
+      <default-value><![CDATA[open-flash-chart-full-embedded-font.swf]]></default-value>
+    </ofc_lib_name>
   </inputs>
 
   <outputs> 
@@ -74,13 +80,14 @@ ORDER BY
     </action-definition>
   
     <action-definition> 
-      <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent2</component-name>
+      <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
       <action-type>Open Flash Chart</action-type>
       <action-inputs> 
         <chart_dataset type="result-set"/>  
         <use_pentaho_xml type="string"/>  
         <chart_width type="string"/>  
-        <chart_height type="string"/> 
+        <chart_height type="string"/>  
+        <ofc_lib_name type="string"/>
       </action-inputs>
       <action-resources> 
         <chart_template type="resource"/> 
