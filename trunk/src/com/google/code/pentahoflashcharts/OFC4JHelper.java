@@ -420,6 +420,7 @@ public class OFC4JHelper {
 					}
 					e.setText((String)data.getMetaData().getColumnHeaders()[0][i]);
 					setLink(e, root, "/chart/link");
+					setOnClick(e,root,"/chart/on-click");
 				elements[i - 1] = e;
 			}
 			String[] labels = new String[rowCount];
@@ -451,7 +452,7 @@ public class OFC4JHelper {
 			e.addValues(datas);
 			elements[0] = e;
 			setLink(e, root, "/chart/link");
-
+			setOnClick(e,root,"/chart/on-click");
 		}
 		c.addElements(elements);
 
