@@ -56,6 +56,8 @@ public class OpenFlashChartComponent extends ComponentBase {
 	private static final String CHART_TEMPLATE_STRING = "chart_template_string"; 
 	private static final String CHART_TEMPLATE = "chart_template"; 
 	private static final String USE_PENTAHO_XML = "use_pentaho_xml";
+	private static final String OTHER_HTML_TEMPLATE = "other_html_template";
+	private static final String OFC_LIB_NAME = "ofc_lib_name";
 	
 	
 
@@ -73,9 +75,9 @@ public class OpenFlashChartComponent extends ComponentBase {
 			"codebase=\"http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0\" " +
 			"width=\"{chart-width}\" height=\"{chart-height}\" align=\"middle\"> " +
 			"<param name=\"allowScriptAccess\" value=\"sameDomain\" /> " +
-			"<param name=\"movie\" value=\"{ofc-url}/open-flash-chart.swf?data-file={data}\" /> " +
+			"<param name=\"movie\" value=\"{ofc-url}/{ofc-libname}?data-file={data}\" /> " +
 			"<param name=\"quality\" value=\"high\" /> " +
-			"<embed src=\"{ofc-url}/open-flash-chart.swf?data-file={data}\" quality=\"high\" bgcolor=\"#FFFFFF\" " +
+			"<embed src=\"{ofc-url}/{ofc-libname}?data-file={data}\" quality=\"high\" bgcolor=\"#FFFFFF\" " +
             "width=\"{chart-width}\" height=\"{chart-height}\" align=\"middle\" allowScriptAccess=\"sameDomain\" type=\"application/x-shockwave-flash\" " +
             "pluginspage=\"http://www.macromedia.com/go/getflashplayer\" /></object>";
 	}
@@ -149,6 +151,12 @@ public class OpenFlashChartComponent extends ComponentBase {
 		if(ofcURL==null||"".equals(ofcURL) )
 		{
 			ofcURL= "/pentaho-style/images";
+		}
+		
+		String ofclibname=getInputStringValue(OFC_LIB_NAME);
+		if(ofclibname==null||"".equals(ofclibname) )
+		{
+			ofclibname= "open-flash-chart.swf";
 		}
 		
 		if(chartTemplateString==null||chartTemplateString.equals(""))
@@ -245,14 +253,18 @@ public class OpenFlashChartComponent extends ComponentBase {
 			error(e.getLocalizedMessage());
 			return false;
 		}
-        //replace the parameters in the flashFragment
-		String flashContent = replace( getFlashFragment(),citem.getId(),chartWidth,chartHeight,ofcURL);
+        
+		//replace the parameters in the flashFragment
+		String flashContent = replace( getFlashFragment(),citem.getId(),chartWidth,chartHeight,ofcURL,ofclibname);
         log.debug("json string:"+c.toString());
 		log.debug("html_fragment="+flashContent);
 		Set outputNames = this.getOutputNames();
+		String html_fragment = null;
 		if(outputNames.contains("html_fragment"))
 		{
-			this.setOutputValue("html_fragment", flashContent);
+			html_fragment = getHtmlFragment(flashContent);
+//			this.setOutputValue("html_fragment", flashContent);
+			this.setOutputValue("html_fragment", html_fragment);
 		}
 		if(outputNames.contains("content_url"))
 		{
@@ -262,6 +274,26 @@ public class OpenFlashChartComponent extends ComponentBase {
 		
 
 		return true;
+	}
+	
+	/**
+	 * to support custom complex chart
+	 * @param flashContent
+	 * @return
+	 */
+	protected String getHtmlFragment(String flashContent) {
+		return flashContent+getOtherHtmlFragment();
+	}
+	
+	/**
+	 * to support the click event. We can add some html object as the input string in the xaction.
+	 * @return
+	 */
+	protected String getOtherHtmlFragment() {
+		String fragment =this.getInputStringValue(OTHER_HTML_TEMPLATE);
+		if(fragment!=null&&fragment.length()>0)
+			return fragment.trim();
+		return "";
 	}
 
 	protected String getFlashFragment() {
@@ -467,7 +499,7 @@ public class OpenFlashChartComponent extends ComponentBase {
 	 * @return the working flash codes 
 	 */
 	public String replace(String flashFragment2, String id,
-			Integer chartWidth, Integer chartHeight, String ofcURL) {
+			Integer chartWidth, Integer chartHeight, String ofcURL,String ofclibname) {
 		StringBuffer buff = new StringBuffer(flashFragment2);
 		//replace the {chart-width}
 		String token= "{chart-width}";
@@ -478,6 +510,10 @@ public class OpenFlashChartComponent extends ComponentBase {
 		//replace the {chart-height}
 		token = "{chart-height}";
 		replaceByToken( buff,""+chartHeight,token);
+		
+		//
+		token = "{ofc-libname}";
+		replaceByToken( buff,""+ofclibname,token);
 		
 		//replace the {ofc-url}
 		token = "{ofc-url}";
