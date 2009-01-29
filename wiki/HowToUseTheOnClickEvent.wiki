@@ -1,0 +1,15 @@
+#summary One-sentence summary of this page.
+
+= How to use the on-click event=
+
+I write some examples for showing the usage of on-click event. You can check the ofc_linechart_onclick.xaction,ofc_piechart_ofc4j_onclick.xaction and ofc_bar_olap.xaction
+
+
+= Steps =
+
+
+  * Copy the open-flash-chart-full-embedded-font.swf and open-flash-chartDZ.swf into \pentaho-style\images;
+  * In the xaction, add one input string : ofc_lib_name. The value of ofc_lib_name will tell the OFC use which SWF lib file. In this way, we can use many other powerful patch of OFC flash.
+  * In the xaction, add one input string : other_html_template. The value of other_html_template can be any html fragment. In normal, we will put the javascript function in here.
+  * In the chart_template definition,we add the element: on-click. For instance, <on-click>clickme</on-click>
+  "clickme" is the javascript function name which defined in  other_html_template.
