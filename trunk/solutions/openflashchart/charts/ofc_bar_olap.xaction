@@ -5,7 +5,7 @@
   <logging-level>DEBUG</logging-level>
   <documentation> 
     <author>Bayon Technologies</author>  
-    <description>Bar Chart based on an OLAP query in Steel Wheels.</description>  
+    <description>Bar Chart based on an OLAP query in Steel Wheels. Support the on click event.</description>  
     <help/>  
     <result-type/>  
     <icon>HelloWorld.png</icon> 
@@ -35,7 +35,19 @@
         <request>use_pentaho_xml</request> 
       </sources>  
       <default-value><![CDATA[false]]></default-value> 
-    </use_pentaho_xml> 
+    </use_pentaho_xml>  
+    <ofc_lib_name type="string">
+      <sources>
+        <request>ofc_lib_name</request>
+      </sources>
+      <default-value><![CDATA[open-flash-chart-full-embedded-font.swf]]></default-value>
+    </ofc_lib_name>
+    <other_html_template type="string">
+      <sources>
+        <request>other_html_template</request>
+      </sources>
+      <default-value><![CDATA[<script> function clickme(){	alert("hello. We will go to the Google Home Page");	window.location.href="http://www.google.com";}</script>]]></default-value>
+    </other_html_template>
   </inputs>
 
   <outputs> 
@@ -90,7 +102,9 @@ from [SteelWheelsSales]]]></query>
         <chart_height type="string"/>  
         <chart_width type="string"/>  
         <myvalue type="string"/>  
-        <use_pentaho_xml type="string"/> 
+        <use_pentaho_xml type="string"/>  
+        <ofc_lib_name type="string"/>
+        <other_html_template type="string"/>
       </action-inputs>
       <action-resources> 
         <chart_template type="resource"/> 
