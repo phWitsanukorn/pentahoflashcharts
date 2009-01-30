@@ -1,6 +1,6 @@
 #summary How to make Chart Templates
 
-You have TWO choices for chart templates.  In both cases, the [TemplaceReplacement] occur prior to processing.
+You have TWO choices for chart templates.  In both cases, the [TemplateReplacements] occur prior to processing.
 
 == [XMLTemplate Pentaho XML] (default) ==
 
