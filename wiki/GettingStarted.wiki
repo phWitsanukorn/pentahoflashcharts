@@ -1,26 +1,19 @@
 #summary Quickest way to See Flash Charts in Pentaho
 
 = Pre Reqs =
- * Pentaho Demo 1.7.GA is needed for OFC 1.0.  Download and verify a working installation of Pentaho 1.7.GA.  The base directory (pentaho-demo) is now referred to as $PENTAHO_HOME
-  
- * Pentaho Demo 2.0x is needed for OFC 2.0.  Download and verify a working installation of Pentaho 2.0x.  The base directory (pentaho-demo) is now referred to as $PENTAHO_HOME
-
+ * Pentaho BI Server 2.0x is needed for OFC 2.0.  Download and verify a working installation of Pentaho 2.0x.  The base directory (bi-server-?e) is now referred to as $PENTAHO_HOME
  * Desire for nice looking charts
 
 = Steps =
 
-  * Download and unzip the "pentahoflashchartcomponent-VERSION.zip" somewhere.  We'll now refer to this as $OFC_HOME
-  * Copy $OFC_HOME/open-flash-chart.swf to $PENTAHO_HOME/jboss/server/default/deploy/pentaho-styles.war/images/ (Pentaho 2.x: $PENTAHO_HOME/tomcat/webapps/pentaho-styles/images/). 
-  Besides, since the OFC2 do not do a good job for y_axis_right, so we find another patch for it. If you wish to support the bar line chart, the open-flash-chart-full-embedded-font.swf(came from http://ofc.x10hosting.com/index.html) should be placed under the /pentaho-styles.war/images/. For more detail, pls see the Bar Line Chart sample.
-  
-  * Copy the directory "openflashchart" of $OFC_HOME/solutions/ to $PENTAHO_HOME/pentaho-solutions/.  End result is that there should be a directory (with files at $PENTAHO_HOME/pentaho-solutions/openflashchart
-  * Copy the file $OFC_HOME/pentahoflashchartcomponent-VERSION.jar" to $PENTAHO_HOME/jboss/server/default/deploy/pentaho.war/WEB-INF/lib (Pentaho 2.x: $PENTAHO_HOME/tomcat/webapps/pentaho/WEB-INF/lib/)
-  * Copy the file $OFC_HOME/xstream-1.3.jar and ofc4j105.jar" to $PENTAHO_HOME/jboss/server/default/deploy/pentaho.war/WEB-INF/lib (Pentaho 2.x: $PENTAHO_HOME/tomcat/webapps/pentaho/WEB-INF/lib/)
-  * Start (or Restart) your Pentaho server.  You may have to "Update the Solution Repository" from the Admin screen if the Solution doesn't show up.
+  # Download and unzip the "pentahoflashchart-dist-VERSION.zip" somewhere.  We'll now refer to this as $OFC_HOME
+  # Copy $OFC_HOME/resource/open-flash-chart.swf to $PENTAHO_HOME/tomcat/webapps/pentaho-styles/images/). 
+  # Copy the directory "openflashchart" of $OFC_HOME/samples/ to $PENTAHO_HOME/pentaho-solutions/.  End result is that there should be a directory (with files at $PENTAHO_HOME/pentaho-solutions/openflashchart
+  # Copy the file $OFC_HOME/pentahoflashchart-VERSION.jar" to $PENTAHO_HOME/tomcat/webapps/pentaho/WEB-INF/lib/)
+  # Copy the jars in $OFC_HOME/lib to $PENTAHO_HOME/tomcat/webapps/pentaho/WEB-INF/lib/
+  # Start (or Restart) your Pentaho server.  You may have to "Update the Solution Repository" from the Admin screen if the Solution doesn't show up.
 
 = Optional Steps =
-  * (only for OFC 1.0)Configure the System Listener (stub). Open $PENTAHO_HOME/pentaho-solutions/system/pentaho.xml and find the <system-listeners>. Then add the openflashchart listener like these: <openflashchart>com.bayontechnologies.bi.pentaho.plugin.openflashchart.OpenFlashChartSystemListener</openflashchart>
-Save it and restart your pentaho server.
-
-  * (only for OFC 2.0)Configure the System Listener (stub). Open $PENTAHO_HOME/pentaho-solutions/system/systemListeners.xml and find the <system-listeners>. Then add the openflashchart listener like these: <bean id="OpenFlashChartSystemListener" class="com.google.code.pentahoflashcharts.OpenFlashChartSystemListener"/>
+   # Some features of (y_axis right, BarLine, etc) use a patched version of OFC2 SWF file.  Copy the the additional .SWF files to $PENTAHO_HOME/tomcat/webapps/pentaho-styles/images/ if you wish to use these features.  NOTES: Patch came from http://ofc.x10hosting.com/index.html.  For examples, see the Bar Line Chart sample.
+  # Configure the System Listener (stub). Open $PENTAHO_HOME/pentaho-solutions/system/systemListeners.xml and find the <system-listeners>. Then add the openflashchart listener like these: <bean id="OpenFlashChartSystemListener" class="com.google.code.pentahoflashcharts.OpenFlashChartSystemListener"/>
 Save it and restart your pentaho server.
