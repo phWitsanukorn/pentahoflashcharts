@@ -6,12 +6,16 @@
 	<property name="lib.dir" location="${base.dir}/lib" />
 	<property name="build.dir" location="${base.dir}/build" />
 	<property name="samples.dir" location="${base.dir}/solutions" />
+	<property name="resource.dir" location="${base.dir}/resource" />
+		
 		
 	<property name="pentaho.pci.webapp" location="/Users/ngoodman/pentaho/biserver-ce-2.0.0.stable" />
 	<property name="pfc.version" value="0.1"/>
 	<property name="pfc.revision" value="132"/>
 	<property name="pfc.jar.name" value="pentahoflashchart-${pfc.version}-r${pfc.revision}.jar"/>
 	<property name="pfc.samples.name" value="pentahoflashchart-samples-${pfc.version}-r${pfc.revision}.zip"/>
+	<property name="pfc.dist.name" value="pentahoflashchart-dist-${pfc.version}-r${pfc.revision}.zip"/>
+		
 			
 
 
@@ -63,9 +67,23 @@
 		</zip>
 	</target>
 	
-	<target name="dist" depends="jar">
+	<target name="distjar" depends="jar">
 		<copy tofile="${build.dir}/${pfc.jar.name}" file="${build.dir}/pentahoflashchart.jar"/>
 	</target>
+	
+	<target name="dist" depends="distjar,samples">
+		<zip destfile="${build.dir}/${pfc.dist.name}">
+			<zipfileset dir="${samples.dir}" prefix="samples">
+				<exclude name="**/.svn/**"/>
+			</zipfileset>
+			<zipfileset dir="${resource.dir}" includes="*.swf" prefix="resource">
+				<exclude name="**/.svn/**"/>
+			</zipfileset>
+			<zipfileset dir="${build.dir}" includes="${pfc.jar.name}"/>
+			<zipfileset dir="${resource.dir}" includes="README.txt"/>
+		</zip>
+	</target>
+		
 	
 	
 
