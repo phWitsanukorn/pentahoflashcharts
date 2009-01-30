@@ -1,7 +1,5 @@
 #summary A description of how to create Pentaho chart XML for PentahoFlashCharts
 
-= XML Templates =
-
 This document covers how to use Pentaho's existing [http://wiki.pentaho.com/display/ServerDoc2x/Chart+Properties+Reference Chart Definition XML] to create flash charts in Pentaho.  
 
 Most charts that are built for Pentaho Charts will work with the PentahoFlashChart repository.  Same XML, Same Data should produce a similar chart.
