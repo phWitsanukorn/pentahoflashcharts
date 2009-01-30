@@ -48,17 +48,7 @@ public class LineChartBuilder  extends ChartBuilder {
 					setOnClick(e,root,"/chart/on-click");
 				elements[i - 1] = e;
 			}
-			String[] labels = new String[rowCount];
-			for (int j = 0; j < rowCount; j++) {
-				Object obj = data.getValueAt(j, 0);
-				if (obj instanceof java.sql.Timestamp
-						|| obj instanceof java.util.Date) {
-					labels[j] = sf.format(obj);
-				} else {
-					labels[j] = obj.toString();
-				}
-			}
-			c.setXAxis(new XAxis().addLabels(labels));
+			setupXAxis(data, c, rowCount);
 
 		} else {
 			elements = new LineChart[columnCount];
@@ -81,10 +71,28 @@ public class LineChartBuilder  extends ChartBuilder {
 		}
 		c.addElements(elements);
 
+		setupYAxis(root, c);
+		return c;
+	}
+
+	protected void setupYAxis(Node root, Chart c) {
 		Node stepsNode = root.selectSingleNode("/chart/y-axis/y-steps");
 		Node yMaxNode = root.selectSingleNode("/chart/y-axis/y-max");
 		setYAxisRange(c, stepsNode, yMaxNode);
-		return c;
+	}
+
+	protected void setupXAxis(IPentahoResultSet data, Chart c, int rowCount) {
+		String[] labels = new String[rowCount];
+		for (int j = 0; j < rowCount; j++) {
+			Object obj = data.getValueAt(j, 0);
+			if (obj instanceof java.sql.Timestamp
+					|| obj instanceof java.util.Date) {
+				labels[j] = sf.format(obj);
+			} else {
+				labels[j] = obj.toString();
+			}
+		}
+		c.setXAxis(new XAxis().addLabels(labels));
 	}
 
 }
