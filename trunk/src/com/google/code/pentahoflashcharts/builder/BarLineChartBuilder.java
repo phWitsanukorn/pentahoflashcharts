@@ -102,18 +102,18 @@ public class BarLineChartBuilder  extends ChartBuilder {
 		
 		if(getValue(rightyMaxNode)!=null)
 		{
-			y_axis_right.setMax(Integer.valueOf(getValue(rightyMaxNode)));
+			y_axis_right.setMax(Integer.valueOf(getNodeValue(rightyMaxNode)));
 		}
 		
 		
 		if(getValue(rightyMinNode)!=null)
 		{
-			y_axis_right.setMin(Integer.valueOf(getValue(rightyMinNode)));
+			y_axis_right.setMin(Integer.valueOf(getNodeValue(rightyMinNode)));
 		}
 		
 		if(getValue(rightstepsNode)!=null)
 		{
-			y_axis_right.setSteps(Integer.valueOf(getValue(rightstepsNode)));
+			y_axis_right.setSteps(Integer.valueOf(getNodeValue(rightstepsNode)));
 		}
 		else
 			y_axis_right.setSteps(Integer.valueOf(10));
