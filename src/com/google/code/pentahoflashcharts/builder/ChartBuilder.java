@@ -16,7 +16,7 @@ public abstract class ChartBuilder {
 	public static void setOnClick(ofc4j.model.elements.Element e,Node root ,String xpath) {
 		if(getValue(root.selectSingleNode(xpath))!=null)
 		{
-			e.setOn_click(getValue(root.selectSingleNode(xpath)).trim());
+			e.setOn_click(getNodeValue(root.selectSingleNode(xpath)));
 		}
 		
 	}
@@ -24,7 +24,7 @@ public abstract class ChartBuilder {
 	public static void setLink(ofc4j.model.elements.Element e,Node root ,String xpath) {
 		if(getValue(root.selectSingleNode(xpath))!=null)
 		{
-			e.setLink(getValue(root.selectSingleNode(xpath)).trim());
+			e.setLink(getNodeValue(root.selectSingleNode(xpath)));
 		}
 		
 	}
@@ -39,10 +39,14 @@ public abstract class ChartBuilder {
 		
 	}
 	
+	public static String getNodeValue(Node n) {
+			return n.getText().trim();
+	}
+	
 	
 	public static String[] fillLabels(Node rightstepsNode) {
 		String[] labels;
-		String labelStr = getValue(rightstepsNode);
+		String labelStr = getNodeValue(rightstepsNode);
 		StringTokenizer st = new StringTokenizer(labelStr,",");
 		labels = new String[st.countTokens()];
 		int i =0;
