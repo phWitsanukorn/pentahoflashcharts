@@ -2,7 +2,7 @@
 
 You have TWO choices for chart templates.  In both cases, the [TemplateReplacements] occur prior to processing.
 
-== [XMLTemplate Pentaho XML] (default) ==
+== [XMLTemplates Pentaho XML] (default) ==
 
 Reads a Pentaho chart XML document, processes the tags/chart types supported, and outputs a chart that would be similar to the one output by the Pentaho standard chart component.
 
