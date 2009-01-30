@@ -1,8 +1,8 @@
 #summary How to make Chart Templates
 
-You have TWO choices for chart templates.  In both cases, the [TemplaceReplacements] occur prior to processing.
+You have TWO choices for chart templates.  In both cases, the [TemplaceReplacement] occur prior to processing.
 
-== Pentaho XML (default) ==
+== [XMLTemplate Pentaho XML] (default) ==
 
 Reads a Pentaho chart XML document, processes the tags/chart types supported, and outputs a chart that would be similar to the one output by the Pentaho standard chart component.
 
