@@ -1,3 +1,5 @@
+#description Documents how templates are preprocessed and data values are replaced
+
 The component reads the template (PFC XML format or Pentaho XML format), and then replaces all occurences of the below tokens with the data from the "chart_dataset" that was an input to the component.
 
 == ${colN} ==
