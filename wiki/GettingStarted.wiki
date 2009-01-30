@@ -17,3 +17,7 @@
    # Some features of (y_axis right, BarLine, etc) use a patched version of OFC2 SWF file.  Copy the the additional .SWF files to $PENTAHO_HOME/tomcat/webapps/pentaho-styles/images/ if you wish to use these features.  NOTES: Patch came from http://ofc.x10hosting.com/index.html.  For examples, see the Bar Line Chart sample.
   # Configure the System Listener (stub). Open $PENTAHO_HOME/pentaho-solutions/system/systemListeners.xml and find the <system-listeners>. Then add the openflashchart listener like these: <bean id="OpenFlashChartSystemListener" class="com.google.code.pentahoflashcharts.OpenFlashChartSystemListener"/>
 Save it and restart your pentaho server.
+
+= Building Your Own Charts =
+
+Review the document [ComponentUsage] and use one of the [ChartTemplate two chart templates].  Definitely consider "copying" and pasting from the samples provided.
