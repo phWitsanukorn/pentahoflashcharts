@@ -8,26 +8,25 @@
 = Pentaho Flash Chart =
 
 == Component Class ==
-`com.bayontechnologies.bi.pentaho.plugin.openflashchart.OpenFlashChartComponent`
+`com.google.code.pentahoflashcharts.OpenFlashChartComponent`
 
 == Inputs ==
 
-chart_dataset (_required_) - A Pentaho "result-set" passed from a previous "Get Data From" operation.  You must have configured a SQL/MDX/Javascript object BEFORE this action that retrieved your data
-
-chart_height (_optional_) - The height of the flash chart to render
-
-chart_width (_optional_) - The width of the flash chart to render
-
-chart_template_string (_optional_) - The string chart template instead of using a "resource" to use.  See the section on [ChartTemplate] syntax.  Either chart_template_string or chart_template must be defined.
-
-*ANY OTHER VARIABLE* (_optional_) - You can pass as an input any custom variables (myCustomTitleForChart) that can be used in the [ChartTemplate]
+  * chart_dataset (_required_) - A Pentaho "result-set" passed from a previous "Get Data From" operation.  You must have configured a SQL/MDX/Javascript object BEFORE this action that retrieved your data
+  * chart_height (_optional_) - The height of the flash chart to render.  DEFAULT: 500
+  * chart_width (_optional_) - The width of the flash chart to render.  DEFAULT: 300
+  * chart_template_string (_optional_) - The string chart template instead of using a "resource" to use.  See the section on [ChartTemplate] syntax.  Either chart_template_string or chart_template must be defined.
+  * use_pentaho_xml (_optional_) - A true/false string that tells the flash chart component to use the Pentaho XML format [XMLTemplates] or to use the [PentahoFlashChartXMLTemplate].  DEFAULT: true
+  * ofc_lib_name (_optional_) - The name of the Open Flash Chart .swf file to use.  Some charts may want to use a "patched" version of the SWF file.  DEFAULT: "open-flash-chart.swf" the standard OFC2 SWF file.
+  * other_html_fragment (_optional_) - Any additional "HTML" to present with the flash chart.  Useful to create javascript functions for onclick events.  DEFAULT: empty.
+  * *ANY OTHER VARIABLE* (_optional_) - You can pass as an input any custom variables (myCustomTitleForChart) that can be used in the [ChartTemplate]
 
 == Resources ==
 
-chart_template (_optional_) - The "resource", usually a solution file, to use as the [ChartTemplate].  This is typically used so that you can create a file, "mychartdefinition.txt" that contains the [ChartTemplate] rather than using a string
+  * chart_template (_optional_) - The "resource", usually a solution file, to use as the [ChartTemplate].  This is typically used so that you can create a file, "mychartdefinition.txt" that contains the [ChartTemplate] rather than using a string
 
 == Outputs ==
 
-html_fragment - Contains the HTML fragment that will render the flash chart.  This includes a Flash Object fragment of size chart_height x chart_width (from inputs) and a callback location for the open flash chart data file in the content repository.  
+  * html_fragment - Contains the HTML fragment that will render the flash chart.  This includes a Flash Object fragment of size chart_height x chart_width (from inputs) and a callback location for the open flash chart data file in the content repository.  
 
-content_url - Contains the URL of the generated open flash chart data file in the content repository.  This is the [ChartTemplate] mashed up with the data to make the real data file to display in open flash chart.
+  * content_url - Contains the URL of the generated open flash chart data file in the content repository.  This is the [ChartTemplate] mashed up with the data to make the real data file to display in open flash chart.
