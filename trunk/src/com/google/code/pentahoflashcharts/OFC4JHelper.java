@@ -166,5 +166,10 @@ public class OFC4JHelper {
 		}
 
 	}
+	
+	public static String getNodeValue(Node n) {
+		return n.getText().trim();
+	}
+
 
 }
