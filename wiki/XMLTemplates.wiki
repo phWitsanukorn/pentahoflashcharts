@@ -2,7 +2,7 @@
 
 This document covers how to use Pentaho's existing [http://wiki.pentaho.com/display/ServerDoc2x/Chart+Properties+Reference Chart Definition XML] to create flash charts in Pentaho.  
 
-Most charts that are built for Pentaho Charts will work with the PentahoFlashChart repository.  Same XML, Same Data should produce a similar chart.
+Most charts that are built for Pentaho Charts will work with the !PentahoFlashChart component.  Same XML, Same Data should produce a similar chart.
 
 The replacements outlined in [TemplateReplacements] are applied to the chart XML before processing.  In other words, you can put ${head1} into the XML and it will be replaced with the literal header value before processing into a chart.
 
