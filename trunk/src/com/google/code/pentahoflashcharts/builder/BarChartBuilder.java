@@ -1,30 +1,25 @@
 package com.google.code.pentahoflashcharts.builder;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import ofc4j.model.Chart;
 import ofc4j.model.axis.XAxis;
-import ofc4j.model.axis.YAxis;
-import ofc4j.model.axis.Label.Rotation;
-import ofc4j.model.elements.AreaHollowChart;
 import ofc4j.model.elements.BarChart;
-import ofc4j.model.elements.LineChart;
 import ofc4j.model.elements.BarChart.Style;
 
 import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoResultSet;
 
-import com.google.code.pentahoflashcharts.OFC4JHelper;
-
-public class BarChartBuilder  extends ChartBuilder {
+public class BarChartBuilder  extends DefaultChartBuilder {
 	private static SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
 	
-	@Override
 	public Chart build(Node root, IPentahoResultSet data) {
-		Chart c = new Chart();
-		
+		Chart c = super.build(root, data);
+		return c;
+	}
+	
+	protected void setupElements(Chart c, Node root, IPentahoResultSet data) {
 		List bars = root.selectNodes("/chart/bars/bar");
 		
 		BarChart[] values = null;
@@ -42,20 +37,12 @@ public class BarChartBuilder  extends ChartBuilder {
 			setLink(e, root, "/chart/bars/bar/link");
 			values[i] = e;
 		}
-
-		// set the x-axis
-		setXAxis(c,root, data);
-		//set the y-axis
-		setYAxis(c, root);
-		
 		c.addElements(values);
-		
-		setupOthers(c,root);
-		return c;
 	}
+
 	
-	protected void setupOthers(Chart c, Node root) {
-		
+	protected void setupOthers(Chart c, Node root, IPentahoResultSet data) {
+		setXAxisLabels(c,root, data);
 		
 	}
 
@@ -90,7 +77,7 @@ public class BarChartBuilder  extends ChartBuilder {
 		}
 	}
 	
-	public static void setXAxis(Chart c,Node root, IPentahoResultSet data) {
+	public static void setXAxisLabels(Chart c,Node root, IPentahoResultSet data) {
 		if (root.selectSingleNode("/chart/x-axis") != null) {
 
 			XAxis axis = new XAxis();
@@ -120,13 +107,6 @@ public class BarChartBuilder  extends ChartBuilder {
 			}
 			c.setXAxis(axis);
 		}
-	}
-
-	public static void setYAxis(Chart c, Node root) {
-		Node stepsNode = root.selectSingleNode("/chart/y-axis/y-steps");
-		Node xMaxNode = root.selectSingleNode("/chart/y-axis/y-max");
-		
-		setYAxisRange(c, stepsNode, xMaxNode);
 	}
 
 }

@@ -10,10 +10,13 @@ import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoResultSet;
 
 public class SketchBarChartBuilder extends BarChartBuilder {
-
-	@Override
+	
 	public Chart build(Node root, IPentahoResultSet data) {
-		Chart c = new Chart();
+		Chart c = super.build(root, data);
+		return c;
+	}
+	
+	protected void setupElements(Chart c, Node root, IPentahoResultSet data) {
 		BarChart[] values = null;
 		int rowCount = data.getRowCount();
 		List bars = root.selectNodes("/chart/bars/bar");
@@ -40,13 +43,8 @@ public class SketchBarChartBuilder extends BarChartBuilder {
 			setLink(e, root, "/chart/bars/bar/link");
 			values[i] = e;
 		}
-
-		// set the x-axis
-		setXAxis(c,root, data);
-		//set the y-axis
-		setYAxis(c, root);
 		c.addElements(values);
-		return c;
 	}
+
 
 }

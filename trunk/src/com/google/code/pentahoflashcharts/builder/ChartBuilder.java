@@ -3,6 +3,7 @@ package com.google.code.pentahoflashcharts.builder;
 import java.util.StringTokenizer;
 
 import ofc4j.model.Chart;
+import ofc4j.model.Text;
 import ofc4j.model.axis.YAxis;
 
 import org.dom4j.Node;
@@ -60,7 +61,31 @@ public abstract class ChartBuilder {
 		return labels;
 	}
 	
-	public static void setYAxisRange(Chart c, Node stepsNode, Node xMaxNode) {
+	public static void setYLegend(Chart c,Node root)
+	{
+		// in the Pentaho chart, range-title equals yLengend title
+		Node yLengendNode = root.selectSingleNode("/chart/range-title");
+		if (yLengendNode != null && yLengendNode.getText().length() > 0) {
+			Text text = new Text();
+			text.setText(yLengendNode.getText().trim());
+			text.setStyle("color: #736AFF; font-size: 14px;");
+			c.setYLegend(text);
+		}
+	}
+	
+	public static void setXLegend(Chart c,Node root)
+	{
+		// in the Pentaho chart, domain-title equals xLengend title
+		Node xLengendNode = root.selectSingleNode("/chart/domain-title");
+		if (xLengendNode != null && xLengendNode.getText().length() > 0) {
+			Text text = new Text();
+			text.setText(xLengendNode.getText().trim());
+			text.setStyle("color: #736AFF; font-size: 14px;");
+			c.setXLegend(text);
+		}
+	}
+	
+	public static void setYAxisRange(Chart c, Node stepsNode, Node yMaxNode) {
 		YAxis yaxis = new YAxis();
 		int y_max = 10000;
 		int y_step = 10;
@@ -68,8 +93,8 @@ public abstract class ChartBuilder {
 			y_step = Integer.parseInt(stepsNode.getText().trim());
 		}
 
-		if (xMaxNode != null && xMaxNode.getText().length() > 0) {
-			y_max = Integer.parseInt(xMaxNode.getText().trim());
+		if (yMaxNode != null && yMaxNode.getText().length() > 0) {
+			y_max = Integer.parseInt(yMaxNode.getText().trim());
 		}
 		yaxis.setRange(0, y_max, y_step);
 
