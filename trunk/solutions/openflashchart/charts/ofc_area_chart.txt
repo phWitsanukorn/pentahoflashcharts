@@ -3,8 +3,8 @@
 <title>OFC Area Sample Chart</title>
 
 
-<domain-title>Day</domain-title>
-<range-title>Sold Price</range-title>
+<domain-title>Year</domain-title>
+<range-title>Sales</range-title>
 <y-axis>
 <labels></labels>
 <y-steps>200150</y-steps>
