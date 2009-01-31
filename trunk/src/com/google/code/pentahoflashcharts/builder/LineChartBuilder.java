@@ -1,27 +1,27 @@
 package com.google.code.pentahoflashcharts.builder;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import ofc4j.model.Chart;
 import ofc4j.model.axis.XAxis;
-import ofc4j.model.axis.YAxis;
-import ofc4j.model.axis.Label.Rotation;
-import ofc4j.model.elements.AreaHollowChart;
 import ofc4j.model.elements.LineChart;
 
 import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoResultSet;
 
-import com.google.code.pentahoflashcharts.OFC4JHelper;
-
-public class LineChartBuilder  extends ChartBuilder {
+public class LineChartBuilder  extends DefaultChartBuilder {
 	private static SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
 	
-	@Override
+	
 	public Chart build(Node root, IPentahoResultSet data) {
-		 Chart c = new Chart();
+		 Chart c = super.build(root, data);
+		 
+		 return c;
+	}
+	
+	protected void setupElements(Chart c, Node root, IPentahoResultSet data) {
+		
 		int columnCount = data.getMetaData().getColumnCount();
 		LineChart[] elements = null;
 		if (columnCount > 1) {
@@ -48,7 +48,7 @@ public class LineChartBuilder  extends ChartBuilder {
 					setOnClick(e,root,"/chart/on-click");
 				elements[i - 1] = e;
 			}
-			setupXAxis(data, c, rowCount);
+			setupXAxisLabels(data, c, rowCount);
 
 		} else {
 			elements = new LineChart[columnCount];
@@ -70,18 +70,11 @@ public class LineChartBuilder  extends ChartBuilder {
 			setOnClick(e,root,"/chart/on-click");
 		}
 		c.addElements(elements);
-
-		setupYAxis(root, c);
-		return c;
 	}
+	
 
-	protected void setupYAxis(Node root, Chart c) {
-		Node stepsNode = root.selectSingleNode("/chart/y-axis/y-steps");
-		Node yMaxNode = root.selectSingleNode("/chart/y-axis/y-max");
-		setYAxisRange(c, stepsNode, yMaxNode);
-	}
 
-	protected void setupXAxis(IPentahoResultSet data, Chart c, int rowCount) {
+	protected void setupXAxisLabels(IPentahoResultSet data, Chart c, int rowCount) {
 		String[] labels = new String[rowCount];
 		for (int j = 0; j < rowCount; j++) {
 			Object obj = data.getValueAt(j, 0);
@@ -92,7 +85,10 @@ public class LineChartBuilder  extends ChartBuilder {
 				labels[j] = obj.toString();
 			}
 		}
-		c.setXAxis(new XAxis().addLabels(labels));
+		if(c.getXAxis()==null)
+			c.setXAxis(new XAxis().addLabels(labels));
+		else
+			c.getXAxis().addLabels(labels);
 	}
 
 }
