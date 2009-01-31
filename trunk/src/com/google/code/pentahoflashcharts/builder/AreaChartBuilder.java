@@ -56,11 +56,11 @@ public class AreaChartBuilder extends ChartBuilder {
 	}
 	
 	protected void setupXAxis(IPentahoResultSet data, Chart c, int columnCount) {
-		String[] labels = new String[columnCount];
+		String[] labels = new String[columnCount-1];
 		for (int j = 1; j <= columnCount - 1; j++) {
 			Object obj = data.getMetaData().getColumnHeaders()[0][j];
 			
-			labels[j] = obj.toString();
+			labels[j-1] = obj.toString();
 			
 		}
 		c.setXAxis(new XAxis().addLabels(labels));
