@@ -12,6 +12,9 @@ import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoResultSet;
 
 public class LineChartBuilder  extends DefaultChartBuilder {
+	public static final String DOT_TYPE_NORMAL = "normal";
+	public static final String DOT_TYPE_DOT = "dot";
+	public static final String DOT_TYPE_HOLLOW = "hollow";
 	private static SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
 	
 	
@@ -77,11 +80,11 @@ public class LineChartBuilder  extends DefaultChartBuilder {
 		if(getValue(root.selectSingleNode("/chart/dot-style"))!=null)
 		{
 			String style = getNodeValue(root.selectSingleNode("/chart/dot-style"));
-			if("dot".equalsIgnoreCase(style))
+			if(DOT_TYPE_DOT.equalsIgnoreCase(style))
 			{
 				return LineChart.Style.DOT;
 			}
-			else if("hollow".equalsIgnoreCase(style))
+			else if(DOT_TYPE_HOLLOW.equalsIgnoreCase(style))
 			{
 				return LineChart.Style.HOLLOW;
 			}
