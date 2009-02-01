@@ -5,6 +5,7 @@ import java.util.List;
 import ofc4j.model.Chart;
 import ofc4j.model.elements.BarChart;
 import ofc4j.model.elements.LineChart;
+import ofc4j.model.elements.LineChart.Style;
 
 import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoResultSet;
@@ -28,7 +29,8 @@ public class BarLineChartBuilder  extends LineChartBuilder {
 
 	protected void setupLineElements(Chart c, Node root,
 			IPentahoResultSet data, int rowCount) {
-		LineChart e = new LineChart(LineChart.Style.DOT);
+		Style lineStyle = setupLineStyle(root);
+		LineChart e = new LineChart(lineStyle);
 
 		Node colIndexNode = root.selectSingleNode("/chart/line/sql-column-index");
 		Node linetooltipNode = root.selectSingleNode("/chart/line/tooltip");
