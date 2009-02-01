@@ -6,6 +6,7 @@ import java.util.List;
 import ofc4j.model.Chart;
 import ofc4j.model.axis.XAxis;
 import ofc4j.model.elements.LineChart;
+import ofc4j.model.elements.LineChart.Style;
 
 import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoResultSet;
@@ -21,7 +22,7 @@ public class LineChartBuilder  extends DefaultChartBuilder {
 	}
 	
 	protected void setupElements(Chart c, Node root, IPentahoResultSet data) {
-		
+		Style lineStyle = setupLineStyle(root);
 		int columnCount = data.getMetaData().getColumnCount();
 		LineChart[] elements = null;
 		if (columnCount > 1) {
@@ -29,7 +30,7 @@ public class LineChartBuilder  extends DefaultChartBuilder {
 			int rowCount = data.getRowCount();
 			List colors = root.selectNodes("/chart/color-palette/color");
 			for (int i = 1; i <= columnCount - 1; i++) {
-				LineChart e = new LineChart(LineChart.Style.DOT);
+				LineChart e = new LineChart(lineStyle);
 				Number[] datas = new Number[rowCount];
 
 				
@@ -52,7 +53,7 @@ public class LineChartBuilder  extends DefaultChartBuilder {
 
 		} else {
 			elements = new LineChart[columnCount];
-			LineChart e = new LineChart(LineChart.Style.DOT);
+			LineChart e = new LineChart(setupLineStyle(root));
 
 			Node chartBackGround=root.selectSingleNode("/chart/chart-background");
 			if (chartBackGround != null) {
@@ -70,6 +71,22 @@ public class LineChartBuilder  extends DefaultChartBuilder {
 			setOnClick(e,root,"/chart/on-click");
 		}
 		c.addElements(elements);
+	}
+
+	protected Style setupLineStyle(Node root) {
+		if(getValue(root.selectSingleNode("/chart/dot-style"))!=null)
+		{
+			String style = getNodeValue(root.selectSingleNode("/chart/dot-style"));
+			if("dot".equalsIgnoreCase(style))
+			{
+				return LineChart.Style.DOT;
+			}
+			else if("hollow".equalsIgnoreCase(style))
+			{
+				return LineChart.Style.HOLLOW;
+			}
+		}
+		return LineChart.Style.NORMAL;
 	}
 	
 
