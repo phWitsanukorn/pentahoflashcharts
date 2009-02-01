@@ -5,11 +5,13 @@ import java.util.List;
 import ofc4j.model.Chart;
 import ofc4j.model.axis.XAxis;
 import ofc4j.model.elements.AreaHollowChart;
+import ofc4j.model.elements.AreaLineChart;
+import ofc4j.model.elements.LineChart;
 
 import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoResultSet;
 
-public class AreaChartBuilder extends DefaultChartBuilder {
+public class AreaChartBuilder extends LineChartBuilder {
 	
 	
 	
@@ -19,15 +21,28 @@ public class AreaChartBuilder extends DefaultChartBuilder {
 	}
 	
 	protected void setupElements(Chart c, Node root, IPentahoResultSet data) {
+		String dotType = setupDotType(root);
 		int rowCount = data.getRowCount();
 		int columnCount = data.getMetaData().getColumnCount();
-		AreaHollowChart[] elements = null;
+		LineChart[] elements = null;
 		if (columnCount > 1) {
-			elements = new AreaHollowChart[rowCount];
+			if(DOT_TYPE_HOLLOW.equalsIgnoreCase(dotType))
+				elements = new AreaHollowChart[rowCount];
+			else
+				elements = new AreaLineChart[rowCount];
 			List colors = root.selectNodes("/chart/color-palette/color");
 			for(int n = 0 ; n< rowCount; n ++ )
 			{
-				AreaHollowChart e = new AreaHollowChart();
+				LineChart e = null;
+				if(DOT_TYPE_HOLLOW.equalsIgnoreCase(dotType))
+				{
+					e =new AreaHollowChart();
+				}
+				else
+				{
+					e =new AreaLineChart();
+				}
+					
 				Number[] datas = new Number[columnCount - 1];
 				for (int i = 1; i <= columnCount - 1; i++) {
 					datas[i-1] = (Number) data.getValueAt(n, i);
@@ -54,7 +69,15 @@ public class AreaChartBuilder extends DefaultChartBuilder {
 		c.addElements(elements);
 	}
 
-	protected void setWidth(AreaHollowChart e,Node node) {
+	private String setupDotType(Node root) {
+		if(getValue(root.selectSingleNode("/chart/dot-style"))!=null)
+		{
+			return getNodeValue(root.selectSingleNode("/chart/dot-style"));
+		}
+		return "normal";
+	}
+
+	protected void setWidth(LineChart e,Node node) {
 		e.setWidth(1);
 	}
 
