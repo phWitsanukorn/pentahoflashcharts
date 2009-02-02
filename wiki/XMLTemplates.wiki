@@ -19,6 +19,7 @@ By default, any "unknown" XML is ignored.  You can add as many additional Pentah
 <chart-type>BarChart</chart-type>
 <chart-type>LineChart</chart-type>
 <chart-type>PieChart</chart-type>
+<chart-type>AreaChart</chart-type>
 
 <title></title>
 <title-font>
