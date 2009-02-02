@@ -11,10 +11,7 @@ import org.pentaho.commons.connection.IPentahoResultSet;
 
 public class SketchBarChartBuilder extends BarChartBuilder {
 	
-	public Chart build(Node root, IPentahoResultSet data) {
-		Chart c = super.build(root, data);
-		return c;
-	}
+	
 	
 	protected void setupElements(Chart c, Node root, IPentahoResultSet data) {
 		BarChart[] values = null;

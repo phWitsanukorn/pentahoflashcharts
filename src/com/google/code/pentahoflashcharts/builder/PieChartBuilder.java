@@ -12,10 +12,7 @@ import org.pentaho.commons.connection.IPentahoResultSet;
 public class PieChartBuilder  extends DefaultChartBuilder {
 	private static SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
 	
-	public Chart build(Node root, IPentahoResultSet data) {
-		Chart c = super.build(root, data);
-		return c;
-	}
+	
 	
 	protected void setupElements(Chart c, Node root, IPentahoResultSet data) {
 		PieChart e = new PieChart();
