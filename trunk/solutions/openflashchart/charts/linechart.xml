@@ -13,6 +13,8 @@
 	<line-width>1.0</line-width>
 	<!-- Specify the title of the chart -->
 	<title>Line Chart</title>
+	
+		<dot-style>dot</dot-style>
 
 	<!-- Specify the location of the title -->
 	<title-position>TOP</title-position>
