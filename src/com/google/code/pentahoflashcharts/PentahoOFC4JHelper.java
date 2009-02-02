@@ -57,6 +57,8 @@ public class PentahoOFC4JHelper {
 	public static String CHART_BACKGROUND_NODE_LOC = "chart-background";
 	public static String CHART_BACKGROUND_COLOR_XPATH = "@type"; //att of plot-background
 	public static String URL_TEMPLATE_NODE_LOC = "url-template";
+	public static String DOTSTYLE_NODE_LOC = "dot-style";
+	
 	
 	
 	
@@ -643,8 +645,16 @@ public class PentahoOFC4JHelper {
 	
 	public void setupLineStyles () {
 		
-		linechartstyle = LINECHART_STYLE_DEFAULT;
-		// TODO: Swap on Styles
+		Node temp = chartNode.selectSingleNode(DOTSTYLE_NODE_LOC);
+		
+		if ( getValue(temp) != null ) {
+			if ( "dot".equals(getValue(temp)) ) linechartstyle = LineChart.Style.DOT;
+			else if  ( "normal".equals(getValue(temp)) ) linechartstyle = LineChart.Style.NORMAL;
+			else if  ( "hollow".equals(getValue(temp)) ) linechartstyle = LineChart.Style.HOLLOW;
+			else linechartstyle = LINECHART_STYLE_DEFAULT;		
+		} else {
+			linechartstyle = LINECHART_STYLE_DEFAULT;
+		}
 		
 	}
 	
