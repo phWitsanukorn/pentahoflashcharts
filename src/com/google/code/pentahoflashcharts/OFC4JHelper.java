@@ -14,6 +14,7 @@ import com.google.code.pentahoflashcharts.builder.GlassBarChartBuilder;
 import com.google.code.pentahoflashcharts.builder.LineChartBuilder;
 import com.google.code.pentahoflashcharts.builder.PieChartBuilder;
 import com.google.code.pentahoflashcharts.builder.SketchBarChartBuilder;
+import com.google.code.pentahoflashcharts.builder.StackedBarChartBuilder;
 import com.google.code.pentahoflashcharts.builder.ThreeDBarChartBuilder;
 
 public class OFC4JHelper {
@@ -77,7 +78,17 @@ public class OFC4JHelper {
 					isDone = true;
 				}
 			}
-
+			Node isStackedNode = root.selectSingleNode("/chart/is-stacked");
+			if (isDone != true && isStackedNode != null
+					&& isStackedNode.getText().length() > 0) {
+				String str = isStackedNode.getText().trim();
+				if (str.equalsIgnoreCase("true")) {
+					
+					StackedBarChartBuilder builder = new StackedBarChartBuilder();
+					c = builder.build(root, data);
+					isDone = true;
+				}
+			}
 			if (isDone != true) {
 				BarChartBuilder builder = new BarChartBuilder();
 				c = builder.build(root, data);
