@@ -71,7 +71,24 @@ public class BarLineChartBuilder  extends LineChartBuilder {
 
 	protected void setupBarElements(Chart c, Node root, IPentahoResultSet data) {
 		List bars = root.selectNodes("/chart/bars/bar");
-		
+		Node is_3DNode = root.selectSingleNode("/chart/is-3D");
+		Node is_glassNode = root.selectSingleNode("/chart/is-glass");
+//		Node is_sketchNode = root.selectSingleNode("/chart/is-sketch");
+		BarChart.Style  style = null;
+		if (getValue(is_3DNode) != null ) {
+			String str = is_3DNode.getText().trim();
+			if (str.equalsIgnoreCase("true")) {
+				style =BarChart.Style.THREED;
+			}
+		}
+		if (getValue(is_glassNode) != null ) {
+			String str = is_glassNode.getText().trim();
+			if (str.equalsIgnoreCase("true")) {
+				style =BarChart.Style.GLASS;
+			}
+		}
+		if(style==null)
+			style =BarChart.Style.NORMAL;
 		BarChart[] values = null;
 		int rowCount = data.getRowCount();
 
@@ -81,7 +98,7 @@ public class BarLineChartBuilder  extends LineChartBuilder {
 			Node bar = (Node) bars.get(i);
 			Node colorNode = bar.selectSingleNode("color");
 			Node textNode = bar.selectSingleNode("text");
-			BarChart e = new BarChart(BarChart.Style.NORMAL);
+			BarChart e = new BarChart(style);
 			
 			Number[] datas = new Number[rowCount];
 			if (colorNode != null && colorNode.getText().length() > 2) {
