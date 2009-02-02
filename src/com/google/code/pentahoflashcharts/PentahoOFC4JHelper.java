@@ -6,9 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import ofc4j.model.Chart;
 import ofc4j.model.Text;
-import ofc4j.model.axis.Axis;
 import ofc4j.model.axis.XAxis;
 import ofc4j.model.axis.YAxis;
+import ofc4j.model.elements.AreaHollowChart;
 import ofc4j.model.elements.BarChart;
 import ofc4j.model.elements.Element;
 import ofc4j.model.elements.HorizontalBarChart;
@@ -120,6 +120,8 @@ public class PentahoOFC4JHelper {
 	public static String BARCHART_TYPE = "BarChart";
 	public static String LINECHART_TYPE = "LineChart";
 	public static String PIECHART_TYPE = "PieChart";
+	public static String AREACHART_TYPE = "AreaChart";
+	
 	
 	// Orientation Type Values (ORIENTATION_NODE_LOC)
 	public static String HORIZONTAL_ORIENTATION = "horizontal";
@@ -281,6 +283,31 @@ public class PentahoOFC4JHelper {
 				    }
 				
 				    System.out.println(testChart.toString());
+				    
+//					  Area Bar Chart
+					
+					try {
+						doc = xmlReader.read("/Users/ngoodman/dev/workspace/pentahoflashcharts/solutions/openflashchart/charts/areachart.xml");
+					} catch (DocumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return;
+					}
+					testing = new PentahoOFC4JHelper(doc, testdata);
+					
+					testChart = testing.convert();
+					try{
+					    // Create file 
+					    FileWriter fstream = new FileWriter("/Users/ngoodman/pentaho/biserver-ce-2.0.0.stable/tomcat/webapps/ofc/testoutput5.json");
+					        BufferedWriter out = new BufferedWriter(fstream);
+					    out.write(testChart.toString());
+					    //Close the output stream
+					    out.close();
+					    }catch (Exception e){//Catch exception if any
+					      System.err.println("Error: " + e.getMessage());
+					    }
+					
+					    System.out.println(testChart.toString());
 		
 
 	}
@@ -293,7 +320,7 @@ public class PentahoOFC4JHelper {
 		elements = new ArrayList<Element>();
 		colors = new ArrayList<String>();
 		
-		this.chartNode = doc.selectSingleNode(this.CHART_NODE_LOC);
+		this.chartNode = doc.selectSingleNode(CHART_NODE_LOC);
 			
 	}
 	
@@ -505,11 +532,9 @@ public class PentahoOFC4JHelper {
 	
 	public void setupStyles() {
 		
-		if (BARCHART_TYPE.equals(chartType)) {
-			setupBarStyles();
-		}
+		if (BARCHART_TYPE.equals(chartType)) setupBarStyles();
 		if (LINECHART_TYPE.equals(chartType))  setupLineStyles();
-		//if (PIECHART_TYPE.equals(chartType)) setupPieStyles();
+		
 	}
 	
 	
@@ -742,6 +767,23 @@ public class PentahoOFC4JHelper {
 			pc.setColours(this.colors);
 			
 			e = pc;
+			
+		} else if (AREACHART_TYPE.equals(chartType) ) {
+			AreaHollowChart ahc = new AreaHollowChart();
+			
+			Number[] numbers = new Number[data.getRowCount()];
+			
+			for (int i = 0 ; i < data.getRowCount(); i ++ ){
+				//double d = ((Number) data.getValueAt(i, n)).doubleValue();
+				//ahc.addDots(new LineChart.Dot(d));
+				numbers[i] = ((Number) data.getValueAt(i, n)).doubleValue();
+				if (null != baseURLTemplate ) ahc.setOn_click(baseURLTemplate);
+			}
+			
+			ahc.addValues(numbers);
+			ahc.setColour(colors.get(n));
+			
+			e = ahc;
 			
 		}
 		
