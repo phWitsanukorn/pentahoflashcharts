@@ -56,6 +56,7 @@ public class PentahoOFC4JHelper {
 	public static String PLOT_BACKGROUND_COLOR_XPATH = "@type"; //att of plot-background
 	public static String CHART_BACKGROUND_NODE_LOC = "chart-background";
 	public static String CHART_BACKGROUND_COLOR_XPATH = "@type"; //att of plot-background
+	public static String URL_TEMPLATE_NODE_LOC = "url-template";
 	
 	
 	
@@ -145,6 +146,7 @@ public class PentahoOFC4JHelper {
 	private BarChart.Style barchartstyle;
 	private LineChart.Style linechartstyle;
 	private boolean issketch; 
+	private String baseURLTemplate;
 	
 	
 	public static IPentahoResultSet test_setupdata () {
@@ -177,7 +179,7 @@ public class PentahoOFC4JHelper {
 		
 		Document doc = null;
 		try {
-			doc = xmlReader.read("/Users/ngoodman/dev/workspace/pentahoflashcharts/solutions/openflashchart/charts/barchart_sketch.xml");
+			doc = xmlReader.read("/Users/ngoodman/dev/workspace/pentahoflashcharts/solutions/openflashchart/charts/barchart.xml");
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -293,6 +295,38 @@ public class PentahoOFC4JHelper {
 		
 		this.chartNode = doc.selectSingleNode(this.CHART_NODE_LOC);
 			
+	}
+	
+	public Chart convert() {
+		
+		// These things apply to pretty much all charts
+		setupDataAndType();
+		setupColors();
+		setupStyles();
+		setupLabels();
+		setupOnclick();
+		
+		// Build the elements (usually Chart Type specific)
+		createElements();
+		
+		// Setup a few additional things before adding elements
+		setupTitles();
+		setupRange();
+	
+		c.addElements(elements);
+		
+		return c;		
+
+	}
+	
+	public void setupOnclick() {
+		
+		Node urlTemplateNode = chartNode.selectSingleNode(URL_TEMPLATE_NODE_LOC);
+		
+		if ( getValue(urlTemplateNode) != null ){
+			baseURLTemplate = getValue(urlTemplateNode);
+		}
+		
 	}
 	
 	private void setupTitles() {
@@ -467,24 +501,7 @@ public class PentahoOFC4JHelper {
 			
 	}
 
-	public Chart convert() {
-		
-		
-		setupDataAndType();
-		setupColors();
-		setupStyles();
-		setupLabels();
-		createElements();
-		
-		setupTitles();
-		setupRange();
-	
-		
-		c.addElements(elements);
-		
-		return c;		
 
-	}
 	
 	public void setupStyles() {
 		
@@ -679,6 +696,7 @@ public class PentahoOFC4JHelper {
 			for (int i = 0; i < data.getRowCount(); i ++ ){
 				double d = ((Number) data.getValueAt(i, n)).doubleValue();
 				bc.addBars(new BarChart.Bar(d));
+				if (null != baseURLTemplate ) bc.setOn_click(baseURLTemplate);
 			}
 			// TODO wrap around the set of colors if bars.length > colors.length
 			bc.setColour(colors.get(n));
@@ -689,7 +707,9 @@ public class PentahoOFC4JHelper {
 			HorizontalBarChart hbc = new HorizontalBarChart();
 			for (int i = 0; i < data.getRowCount(); i ++ ){
 				double d = ((Number) data.getValueAt(i, n)).doubleValue();
+				HorizontalBarChart.Bar hbcb = new HorizontalBarChart.Bar(d);
 				hbc.addBars(new HorizontalBarChart.Bar(d));
+				if (null != baseURLTemplate ) hbc.setOn_click(baseURLTemplate);
 			}
 			hbc.setColour(colors.get(n));
 			
@@ -701,6 +721,7 @@ public class PentahoOFC4JHelper {
 			for (int i = 0 ; i < data.getRowCount(); i ++ ){
 				double d = ((Number) data.getValueAt(i, n)).doubleValue();
 				lc.addDots(new LineChart.Dot(d));
+				if (null != baseURLTemplate ) lc.setOn_click(baseURLTemplate);
 			}
 //			 TODO wrap around the set of colors if bars.length > colors.length
 			lc.setColour(colors.get(n));
@@ -714,6 +735,7 @@ public class PentahoOFC4JHelper {
 				// Labels are already set - use them
 				String label = (String) c.getXAxis().getLabels().getLabels().get(i);
 				slices[i] = new PieChart.Slice(d, label);
+				if (null != baseURLTemplate ) pc.setOn_click(baseURLTemplate);
 			}
 			
 			pc.addSlices(slices);
