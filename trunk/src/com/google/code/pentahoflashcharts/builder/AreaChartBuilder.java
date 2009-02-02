@@ -15,10 +15,7 @@ public class AreaChartBuilder extends LineChartBuilder {
 	
 	
 	
-	public Chart build(Node root, IPentahoResultSet data) {
-		Chart c = super.build(root, data);
-		return c;
-	}
+
 	
 	protected void setupElements(Chart c, Node root, IPentahoResultSet data) {
 		String dotType = setupDotType(root);

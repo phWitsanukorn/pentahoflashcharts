@@ -17,12 +17,7 @@ public class LineChartBuilder  extends DefaultChartBuilder {
 	public static final String DOT_TYPE_HOLLOW = "hollow";
 	private static SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
 	
-	
-	public Chart build(Node root, IPentahoResultSet data) {
-		 Chart c = super.build(root, data);
-		 
-		 return c;
-	}
+
 	
 	protected void setupElements(Chart c, Node root, IPentahoResultSet data) {
 		Style lineStyle = setupLineStyle(root);

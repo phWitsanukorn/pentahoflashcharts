@@ -14,10 +14,7 @@ import org.pentaho.commons.connection.IPentahoResultSet;
 public class BarChartBuilder  extends DefaultChartBuilder {
 	private static SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
 	
-	public Chart build(Node root, IPentahoResultSet data) {
-		Chart c = super.build(root, data);
-		return c;
-	}
+	
 	
 	protected void setupElements(Chart c, Node root, IPentahoResultSet data) {
 		List bars = root.selectNodes("/chart/bars/bar");
