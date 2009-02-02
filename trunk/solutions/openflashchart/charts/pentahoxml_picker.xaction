@@ -49,6 +49,10 @@
           <entry key="Display">Bar Sketch</entry>
           <entry key="chart_type">barchart_sketch</entry>
         </property-map>
+        <property-map>
+          <entry key="Display">Area</entry>
+          <entry key="chart_type">area</entry>
+        </property-map>
       </default-value> 
     </chart_type_FILTER>  
     <component_name type="string"> 
@@ -128,7 +132,13 @@
         <location>barchart_sketch.xml</location>  
         <mime-type>text/xml</mime-type> 
       </solution-file> 
-    </barchart_sketch> 
+    </barchart_sketch>  
+    <area>
+      <solution-file>
+        <location>areachart.xml</location>
+        <mime-type>text/xml</mime-type>
+      </solution-file>
+    </area>
   </resources>
   
   <actions> 
@@ -211,6 +221,28 @@ ORDER BY
         </action-inputs>
         <action-resources> 
           <chart_template type="resource" mapping="line"/> 
+        </action-resources>
+        <action-outputs> 
+          <html_fragment type="string"/>  
+          <content_url type="string"/> 
+        </action-outputs>
+        <component-definition/> 
+      </action-definition>
+ 
+    </actions>
+    
+        <actions> 
+      <condition><![CDATA[chart_type == 'area']]></condition>  
+      <action-definition> 
+        <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+        <action-type>Open Flash Chart</action-type>
+        <action-inputs> 
+          <chart_dataset type="string" mapping="query_result"/>  
+          <chart_height type="string"/>  
+          <chart_width type="string"/> 
+        </action-inputs>
+        <action-resources> 
+          <chart_template type="resource" mapping="area"/> 
         </action-resources>
         <action-outputs> 
           <html_fragment type="string"/>  
