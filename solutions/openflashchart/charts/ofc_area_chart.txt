@@ -1,7 +1,7 @@
 <chart>
 <chart-type>AreaChart</chart-type>
 <title>OFC Area Sample Chart</title>
-
+<dot-style>hollow</dot-style>
 
 <domain-title>Year</domain-title>
 <range-title>Sales</range-title>
