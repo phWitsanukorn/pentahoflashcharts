@@ -95,6 +95,10 @@ public class BarChartBuilder  extends DefaultChartBuilder {
 				}
 				axis.setLabels(labels);
 			}
+			else if(getValue(root.selectSingleNode("/chart/x-axis/labels/values"))!=null)
+			{
+				axis.setLabels(fillLabels(root.selectSingleNode("/chart/x-axis/labels/values")));
+			}
 			
 			
 			Node colorNode = root.selectSingleNode("/chart/x-axis/color");
