@@ -3,6 +3,7 @@ package com.google.code.pentahoflashcharts.builder;
 import java.text.SimpleDateFormat;
 
 import ofc4j.model.Chart;
+import ofc4j.model.elements.Element;
 import ofc4j.model.elements.PieChart;
 import ofc4j.model.elements.PieChart.Slice;
 
@@ -51,7 +52,7 @@ public class PieChartBuilder  extends DefaultChartBuilder {
 	}
 	
 
-	protected void setTooltip(Node root, PieChart e) {
+	protected void setTooltip(Node root, Element e) {
 		Node tooltipNode = root.selectSingleNode("/chart/tooltip");
 		if (tooltipNode!=null&&tooltipNode.getText().length()>0) {
 			String tooltip = tooltipNode.getText().trim();

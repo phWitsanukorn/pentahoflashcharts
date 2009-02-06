@@ -20,7 +20,7 @@ public class BarLineChartBuilder  extends LineChartBuilder {
 		setupBarElements(c, root, data);
 		
 		setupLineElements(c, root, data, rowCount);
-		setupXAxisLabels(data, c, rowCount);
+//		setupXAxisLabels(data, c, rowCount);
 	}
 
 	protected void setupLineElements(Chart c, Node root,
