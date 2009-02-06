@@ -1,9 +1,12 @@
 package com.google.code.pentahoflashcharts.builder;
 
+import java.text.SimpleDateFormat;
+
 import ofc4j.model.Chart;
 import ofc4j.model.Text;
 import ofc4j.model.axis.XAxis;
 import ofc4j.model.axis.YAxis;
+import ofc4j.model.elements.Element;
 
 import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoResultSet;
@@ -16,7 +19,7 @@ import com.google.code.pentahoflashcharts.PentahoOFC4JHelper;
  *
  */
 public class DefaultChartBuilder extends ChartBuilder {
-
+	protected static SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
 	@Override
 	public Chart build(Node root, IPentahoResultSet data) {
 		Chart c = new Chart();
@@ -92,6 +95,16 @@ public class DefaultChartBuilder extends ChartBuilder {
 		}
 		
 	}
+	
+	protected void setTooltip(Node root, Element e) {
+		Node tooltipNode = root.selectSingleNode("/chart/tooltip");
+		if (tooltipNode!=null&&tooltipNode.getText().length()>0) {
+			String tooltip = tooltipNode.getText().trim();
+			e.setTooltip(tooltip);
+		} else {
+			e.setTooltip("#val#");
+		}
+	}
 
 	protected void setupChartText(Chart c, Node root) {
 		Node chartNode = root.selectSingleNode("/"+PentahoOFC4JHelper.CHART_NODE_LOC);
@@ -117,11 +130,38 @@ public class DefaultChartBuilder extends ChartBuilder {
 		setXLegend(c,root);
 		XAxis xaxis =new XAxis();
 		c.setXAxis(xaxis);
+		setXAxisLabels(c,root,data);
+		Node stepsNode = root.selectSingleNode("/chart/x-axis/x-steps");
+		Node maxNode = root.selectSingleNode("/chart/x-axis/x-max");
+		if(stepsNode!=null||maxNode!=null)
+			setXAxisRange(c, stepsNode, maxNode);
 		setupXAxisColor(c,root);
 
 	}
 
 	
+
+	protected void setXAxisRange(Chart c, Node stepsNode, Node maxNode) {
+		XAxis axis = c.getXAxis();
+		if(axis==null)
+		{
+			axis = new XAxis();
+			
+			c.setXAxis(axis);
+		}
+		
+		int max = 10000;
+		int step = 10;
+		if (stepsNode != null && stepsNode.getText().length() > 0) {
+			step = Integer.parseInt(stepsNode.getText().trim());
+		}
+
+		if (maxNode != null && maxNode.getText().length() > 0) {
+			max = Integer.parseInt(maxNode.getText().trim());
+		}
+		axis.setRange(0, max, step);
+		
+	}
 
 	protected void setupXAxisColor(Chart c, Node root) {
 		
@@ -135,6 +175,7 @@ public class DefaultChartBuilder extends ChartBuilder {
 		Node yMaxNode = root.selectSingleNode("/chart/y-axis/y-max");
 		if(stepsNode!=null||yMaxNode!=null)
 			setYAxisRange(c, stepsNode, yMaxNode);
+		setupYAxisLabels(c, root, data);
 	}
 
 
@@ -177,6 +218,87 @@ public class DefaultChartBuilder extends ChartBuilder {
 		
 	}
 	
+	protected void setupYAxisLabels(Chart c, Node root, IPentahoResultSet data) {
+		if (root.selectSingleNode("/chart/y-axis") != null) {
+
+			YAxis axis = c.getYAxis();
+			if(axis==null)
+			{
+				axis = new YAxis();
+				c.setYAxis(axis);
+			}
+			Node colIndexNode = root
+					.selectSingleNode("/chart/y-axis/labels/sql-column-index");
+			if (colIndexNode != null && colIndexNode.getText().length() > 0) {
+				int index = Integer.parseInt(colIndexNode.getText().trim());
+				int rowCount = data.getRowCount();
+				String[] labels = new String[rowCount];
+				for (int j = 0; j < rowCount; j++) {
+					Object obj = data.getValueAt(j, index - 1);
+					if (obj instanceof java.sql.Timestamp
+							|| obj instanceof java.util.Date) {
+						labels[j] = sf.format(obj);
+					} else {
+						labels[j] = obj.toString();
+					}
+				}
+				axis.setLabels(labels);
+			}
+			else if(getValue(root.selectSingleNode("/chart/y-axis/labels/values"))!=null)
+			{
+				axis.setLabels(fillLabels(root.selectSingleNode("/chart/y-axis/labels/values")));
+			}
+			
+			
+			Node colorNode = root.selectSingleNode("/chart/y-axis/color");
+			if(colorNode!=null&&colorNode.getText().length()>2)
+			{
+				axis.setColour(colorNode.getText().trim());
+			}
+
+		}
+	}
 	
+	protected static void setXAxisLabels(Chart c,Node root, IPentahoResultSet data) {
+		if (root.selectSingleNode("/chart/x-axis") != null) {
+
+			XAxis axis = c.getXAxis();
+			if(axis==null)
+			{
+				axis = new XAxis();
+				
+				c.setXAxis(axis);
+			}
+			Node colIndexNode = root
+					.selectSingleNode("/chart/x-axis/labels/sql-column-index");
+			if (colIndexNode != null && colIndexNode.getText().length() > 0) {
+				int index = Integer.parseInt(colIndexNode.getText().trim());
+				int rowCount = data.getRowCount();
+				String[] labels = new String[rowCount];
+				for (int j = 0; j < rowCount; j++) {
+					Object obj = data.getValueAt(j, index - 1);
+					if (obj instanceof java.sql.Timestamp
+							|| obj instanceof java.util.Date) {
+						labels[j] = sf.format(obj);
+					} else {
+						labels[j] = obj.toString();
+					}
+				}
+				axis.setLabels(labels);
+			}
+			else if(getValue(root.selectSingleNode("/chart/x-axis/labels/values"))!=null)
+			{
+				axis.setLabels(fillLabels(root.selectSingleNode("/chart/x-axis/labels/values")));
+			}
+			
+			
+			Node colorNode = root.selectSingleNode("/chart/x-axis/color");
+			if(colorNode!=null&&colorNode.getText().length()>2)
+			{
+				axis.setColour(colorNode.getText().trim());
+			}
+
+		}
+	}
 
 }
