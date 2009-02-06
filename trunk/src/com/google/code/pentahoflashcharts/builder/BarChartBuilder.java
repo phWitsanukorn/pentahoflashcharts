@@ -4,15 +4,15 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import ofc4j.model.Chart;
-import ofc4j.model.axis.XAxis;
 import ofc4j.model.elements.BarChart;
+import ofc4j.model.elements.Element;
 import ofc4j.model.elements.BarChart.Style;
 
 import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoResultSet;
 
 public class BarChartBuilder  extends DefaultChartBuilder {
-	private static SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+	protected static SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
 	
 	
 	
@@ -39,9 +39,10 @@ public class BarChartBuilder  extends DefaultChartBuilder {
 
 	
 	protected void setupOthers(Chart c, Node root, IPentahoResultSet data) {
-		setXAxisLabels(c,root, data);
 		
 	}
+	
+	
 
 	/**
 	 * subclass should override this function.
@@ -74,40 +75,6 @@ public class BarChartBuilder  extends DefaultChartBuilder {
 		}
 	}
 	
-	public static void setXAxisLabels(Chart c,Node root, IPentahoResultSet data) {
-		if (root.selectSingleNode("/chart/x-axis") != null) {
-
-			XAxis axis = new XAxis();
-			Node colIndexNode = root
-					.selectSingleNode("/chart/x-axis/labels/sql-column-index");
-			if (colIndexNode != null && colIndexNode.getText().length() > 0) {
-				int index = Integer.parseInt(colIndexNode.getText().trim());
-				int rowCount = data.getRowCount();
-				String[] labels = new String[rowCount];
-				for (int j = 0; j < rowCount; j++) {
-					Object obj = data.getValueAt(j, index - 1);
-					if (obj instanceof java.sql.Timestamp
-							|| obj instanceof java.util.Date) {
-						labels[j] = sf.format(obj);
-					} else {
-						labels[j] = obj.toString();
-					}
-				}
-				axis.setLabels(labels);
-			}
-			else if(getValue(root.selectSingleNode("/chart/x-axis/labels/values"))!=null)
-			{
-				axis.setLabels(fillLabels(root.selectSingleNode("/chart/x-axis/labels/values")));
-			}
-			
-			
-			Node colorNode = root.selectSingleNode("/chart/x-axis/color");
-			if(colorNode!=null&&colorNode.getText().length()>2)
-			{
-				axis.setColour(colorNode.getText().trim());
-			}
-			c.setXAxis(axis);
-		}
-	}
+	
 
 }
