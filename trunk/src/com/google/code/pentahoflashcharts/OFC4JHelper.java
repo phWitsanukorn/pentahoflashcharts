@@ -11,8 +11,10 @@ import com.google.code.pentahoflashcharts.builder.AreaChartBuilder;
 import com.google.code.pentahoflashcharts.builder.BarChartBuilder;
 import com.google.code.pentahoflashcharts.builder.BarLineChartBuilder;
 import com.google.code.pentahoflashcharts.builder.GlassBarChartBuilder;
+import com.google.code.pentahoflashcharts.builder.HorizontalBarChartBuilder;
 import com.google.code.pentahoflashcharts.builder.LineChartBuilder;
 import com.google.code.pentahoflashcharts.builder.PieChartBuilder;
+import com.google.code.pentahoflashcharts.builder.ScatterChartBuilder;
 import com.google.code.pentahoflashcharts.builder.SketchBarChartBuilder;
 import com.google.code.pentahoflashcharts.builder.StackedBarChartBuilder;
 import com.google.code.pentahoflashcharts.builder.ThreeDBarChartBuilder;
@@ -45,7 +47,8 @@ public class OFC4JHelper {
 		Node is_3DNode = root.selectSingleNode("/chart/is-3D");
 		Node is_glassNode = root.selectSingleNode("/chart/is-glass");
 		Node is_sketchNode = root.selectSingleNode("/chart/is-sketch");
-	
+		
+		
 		if (cType.equalsIgnoreCase("BarChart")) {
 			boolean isDone = false;
 			if (is_3DNode != null && is_3DNode.getText().length() > 0) {
@@ -89,6 +92,18 @@ public class OFC4JHelper {
 					isDone = true;
 				}
 			}
+			
+			Node orientationNode = root.selectSingleNode("/chart/orientation");
+			if (isDone != true && orientationNode != null
+					&& orientationNode.getText().length() > 0) {
+				String str = orientationNode.getText().trim();
+				if (str.equalsIgnoreCase("horizontal")) {
+					
+					HorizontalBarChartBuilder builder = new HorizontalBarChartBuilder();
+					c = builder.build(root, data);
+					isDone = true;
+				}
+			}
 			if (isDone != true) {
 				BarChartBuilder builder = new BarChartBuilder();
 				c = builder.build(root, data);
@@ -107,6 +122,9 @@ public class OFC4JHelper {
 			c = builder.build(root, data);
 		} else if (cType.equalsIgnoreCase("BarLineChart")) {
 			BarLineChartBuilder builder = new BarLineChartBuilder();
+			c = builder.build(root, data);
+		} else if (cType.equalsIgnoreCase("ScatterChart")) {
+			ScatterChartBuilder builder = new ScatterChartBuilder();
 			c = builder.build(root, data);
 		}
 
