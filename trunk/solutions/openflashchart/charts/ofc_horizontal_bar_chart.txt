@@ -1,0 +1,48 @@
+<chart>
+<chart-type>BarChart</chart-type>
+<is-3D>false</is-3D>
+<is-stacked>false</is-stacked>
+<is-glass>false</is-glass>
+<is-filled>false</is-filled>
+<orientation>horizontal</orientation>
+<title>Product Sales on 2003</title>
+<title-font>
+		<font-family>Arial</font-family>
+		<size>14</size>
+		<is-bold>true</is-bold>
+		<is-italic>false</is-italic>
+</title-font>
+<x-axis>
+<labels>
+</labels>
+<x-steps>
+200000
+</x-steps>
+<x-max>1600000</x-max>
+<color>#909090</color>
+</x-axis>
+<domain-title>Sales</domain-title>
+<domain-title-font>
+      <font-family>Arial</font-family>
+	  <size>12</size>
+	  <is-bold>false</is-bold>
+	  <is-italic>false</is-italic>	
+</domain-title-font>
+<range-title>Product Line</range-title>
+<range-title-font>
+      <font-family>Arial</font-family>
+	  <size>12</size>
+	  <is-bold>false</is-bold>
+	  <is-italic>false</is-italic>	
+</range-title-font>
+<tooltip>Total sales:#val#</tooltip>
+<y-axis>
+<labels>
+<sql-column-index>1</sql-column-index>
+</labels>
+
+</y-axis>
+<color-palette>
+		<color>#387179</color>	
+</color-palette>
+</chart>
