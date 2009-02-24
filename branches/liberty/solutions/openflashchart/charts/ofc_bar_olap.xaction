@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<action-sequence> 
+  <title>PFC XML - Bar Chart from OLAP</title>
+  <version>1</version>
+  <logging-level>DEBUG</logging-level>
+  <documentation> 
+    <author>Bayon Technologies</author>  
+    <description>Bar Chart based on an OLAP query in Steel Wheels. Support the on click event.</description>  
+    <help/>  
+    <result-type/>  
+    <icon>HelloWorld.png</icon> 
+  </documentation>
+
+  <inputs> 
+    <chart_width type="string"> 
+      <sources> 
+        <request>chart_width</request> 
+      </sources>  
+      <default-value><![CDATA[800]]></default-value> 
+    </chart_width>  
+    <chart_height type="string"> 
+      <sources> 
+        <request>chart_height</request> 
+      </sources>  
+      <default-value><![CDATA[600]]></default-value> 
+    </chart_height>  
+    <myvalue type="string"> 
+      <sources> 
+        <request>myvalue</request> 
+      </sources>  
+      <default-value><![CDATA[(All Regions)]]></default-value> 
+    </myvalue>  
+    <use_pentaho_xml type="string"> 
+      <sources> 
+        <request>use_pentaho_xml</request> 
+      </sources>  
+      <default-value><![CDATA[false]]></default-value> 
+    </use_pentaho_xml>  
+    <ofc_lib_name type="string">
+      <sources>
+        <request>ofc_lib_name</request>
+      </sources>
+      <default-value><![CDATA[open-flash-chart-full-embedded-font.swf]]></default-value>
+    </ofc_lib_name>
+    <other_html_template type="string">
+      <sources>
+        <request>other_html_template</request>
+      </sources>
+      <default-value><![CDATA[<script> function clickme(){	alert("hello. We will go to the Google Home Page");	window.location.href="http://www.google.com";}</script>]]></default-value>
+    </other_html_template>
+  </inputs>
+
+  <outputs> 
+    <html_fragment type="string"> 
+      <destinations> 
+        <response>content</response> 
+      </destinations> 
+    </html_fragment> 
+  </outputs>
+
+  <resources> 
+    <chart_template> 
+      <solution-file> 
+        <location>ofc_bar_olap.txt</location>  
+        <mime-type>text/plain</mime-type> 
+      </solution-file> 
+    </chart_template>  
+    <catalog> 
+      <solution-file> 
+        <location>steelwheels.mondrian.xml</location>  
+        <mime-type>text/plain</mime-type> 
+      </solution-file> 
+    </catalog> 
+  </resources>
+  
+  <actions> 
+    <action-definition> 
+      <component-name>MDXLookupRule</component-name>
+      <action-type>OLAP</action-type>
+      <action-resources> 
+        <catalog type="resource"/> 
+      </action-resources>
+      <action-outputs> 
+        <query-results type="result-set" mapping="query_result"/> 
+      </action-outputs>
+      <component-definition> 
+        <jndi><![CDATA[SampleData]]></jndi>  
+        <location><![CDATA[mondrian]]></location>  
+        <query><![CDATA[with member [Measures].[Product] as '[Product].CurrentMember.Name'
+  member [Measures].[Market] as '[Markets].CurrentMember.Name'
+select Crossjoin({[Markets].[All Markets].[APAC], [Markets].[All Markets].[EMEA], [Markets].[All Markets].[Japan], [Markets].[All Markets].[NA]}, {[Measures].[Product], [Measures].[Sales]}) ON COLUMNS,
+  {[Product].[All Products].[Classic Cars], [Product].[All Products].[Motorcycles], [Product].[All Products].[Planes], [Product].[All Products].[Ships], [Product].[All Products].[Trains], [Product].[All Products].[Trucks and Buses], [Product].[All Products].[Vintage Cars]} ON ROWS
+from [SteelWheelsSales]]]></query> 
+      </component-definition> 
+    </action-definition>
+  
+    <action-definition> 
+      <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+      <action-type>Open Flash Char</action-type>
+      <action-inputs> 
+        <chart_dataset type="string" mapping="query_result"/>  
+        <chart_height type="string"/>  
+        <chart_width type="string"/>  
+        <myvalue type="string"/>  
+        <use_pentaho_xml type="string"/>  
+        <ofc_lib_name type="string"/>
+        <other_html_template type="string"/>
+      </action-inputs>
+      <action-resources> 
+        <chart_template type="resource"/> 
+      </action-resources>
+      <action-outputs> 
+        <html_fragment type="string"/>  
+        <content_url type="string"/> 
+      </action-outputs>
+      <component-definition/> 
+    </action-definition>
+ 
+  </actions> 
+</action-sequence>

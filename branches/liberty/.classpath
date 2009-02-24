@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/xstream-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/pentaho-bi-platform-api-2.0.0.stable.jar"/>
+	<classpathentry kind="lib" path="lib/pentaho-bi-platform-engine-core-2.0.0.stable.jar"/>
+	<classpathentry kind="lib" path="lib/pentaho-bi-platform-engine-services-2.0.0.stable.jar"/>
+	<classpathentry kind="lib" path="lib/pentaho-bi-platform-plugin-actions-2.0.0.stable.jar" sourcepath="/bi-platform-plugin-actions/src"/>
+	<classpathentry kind="lib" path="lib/pentaho-bi-platform-repository-2.0.0.stable.jar"/>
+	<classpathentry kind="lib" path="lib/pentaho-bi-platform-util-2.0.0.stable.jar"/>
+	<classpathentry kind="lib" path="lib/pentaho-connections-2.0.0-SNAPSHOT.jar" sourcepath="/pentaho-commons-connections/src"/>
+	<classpathentry kind="lib" path="lib/jaxen-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/ofc4j105.jar"/>
+	<classpathentry kind="lib" path="lib/pentaho-actionsequence-dom-2.0.3.jar"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>

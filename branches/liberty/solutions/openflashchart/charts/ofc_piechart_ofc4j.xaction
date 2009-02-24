@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<action-sequence> 
+  <title>PFC XML - Pie Chart Test</title>
+  <version>1</version>
+  <logging-level>DEBUG</logging-level>
+  <documentation> 
+    <author>Bayon Technologies</author>  
+    <description>Animated, simple Pie Chart based on a Relational Data source. Includes an example of drill thru links.</description>  
+    <help/>  
+    <result-type/>  
+    <icon>HelloWorld.png</icon> 
+  </documentation>
+
+  <inputs> 
+    <use_pentaho_xml type="string"> 
+      <sources> 
+        <request>use_pentaho_xml</request> 
+      </sources>  
+      <default-value><![CDATA[false]]></default-value> 
+    </use_pentaho_xml> 
+  </inputs>
+
+  <outputs> 
+    <html_fragment type="string"> 
+      <destinations> 
+        <response>content</response> 
+      </destinations> 
+    </html_fragment> 
+  </outputs>
+
+  <resources> 
+    <chart_template> 
+      <solution-file> 
+        <location>ofc-piechar.txt</location>  
+        <mime-type>text/plain</mime-type> 
+      </solution-file> 
+    </chart_template> 
+  </resources>
+  
+  <actions> 
+    <action-definition> 
+      <component-name>SQLLookupRule</component-name>
+      <action-type>Relational</action-type>
+      <action-outputs> 
+        <query-result type="result-set" mapping="chart_dataset"/> 
+      </action-outputs>
+      <component-definition> 
+        <jndi><![CDATA[SampleData]]></jndi>  
+        <query><![CDATA[select region,sum(actual) as "Actuals",  'http://www.google.com/search?q='|| region as "URL"  from quadrant_actuals group by region]]></query>  
+        <live><![CDATA[true]]></live> 
+      </component-definition> 
+    </action-definition>
+  
+    <action-definition> 
+      <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+      <action-type>Open Flash Chart</action-type>
+      <action-inputs> 
+        <chart_dataset type="result-set"/>  
+        <use_pentaho_xml type="string"/>
+      </action-inputs>
+      <action-resources> 
+        <chart_template type="resource"/> 
+      </action-resources>
+      <action-outputs> 
+        <html_fragment type="string"/>  
+        <content_url type="string"/> 
+      </action-outputs>
+      <component-definition/> 
+    </action-definition>
+ 
+  </actions> 
+</action-sequence>
