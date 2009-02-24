@@ -1,0 +1,35 @@
+<chart>
+<chart-type>BarChart</chart-type>
+<is-3D>true</is-3D>
+<is-stacked>false</is-stacked>
+<is-glass>false</is-glass>
+<is-filled>false</is-filled>
+<title>Bar Chart--Product "1948 Porsche 356-A Roadster"</title>
+<domain-title>Day</domain-title>
+<range-title>Sold Price</range-title>
+<x-steps>200000</x-steps>
+<x-max>2000000</x-max>
+<x-axis>
+<labels>
+<sql-column-index>1</sql-column-index>
+</labels>
+
+<color>#909090</color>
+</x-axis>
+<y-axis>
+<labels>
+</labels>
+<y-steps>
+200000
+</y-steps>
+<y-max>2000000</y-max>
+<color>#909090</color>
+</y-axis>
+<bars>
+<bar>
+<color>#D54C78</color>
+<sql-column-index>2</sql-column-index>
+<values></values>
+</bar>
+</bars>
+</chart>
