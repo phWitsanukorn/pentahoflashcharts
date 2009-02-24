@@ -152,11 +152,11 @@ public class DefaultChartBuilder extends ChartBuilder {
 		
 		int max = 10000;
 		int step = 10;
-		if (stepsNode != null && stepsNode.getText().length() > 0) {
+		if (stepsNode != null && stepsNode.getText().trim().length() > 0) {
 			step = Integer.parseInt(stepsNode.getText().trim());
 		}
 
-		if (maxNode != null && maxNode.getText().length() > 0) {
+		if (maxNode != null && maxNode.getText().trim().length() > 0) {
 			max = Integer.parseInt(maxNode.getText().trim());
 		}
 		axis.setRange(0, max, step);
