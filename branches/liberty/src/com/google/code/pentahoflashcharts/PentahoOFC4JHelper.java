@@ -2,6 +2,9 @@ package com.google.code.pentahoflashcharts;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.text.DecimalFormat;
+import java.text.MessageFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -958,17 +961,33 @@ public class PentahoOFC4JHelper {
       int rowCount = getRowCount();
       for (int i = 1; i < rowCount; i++) {
         Element e = null;
+        String text = (String) getValueAt(i, 0);        
         if (BUBBLECHART_TYPE.equals(chartType)) {
           ScatterChart sc = new ScatterChart("");
           sc.setColour(colors.get(i-1));
-          setupDotSize(sc, (Number)getValueAt(i, 3));
+          Number z = (Number)getValueAt(i, 3);
+          setupDotSize(sc, z);
+
           Number x = (Number)getValueAt(i, 1);
           Number y = (Number)getValueAt(i, 2);
           sc.addPoint(x.doubleValue(), y.doubleValue());
+          
+          Node temp = chartNode.selectSingleNode("bubble-label-content");
+          if (getValue(temp) != null) {
+            Node temp2 = chartNode.selectSingleNode("bubble-label-z-format");
+            String zstr = null;
+            if (getValue(temp2) != null) {
+              DecimalFormat df = new DecimalFormat(getValue(temp2));
+              zstr = df.format(z); 
+            } else {
+              zstr = z.toString();
+            }
+            sc.setTooltip(MessageFormat.format(getValue(temp), text, 
+                NumberFormat.getInstance().format(x), NumberFormat.getInstance().format(y), zstr));
+          }          
           e = sc;
-          // TODO: setTooltip(root,se);
         }
-        String text = (String) getValueAt(i, 0);
+
         e.setText(text);
         elements.add(e);
       }
