@@ -30,6 +30,7 @@ import org.pentaho.platform.repository.content.ContentRepository;
 import org.pentaho.platform.util.UUIDUtil;
 import org.pentaho.platform.util.messages.LocaleHelper;
 import org.pentaho.platform.util.xml.dom4j.XmlDom4JHelper;
+import org.pentaho.platform.api.repository.ISolutionRepository;
 
 /**
  * To integrate the open-flash-chart, we write this component.
@@ -180,7 +181,7 @@ public class OpenFlashChartComponent extends ComponentBase {
       }
       try {
         // TODO Sort out deprecated method
-        chartTemplateString = PentahoSystem.getSolutionRepository(userSession).getResourceAsString(fileResource);
+        chartTemplateString = PentahoSystem.get(ISolutionRepository.class, userSession).getResourceAsString(fileResource);
 
       } catch (IOException e) {
         error(e.getLocalizedMessage());
