@@ -1411,11 +1411,11 @@ public class PentahoOFC4JHelper {
         double d = ((Number) getValueAt(i, n)).doubleValue();
         // Labels are already set - use them
         String label = (String) c.getXAxis().getLabels().getLabels().get(i - 1);
-        String tooltip = label;
+        
+        slices[i - 1] = new PieChart.Slice(d, label, label);
         if (tooltipText != null) {
-          tooltip = tooltipText;
+          slices[i - 1].setTooltip(tooltipText);
         }
-        slices[i - 1] = new PieChart.Slice(d, label, tooltip);
         
         if (null != baseURLTemplate) {
           pc.setOn_click(baseURLTemplate);
