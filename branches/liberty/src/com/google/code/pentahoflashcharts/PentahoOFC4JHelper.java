@@ -14,6 +14,7 @@ import ofc4j.model.Text;
 import ofc4j.model.axis.XAxis;
 import ofc4j.model.axis.YAxis;
 import ofc4j.model.elements.AreaHollowChart;
+import ofc4j.model.elements.AreaLineChart;
 import ofc4j.model.elements.BarChart;
 import ofc4j.model.elements.Element;
 import ofc4j.model.elements.HorizontalBarChart;
@@ -21,7 +22,11 @@ import ofc4j.model.elements.LineChart;
 import ofc4j.model.elements.PieChart;
 import ofc4j.model.elements.ScatterChart;
 import ofc4j.model.elements.SketchBarChart;
+import ofc4j.model.elements.StackedBarChart;
 import ofc4j.model.elements.BarChart.Style;
+import ofc4j.model.elements.StackedBarChart.Stack;
+import ofc4j.model.elements.StackedBarChart.StackKey;
+import ofc4j.model.elements.StackedBarChart.StackValue;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -71,12 +76,15 @@ public class PentahoOFC4JHelper {
   public static String ISGLASS_NODE_LOC = "is-glass";
 
   public static String ISSKETCH_NODE_LOC = "is-sketch";
+  
+  public static String ISSTACKED_NODE_LOC = "is-stacked";
 
   public static String DATASET_TYPE_NODE_LOC = "dataset-type";
 
   public static String CHART_TYPE_NODE_LOC = "chart-type";
 
   public static String COLOR_PALETTE_NODE_LOC = "color-palette";
+  public static String OUTLINE_COLOR_PALETTE_NODE_LOC = "outline-color-palette";
 
   public static String RANGE_MAXIMUM_NODE_LOC = "range-maximum";
 
@@ -103,6 +111,7 @@ public class PentahoOFC4JHelper {
   public static String URL_TEMPLATE_NODE_LOC = "url-template";
 
   public static String DOTSTYLE_NODE_LOC = "dot-style";
+  public static String DOT_WIDTH_NODE_LOC = "dot-width";
 
   // assume starting at "color-palette" node
   // /color-palette/color
@@ -116,6 +125,8 @@ public class PentahoOFC4JHelper {
   public static String FONT_BOLD_NODE_LOC = "is-bold";
 
   public static String FONT_ITALIC_NODE_LOC = "is-italic";
+  
+  public static String TOOLTIP_NODE_LOC = "tooltip";
 
   // Default values
   public static String CSS_FONT_FAMILY_DEFAULT = "Ariel";
@@ -155,6 +166,8 @@ public class PentahoOFC4JHelper {
   public static String BARLINECHART_TYPE = "BarLineChart";
   
   public static String BUBBLECHART_TYPE = "BubbleChart";
+  
+  public static String DOTCHART_TYPE = "DotChart";
 
   // Orientation Type Values (ORIENTATION_NODE_LOC)
   public static String HORIZONTAL_ORIENTATION = "horizontal";
@@ -194,14 +207,27 @@ public class PentahoOFC4JHelper {
   private ArrayList<Element> elements;
 
   private ArrayList<String> colors;
+  private ArrayList<String> outlineColors;
 
   private BarChart.Style barchartstyle;
 
+  private boolean animate;
+  private Integer startAngle;
+  
   private LineChart.Style linechartstyle;
+  private Integer linechartwidth;
+  private Integer dotwidth;
 
   private boolean issketch;
+  
+  private boolean isstacked = false;
 
   private String baseURLTemplate;
+  
+  private Integer sketchBarFunFactor;
+  private Integer threedheight;
+  
+  private String tooltipText;
 
   public static IPentahoResultSet test_setupdata() {
     IPentahoResultSet ips = null;
@@ -425,6 +451,7 @@ public class PentahoOFC4JHelper {
     this.ec = new ExtendedChart(c);
     elements = new ArrayList<Element>();
     colors = new ArrayList<String>();
+    outlineColors = new ArrayList<String>();
 
     this.chartNode = doc.selectSingleNode(CHART_NODE_LOC);
 
@@ -612,6 +639,21 @@ public class PentahoOFC4JHelper {
         colors.add(COLORS_DEFAULT[i]);
       }
     }
+    
+    temp = chartNode.selectSingleNode(OUTLINE_COLOR_PALETTE_NODE_LOC);
+    if (temp != null) {
+      Object[] colorNodes = temp.selectNodes(COLOR_NODE_LOC).toArray();
+
+      for (int j = 0; j < colorNodes.length; j++) {
+        outlineColors.add(getValue((Node) colorNodes[j]));
+      }
+
+    } else {
+      for (int i = 0; i < COLORS_DEFAULT.length; i++) {
+        outlineColors.add(COLORS_DEFAULT[i]);
+      }
+    }
+
 
     // Use either chart-background or plot-background (chart takes precendence)
     temp = chartNode.selectSingleNode(PLOT_BACKGROUND_NODE_LOC);
@@ -640,8 +682,14 @@ public class PentahoOFC4JHelper {
     if (BARLINECHART_TYPE.equals(chartType)) {
       setupBarStyles();
       setupLineStyles();
+    } else if (PIECHART_TYPE.equals(chartType)) {
+      setupPieStyles();
     }
-
+    
+    Node temp = chartNode.selectSingleNode(TOOLTIP_NODE_LOC);
+    if (getValue(temp) != null) {
+      tooltipText = getValue(temp);
+    }
   }
 
   public void setupLineRange() {
@@ -722,6 +770,11 @@ public class PentahoOFC4JHelper {
       rangeStroke = Integer.parseInt(getValue(temp));
     }
 
+    temp = chartNode.selectSingleNode("range-steps");
+    if (getValue(temp) != null) {
+      steps = new Integer(getValue(temp)).intValue();
+    }
+    
     int diff = rangeMax - rangeMin;
 
     int chunksize = diff / steps;
@@ -761,6 +814,23 @@ public class PentahoOFC4JHelper {
     //    }
   }
 
+  public int getStackedMaxRange() {
+    int maxRange = 0;
+    for (int i = 0; i < sbc.getStackCount(); i++) {
+      int currRange = 0;
+      List<Object> vals = (List<Object>)sbc.getValues().get(i);
+      for (Object val : vals) {
+        currRange += ((StackValue)val).getValue().intValue();
+      }
+      if (currRange > maxRange) {
+        maxRange = currRange;
+      }
+    }
+    
+    return maxRange;
+    
+  }
+  
   public void setupRange() {
 
     int rangeMin = 0;
@@ -771,32 +841,37 @@ public class PentahoOFC4JHelper {
     String rangeGridColor = "#aaaaaa";
     int rangeStroke = 1;
 
-    if (CATEGORY_TYPE.equals(datasetType) || XYZ_TYPE.equals(datasetType)) {
+    if (CATEGORY_TYPE.equals(datasetType) || XYZ_TYPE.equals(datasetType) || XY_TYPE.equals(datasetType)) {
       // Set to first number in our data set
       if (BARLINECHART_TYPE.equals(chartType)) {
         setupLineRange();
-        rangeMin = Integer.MAX_VALUE;
-        rangeMax = Integer.MIN_VALUE;
-        List nodes = chartNode.selectNodes("bar-series/series");
-        List<String> bars = new ArrayList<String>();
-        for (Object node : nodes) {
-          if (getValue((Node) node) != null) {
-            bars.add(getValue((Node) node));
+        if (isstacked) {
+          rangeMin = 0;
+          rangeMax = getStackedMaxRange();
+        } else {
+          rangeMin = Integer.MAX_VALUE;
+          rangeMax = Integer.MIN_VALUE;
+          List nodes = chartNode.selectNodes("bar-series/series");
+          List<String> bars = new ArrayList<String>();
+          for (Object node : nodes) {
+            if (getValue((Node) node) != null) {
+              bars.add(getValue((Node) node));
+            }
           }
-        }
-
-        for (int c = 1; c < getColumnCount(); c++) {
-          String text = (String) getValueAt(0, c);
-          if (bars.contains(text)) {
-            for (int r = 1; r < getRowCount(); r++) {
-              if (rangeMin > ((Number) getValueAt(r, c)).intValue())
-                rangeMin = ((Number) getValueAt(r, c)).intValue();
-              if (rangeMax < ((Number) getValueAt(r, c)).intValue())
-                rangeMax = ((Number) getValueAt(r, c)).intValue();
+  
+          for (int c = 1; c < getColumnCount(); c++) {
+            String text = (String) getValueAt(0, c);
+            if (bars.contains(text)) {
+              for (int r = 1; r < getRowCount(); r++) {
+                if (rangeMin > ((Number) getValueAt(r, c)).intValue())
+                  rangeMin = ((Number) getValueAt(r, c)).intValue();
+                if (rangeMax < ((Number) getValueAt(r, c)).intValue())
+                  rangeMax = ((Number) getValueAt(r, c)).intValue();
+              }
             }
           }
         }
-      } else if (XYZ_TYPE.equals(datasetType)) {
+      } else if (XYZ_TYPE.equals(datasetType) || XY_TYPE.equals(datasetType)) {
         rangeMin = ((Number) getValueAt(1, 2)).intValue();
         rangeMax = rangeMin;
         // Iterate over 2nd row
@@ -807,15 +882,21 @@ public class PentahoOFC4JHelper {
               rangeMax = ((Number) getValueAt(r, 2)).intValue();
         }
       } else {
-        rangeMin = ((Number) getValueAt(1, 1)).intValue();
-        rangeMax = rangeMin;
-        // Iterate over columns 1+
-        for (int c = 1; c < getColumnCount(); c++) {
-          for (int r = 1; r < getRowCount(); r++) {
-            if (rangeMin > ((Number) getValueAt(r, c)).intValue())
-              rangeMin = ((Number) getValueAt(r, c)).intValue();
-            if (rangeMax < ((Number) getValueAt(r, c)).intValue())
-              rangeMax = ((Number) getValueAt(r, c)).intValue();
+        
+        if (isstacked) {
+          rangeMin = 0;
+          rangeMax = getStackedMaxRange();
+        } else {
+          rangeMin = ((Number) getValueAt(1, 1)).intValue();
+          rangeMax = rangeMin;
+          // Iterate over columns 1+
+          for (int c = 1; c < getColumnCount(); c++) {
+            for (int r = 1; r < getRowCount(); r++) {
+              if (rangeMin > ((Number) getValueAt(r, c)).intValue())
+                rangeMin = ((Number) getValueAt(r, c)).intValue();
+              if (rangeMax < ((Number) getValueAt(r, c)).intValue())
+                rangeMax = ((Number) getValueAt(r, c)).intValue();
+            }
           }
         }
       }
@@ -835,6 +916,11 @@ public class PentahoOFC4JHelper {
     if (getValue(temp) != null) {
       rangeMax = new Integer(getValue(temp)).intValue();
       maxDefined = true;
+    }
+    
+    temp = chartNode.selectSingleNode("range-steps");
+    if (getValue(temp) != null) {
+      steps = new Integer(getValue(temp)).intValue();
     }
 
     temp = chartNode.selectSingleNode("range-color");
@@ -891,6 +977,19 @@ public class PentahoOFC4JHelper {
 
   }
 
+  public void setupPieStyles() {
+
+    Node temp = chartNode.selectSingleNode("animate");
+    if (getValue(temp) != null) {
+      animate = "true".equals(getValue(temp));
+    }
+    
+    temp = chartNode.selectSingleNode("start-angle");
+    if (getValue(temp) != null) {
+      startAngle = Integer.parseInt(getValue(temp));
+    }
+  }
+  
   public void setupBarStyles() {
 
     barchartstyle = BARCHART_STYLE_DEFAULT;
@@ -913,12 +1012,30 @@ public class PentahoOFC4JHelper {
       issketch = false;
     }
 
+    // Sketch
+    temp = chartNode.selectSingleNode(ISSTACKED_NODE_LOC);
+    if (getValue(temp) != null) {
+      isstacked = "true".equals(getValue(temp));
+    }
+
+    
     temp = chartNode.selectSingleNode(ORIENTATION_NODE_LOC);
     if (getValue(temp) != null)
       orientation = getValue(temp);
     else
       orientation = ORIENTATION_DEFAULT;
+    
+    temp = chartNode.selectSingleNode("fun-factor");
+    if (getValue(temp) != null) {
+      sketchBarFunFactor = Integer.parseInt(getValue(temp));
+    } else {
+      sketchBarFunFactor = SKETCH_FUNFACTOR_DEFAULT;
+    }
 
+    temp = chartNode.selectSingleNode("height-3d");
+    if (getValue(temp) != null) {
+      threedheight = Integer.parseInt(getValue(temp));
+    }
   }
 
   public void setupLineStyles() {
@@ -936,6 +1053,17 @@ public class PentahoOFC4JHelper {
         linechartstyle = LINECHART_STYLE_DEFAULT;
     } else {
       linechartstyle = LINECHART_STYLE_DEFAULT;
+    }
+    
+    temp = chartNode.selectSingleNode("line-width");
+    
+    if (getValue(temp) != null) {
+      linechartwidth = Integer.parseInt(getValue(temp));
+    }
+    
+    temp = chartNode.selectSingleNode(DOT_WIDTH_NODE_LOC);
+    if (getValue(temp) != null) {
+      dotwidth = Integer.parseInt(getValue(temp));
     }
 
   }
@@ -956,35 +1084,56 @@ public class PentahoOFC4JHelper {
       for (int i = 1; i < columnCount; i++) {
         elements.add(getElementForColumn(i));
       }
-    } else if (XYZ_TYPE.equals(datasetType)) {
+    } else if (XYZ_TYPE.equals(datasetType) || XY_TYPE.equals(datasetType)) {
       
       int rowCount = getRowCount();
       for (int i = 1; i < rowCount; i++) {
         Element e = null;
         String text = (String) getValueAt(i, 0);        
-        if (BUBBLECHART_TYPE.equals(chartType)) {
+        if (BUBBLECHART_TYPE.equals(chartType) || DOTCHART_TYPE.equals(chartType)) {
           ScatterChart sc = new ScatterChart("");
           sc.setColour(colors.get(i-1));
-          Number z = (Number)getValueAt(i, 3);
-          setupDotSize(sc, z);
-
           Number x = (Number)getValueAt(i, 1);
           Number y = (Number)getValueAt(i, 2);
+          Number z = null; 
+          if (XYZ_TYPE.equals(datasetType)) {
+            z = (Number)getValueAt(i, 3);
+            setupDotSize(sc, z);
+          } else {
+            if (dotwidth != null) {
+              sc.setDotSize(dotwidth);
+            
+            }
+            
+            Node temp = chartNode.selectSingleNode("dot-label-content");
+            if (getValue(temp) != null) {
+              sc.setTooltip(MessageFormat.format(getValue(temp), text, 
+                  NumberFormat.getInstance().format(x), NumberFormat.getInstance().format(y)));
+            } else {
+              sc.setTooltip(MessageFormat.format("{0}: {1}, {2}", text, 
+                  NumberFormat.getInstance().format(x), NumberFormat.getInstance().format(y)));
+            }
+          }
           sc.addPoint(x.doubleValue(), y.doubleValue());
           
-          Node temp = chartNode.selectSingleNode("bubble-label-content");
-          if (getValue(temp) != null) {
-            Node temp2 = chartNode.selectSingleNode("bubble-label-z-format");
-            String zstr = null;
-            if (getValue(temp2) != null) {
-              DecimalFormat df = new DecimalFormat(getValue(temp2));
-              zstr = df.format(z); 
-            } else {
-              zstr = z.toString();
-            }
-            sc.setTooltip(MessageFormat.format(getValue(temp), text, 
-                NumberFormat.getInstance().format(x), NumberFormat.getInstance().format(y), zstr));
-          }          
+          
+          if (BUBBLECHART_TYPE.equals(datasetType)) {
+            Node temp = chartNode.selectSingleNode("bubble-label-content");
+            if (getValue(temp) != null) {
+              Node temp2 = chartNode.selectSingleNode("bubble-label-z-format");
+              String zstr = null;
+              if (getValue(temp2) != null) {
+                DecimalFormat df = new DecimalFormat(getValue(temp2));
+                zstr = df.format(z); 
+              } else {
+                if (z != null) {
+                  zstr = z.toString();
+                }
+              }
+              sc.setTooltip(MessageFormat.format(getValue(temp), text, 
+                  NumberFormat.getInstance().format(x), NumberFormat.getInstance().format(y), zstr));
+            } 
+          }
           e = sc;
         }
 
@@ -1045,7 +1194,7 @@ public class PentahoOFC4JHelper {
           labels[j] = obj.toString();
         }
       }
-    } else if (XYZ_TYPE.equals(datasetType)) {
+    } else if (XYZ_TYPE.equals(datasetType) || XY_TYPE.equals(datasetType)) {
       domainMin = ((Number) getValueAt(1, 1)).intValue();
       domainMax = domainMin;
       // Iterate over rows
@@ -1061,6 +1210,11 @@ public class PentahoOFC4JHelper {
       int steps = 9;
       int diff = domainMax.intValue() - domainMin.intValue();
       
+      Node temp = chartNode.selectSingleNode("domain-steps");
+      if (getValue(temp) != null) {
+        steps = new Integer(getValue(temp)).intValue();
+      }
+      
       int chunksize = diff / steps;
       
       if (chunksize > 0) {
@@ -1075,7 +1229,7 @@ public class PentahoOFC4JHelper {
 
       domainMax = domainMin.intValue() + (chunksize * (steps + 2));
 
-      Node temp = chartNode.selectSingleNode(RANGE_MINIMUM_NODE_LOC);
+      temp = chartNode.selectSingleNode(DOMAIN_MINIMUM_NODE_LOC);
       if (getValue(temp) != null) {
         domainMin = new Integer(getValue(temp)).intValue();
       }
@@ -1136,20 +1290,78 @@ public class PentahoOFC4JHelper {
     }
 
   }
+  
+  public LineChart getLineChart(int n) {
+    LineChart lc = new LineChart(this.linechartstyle);
+    for (int i = 1; i < getRowCount(); i++) {
+      double d = ((Number) getValueAt(i, n)).doubleValue();
+      LineChart.Dot dot = new LineChart.Dot(d);
 
-  public Element getElementForColumn(int n) {
+      if (dotwidth != null) {
+        dot.setDotSize(dotwidth);
+      }
+      lc.addDots(dot);
+      if (null != baseURLTemplate)
+        lc.setOn_click(baseURLTemplate);
+    }
+    if (linechartwidth != null) {
+      lc.setWidth(linechartwidth);
+    }
+    //       TODO wrap around the set of colors if bars.length > colors.length
+    lc.setColour(colors.get(n - 1));
+    
+    if (tooltipText != null) {
+      lc.setTooltip(tooltipText);
+    }
+    
+    return lc;
+  }
+  
+  StackedBarChart sbc;
+  
+  public Element getVerticalBarChart(int n) {
+    if (isstacked) {
+      if (sbc == null) {
+        sbc = new StackedBarChart();
+      }
+      // keys ?
 
-    Element e = null;
+      StackKey key = new StackKey();
+      String text = (String) getValueAt(0, n);
+      key.setText(text);
+      // key.setFontSize(???)
+      key.setColour(colors.get(n - 1));
+      sbc.addKeys(key);
+      // values
 
-    if (BARCHART_TYPE.equals(chartType) && VERTICAL_ORIENTATION.equals(orientation)) {
-
+      StackValue[] datas = new StackValue[getRowCount()];
+      
+      for (int i = 1; i < getRowCount(); i++) {
+        Stack stack = null;
+        if (sbc.getStackCount() > i - 1) {
+          stack = sbc.stack(i - 1);
+        } else {
+          stack = sbc.newStack();
+        }
+        double d = ((Number) getValueAt(i, n)).doubleValue();
+        stack.addStackValues(new StackValue(d, colors.get(n - 1)));
+      }
+      
+      return sbc;
+    } else {
+      
       BarChart bc;
       // Is Sketch?
       if (issketch) {
         bc = new SketchBarChart();
-        ((SketchBarChart) bc).setFunFactor(SKETCH_FUNFACTOR_DEFAULT);
+        ((SketchBarChart) bc).setFunFactor(sketchBarFunFactor);
+        ((SketchBarChart) bc).setOutlineColour(outlineColors.get(n - 1));
+        
       } else {
         bc = new BarChart(this.barchartstyle);
+        if (this.barchartstyle == Style.THREED && threedheight != null) {
+          c.getXAxis().set3D(threedheight);
+        }
       }
 
       for (int i = 1; i < getRowCount(); i++) {
@@ -1160,9 +1372,21 @@ public class PentahoOFC4JHelper {
       }
       // TODO wrap around the set of colors if bars.length > colors.length
       bc.setColour(colors.get(n - 1));
+      
+      if (tooltipText != null) {
+        bc.setTooltip(tooltipText);
+      }
 
-      e = bc;
+      return bc;
+    }
+  }
 
+  public Element getElementForColumn(int n) {
+
+    Element e = null;
+
+    if (BARCHART_TYPE.equals(chartType) && VERTICAL_ORIENTATION.equals(orientation)) {
+      e = getVerticalBarChart(n);
     } else if (BARCHART_TYPE.equals(chartType) && HORIZONTAL_ORIENTATION.equals(orientation)) {
       HorizontalBarChart hbc = new HorizontalBarChart();
       for (int i = 1; i < getRowCount(); i++) {
@@ -1173,21 +1397,13 @@ public class PentahoOFC4JHelper {
           hbc.setOn_click(baseURLTemplate);
       }
       hbc.setColour(colors.get(n - 1));
-
+      if (tooltipText != null) {
+        hbc.setTooltip(tooltipText);
+      }
       e = hbc;
 
     } else if (LINECHART_TYPE.equals(chartType)) {
-      LineChart lc = new LineChart(this.linechartstyle);
-      for (int i = 1; i < getRowCount(); i++) {
-        double d = ((Number) getValueAt(i, n)).doubleValue();
-        lc.addDots(new LineChart.Dot(d));
-        if (null != baseURLTemplate)
-          lc.setOn_click(baseURLTemplate);
-      }
-      //			 TODO wrap around the set of colors if bars.length > colors.length
-      lc.setColour(colors.get(n - 1));
-
-      e = lc;
+      e = getLineChart(n);
     } else if (PIECHART_TYPE.equals(chartType)) {
       PieChart pc = new PieChart();
       PieChart.Slice[] slices = new PieChart.Slice[getRowCount() - 1];
@@ -1195,7 +1411,12 @@ public class PentahoOFC4JHelper {
         double d = ((Number) getValueAt(i, n)).doubleValue();
         // Labels are already set - use them
         String label = (String) c.getXAxis().getLabels().getLabels().get(i - 1);
-        slices[i - 1] = new PieChart.Slice(d, label, label);
+        String tooltip = label;
+        if (tooltipText != null) {
+          tooltip = tooltipText;
+        }
+        slices[i - 1] = new PieChart.Slice(d, label, tooltip);
+        
         if (null != baseURLTemplate) {
           pc.setOn_click(baseURLTemplate);
         }
@@ -1203,11 +1424,22 @@ public class PentahoOFC4JHelper {
 
       pc.addSlices(slices);
       pc.setColours(this.colors);
-      // ec.setLegendVisible(true);
+      pc.setStartAngle(startAngle);
+      pc.setAnimate(animate);
+      
       e = pc;
 
     } else if (AREACHART_TYPE.equals(chartType)) {
-      AreaHollowChart ahc = new AreaHollowChart();
+      LineChart ac = null;
+      if(linechartstyle != LineChart.Style.HOLLOW) {
+        AreaLineChart ahc = new AreaLineChart();
+        ahc.setFill(colors.get(n-1));
+        ac = ahc;
+      } else {
+        AreaHollowChart ahc = new AreaHollowChart();
+        ahc.setFill(colors.get(n-1));
+        ac = ahc;
+      }
 
       Number[] numbers = new Number[getRowCount() - 1];
 
@@ -1216,14 +1448,19 @@ public class PentahoOFC4JHelper {
         //ahc.addDots(new LineChart.Dot(d));
         numbers[i - 1] = ((Number) getValueAt(i, n)).doubleValue();
         if (null != baseURLTemplate)
-          ahc.setOn_click(baseURLTemplate);
+          ac.setOn_click(baseURLTemplate);
       }
 
-      ahc.addValues(numbers);
-      ahc.setColour(colors.get(n - 1));
-      ahc.setFill(colors.get(n-1));
-      // until the setFill is exposed, we cannot color the areas
-      e = ahc;
+      ac.addValues(numbers);
+      ac.setColour(colors.get(n - 1));
+      
+      if (linechartwidth != null) {
+        ac.setWidth(linechartwidth);
+      }
+      if (tooltipText != null) {
+        ac.setTooltip(tooltipText);
+      }
+      e = ac;
 
     } else if (BARLINECHART_TYPE.equals(chartType)) {
       String text = (String) getValueAt(0, n);
@@ -1237,40 +1474,21 @@ public class PentahoOFC4JHelper {
       }
       //      Chart blc = 
       if (!bars.contains(text)) {
-        LineChart lc = new LineChart(this.linechartstyle);
+        LineChart lc = getLineChart(n);
         lc.setRightYAxis();
-        for (int i = 1; i < getRowCount(); i++) {
-          double d = ((Number) getValueAt(i, n)).doubleValue();
-          lc.addDots(new LineChart.Dot(d));
-          if (null != baseURLTemplate)
-            lc.setOn_click(baseURLTemplate);
-        }
-        //       TODO wrap around the set of colors if bars.length > colors.length
-        lc.setColour(colors.get(n - 1));
-
         e = lc;
       } else {
-        BarChart hbc = new BarChart();
-        for (int i = 1; i < getRowCount(); i++) {
-          double d = ((Number) getValueAt(i, n)).doubleValue();
-          BarChart.Bar hbcb = new BarChart.Bar(d);
-          hbc.addBars(new BarChart.Bar(d));
-          if (null != baseURLTemplate)
-            hbc.setOn_click(baseURLTemplate);
-        }
-        hbc.setColour(colors.get(n - 1));
-
-        e = hbc;
+        e = getVerticalBarChart(n);
       }
-    } else if (BUBBLECHART_TYPE.equals(chartType)) {
-      ScatterChart sc = new ScatterChart("");
-      sc.setColour(colors.get(n-1));
-      setupDotSize(sc, (Number)getValueAt(3, n));
-      Number x = (Number)getValueAt(1, n);
-      Number y = (Number)getValueAt(2, n);
-      sc.addPoint(x.doubleValue(), y.doubleValue());
-      e = sc;
-      // TODO: setTooltip(root,se);
+//    } else if (BUBBLECHART_TYPE.equals(chartType)) {
+//      ScatterChart sc = new ScatterChart("");
+//      sc.setColour(colors.get(n-1));
+//      setupDotSize(sc, (Number)getValueAt(3, n));
+//      Number x = (Number)getValueAt(1, n);
+//      Number y = (Number)getValueAt(2, n);
+//      sc.addPoint(x.doubleValue(), y.doubleValue());
+//      e = sc;
+//      // TODO: setTooltip(root,se);
 
     }
 
