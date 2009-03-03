@@ -725,7 +725,12 @@ public class PentahoOFC4JHelper {
           }
         }
       }
-
+    }
+    
+    if (BARCHART_TYPE.equals(chartType) || BARLINECHART_TYPE.equals(chartType)) {
+      if (rangeMin > 0) {
+        rangeMin = 0;
+      }
     }
 
     boolean minDefined = false;
@@ -774,7 +779,7 @@ public class PentahoOFC4JHelper {
     // Readjust mins/maxs only if they weren't specified
     if (!minDefined) {
       // If actual min is positive, don't go below ZERO
-      if (rangeMin > 0 && rangeMin - chunksize < 0)
+      if (rangeMin >= 0 && rangeMin - chunksize < 0)
         rangeMin = 0;
       else
         rangeMin = rangeMin - chunksize;
@@ -981,6 +986,9 @@ public class PentahoOFC4JHelper {
       yaxis.setStroke(domainStroke);
       yaxis.setColour(domainColor);
       yaxis.setGridColour(domainGridColor);
+      if (BARCHART_TYPE.equals(chartType) || BARLINECHART_TYPE.equals(chartType)) {
+        yaxis.setOffset(true);
+      }
       
       if (domainMin != null && domainMax != null) {
         yaxis.setRange(domainMin.intValue(), domainMax.intValue(), stepforchart);  
@@ -993,6 +1001,10 @@ public class PentahoOFC4JHelper {
         xaxis.addLabels(labels);
       }
       xaxis.setStroke(domainStroke);
+      
+      if (BARCHART_TYPE.equals(chartType) || BARLINECHART_TYPE.equals(chartType)) {
+        xaxis.setOffset(true);
+      }
       xaxis.setColour(domainColor);
       xaxis.setGridColour(domainGridColor);
       if (domainMin != null && domainMax != null) {
@@ -1260,12 +1272,16 @@ public class PentahoOFC4JHelper {
       log.error(Messages.getString("PentahoOFC4JHelper.ERROR_0001_UNSUPPORTED_CHART_TYPE", chartType)); //$NON-NLS-1$
     }
 
-    // set the title for this series
-    e.setText(getColumnHeader(col));
-
-    // set the onclick event to the base url template
-    if (null != baseURLTemplate) {
-      e.setOn_click(baseURLTemplate);
+    if (!PIECHART_TYPE.equals(chartType)) {
+    
+      // set the title for this series
+      e.setText(getColumnHeader(col));
+  
+      // set the onclick event to the base url template
+      if (null != baseURLTemplate) {
+        e.setOn_click(baseURLTemplate);
+      }
+      
     }
     
     return e;

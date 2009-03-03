@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ofc4j.model.Chart;
+import ofc4j.model.axis.Axis;
 import ofc4j.model.axis.YAxis;
 import ofc4j.model.elements.Element;
 import ofc4j.model.elements.LineChart;
@@ -34,9 +35,10 @@ public class BarLineChartFactory extends BarChartFactory {
     return super.convert();
   }
   
-  public void setupRange() {
-    super.setupRange();
+  public Axis setupRange() {
+    Axis axis = super.setupRange();
     setupLineRange();
+    return axis;
   }
   
   @SuppressWarnings("unchecked")
@@ -69,6 +71,11 @@ public class BarLineChartFactory extends BarChartFactory {
         }
       }
     }
+    
+    if (rangeMin > 0) {
+      rangeMin = 0;
+    }
+    
     return new MinMax(rangeMin, rangeMax);
   }
   

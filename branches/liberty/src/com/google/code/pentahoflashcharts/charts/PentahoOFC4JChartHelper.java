@@ -15,6 +15,8 @@ public class PentahoOFC4JChartHelper {
   private static final String CHART_TYPE_NODE_LOC = "chart-type"; //$NON-NLS-1$
   private static final String CHART_TYPE_DEFAULT = "BarChart"; //$NON-NLS-1$
   
+  static Map<String, Class<? extends ChartFactory>> factories = new HashMap<String, Class<? extends ChartFactory>>(); 
+  
   static {
     registerChartFactory("BarChart", BarChartFactory.class); //$NON-NLS-1$
     registerChartFactory("LineChart", LineChartFactory.class); //$NON-NLS-1$
@@ -24,8 +26,6 @@ public class PentahoOFC4JChartHelper {
     registerChartFactory("DotChart", DotChartFactory.class); //$NON-NLS-1$
     registerChartFactory("BubbleChart", BubbleChartFactory.class); //$NON-NLS-1$
   }
-  
-  static Map<String, Class<? extends ChartFactory>> factories = new HashMap<String, Class<? extends ChartFactory>>(); 
   
   public static void registerChartFactory(String type, Class<? extends ChartFactory> factory) {
     factories.put(type, factory);
