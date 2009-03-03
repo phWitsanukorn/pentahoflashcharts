@@ -1,13 +1,11 @@
 package com.google.code.pentahoflashcharts;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import ofc4j.model.Chart;
 import ofc4j.model.Text;
@@ -28,435 +26,287 @@ import ofc4j.model.elements.StackedBarChart.Stack;
 import ofc4j.model.elements.StackedBarChart.StackKey;
 import ofc4j.model.elements.StackedBarChart.StackValue;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
+import org.apache.commons.logging.Log;
 import org.dom4j.Node;
-import org.dom4j.io.SAXReader;
+import org.pentaho.commons.connection.IPentahoDataTypes;
 import org.pentaho.commons.connection.IPentahoResultSet;
-import org.pentaho.commons.connection.memory.MemoryResultSet;
+import org.pentaho.commons.connection.PentahoDataTransmuter;
+import org.pentaho.platform.engine.services.runtime.TemplateUtil;
+import org.pentaho.platform.plugin.action.messages.Messages;
 
-import com.google.code.pentahoflashcharts.builder.BarLineChartBuilder;
-
+/**
+ * Contributed by Nick Goodman, this class creates an OFC4J Chart object for
+ * rendering, using pentaho chart xml format.
+ * 
+ * See http://www.ofc2dz.com for details on the SWF we are using.
+ * 
+ * note: onclick events are only partially implemented, due to limitations of
+ * OFC.  In future releases of OFC, this should be revisited.
+ * 
+ * Backlog:
+ * - y2_legend - barline right axis title, would need to update OFC4J
+ * - horizontal stacked bars
+ * http://www.ofc2dz.com/OFC2/examples/HorizontalStackedBars.html
+ * - styled stacked bars (would require impl in OFC)
+ * - dial chart (would require impl in OFC)
+ * - XY Line Chart
+ * - XY Area Chart
+ * - onclick / link support (would require enhancements to OFC) 
+ */
 public class PentahoOFC4JHelper {
 
-  // Static declarations
-  public static String CHART_NODE_LOC = "chart";
-
-  public static String ARG = "$ARG";
-
-  public static String CSS_FONT_SIZE = " font-size: $ARGpx;";
-
-  public static String CSS_FONT_FAMILY = " font-family: $ARG;";
-
-  public static String CSS_FONT_WEIGHT = " font-weight: $ARG;";
-
-  public static String CSS_FONT_STYLE = " font-style: $ARG";
-
-  // assume starting at the "Chart" node
-  // /chart/title
-  // /chart/range-title
-  public static String TITLE_NODE_LOC = "title";
-
-  public static String TITLE_FONT_NODE_LOC = "title-font";
-
-  public static String RANGE_TITLE_NODE_LOC = "range-title";
-
-  public static String RANGE_TITLE_FONT_NODE_LOC = "range-title-font";
-
-  public static String LINES_RANGE_TITLE_NODE_LOC = "lines-range-title";
-
-  public static String LINES_RANGE_TITLE_FONT_NODE_LOC = "lines-range-title-font";
-
-  public static String DOMAIN_TITLE_NODE_LOC = "domain-title";
-
-  public static String DOMAIN_TITLE_FONT_NODE_LOC = "domain-title-font";
-
-  public static String IS3D_NODE_LOC = "is-3D";
-
-  public static String ISGLASS_NODE_LOC = "is-glass";
-
-  public static String ISSKETCH_NODE_LOC = "is-sketch";
+  // general chart related elements
   
-  public static String ISSTACKED_NODE_LOC = "is-stacked";
+  private static final String TITLE_NODE_LOC = "title"; //$NON-NLS-1$
 
-  public static String DATASET_TYPE_NODE_LOC = "dataset-type";
+  private static final String TITLE_FONT_NODE_LOC = "title-font"; //$NON-NLS-1$
 
-  public static String CHART_TYPE_NODE_LOC = "chart-type";
+  private static final String DATASET_TYPE_NODE_LOC = "dataset-type"; //$NON-NLS-1$
 
-  public static String COLOR_PALETTE_NODE_LOC = "color-palette";
-  public static String OUTLINE_COLOR_PALETTE_NODE_LOC = "outline-color-palette";
+  private static final String CHART_TYPE_NODE_LOC = "chart-type"; //$NON-NLS-1$
 
-  public static String RANGE_MAXIMUM_NODE_LOC = "range-maximum";
-
-  public static String RANGE_MINIMUM_NODE_LOC = "range-minimum";
-
-  public static String DOMAIN_MAXIMUM_NODE_LOC = "domain-maximum";
-
-  public static String DOMAIN_MINIMUM_NODE_LOC = "domain-minimum";
+  private static final String COLOR_PALETTE_NODE_LOC = "color-palette"; //$NON-NLS-1$
   
-  public static String LINES_RANGE_MAXIMUM_NODE_LOC = "lines-range-maximum";
-
-  public static String LINES_RANGE_MINIMUM_NODE_LOC = "lines-range-minimum";
-
-  public static String ORIENTATION_NODE_LOC = "orientation";
-
-  public static String PLOT_BACKGROUND_NODE_LOC = "plot-background";
-
-  public static String PLOT_BACKGROUND_COLOR_XPATH = "@type"; //att of plot-background
-
-  public static String CHART_BACKGROUND_NODE_LOC = "chart-background";
-
-  public static String CHART_BACKGROUND_COLOR_XPATH = "@type"; //att of plot-background
-
-  public static String URL_TEMPLATE_NODE_LOC = "url-template";
-
-  public static String DOTSTYLE_NODE_LOC = "dot-style";
-  public static String DOT_WIDTH_NODE_LOC = "dot-width";
-
-  // assume starting at "color-palette" node
-  // /color-palette/color
-  public static String COLOR_NODE_LOC = "color";
-
-  // assume starting at a "*-title-font" node
-  public static String FONT_FAMILY_NODE_LOC = "font-family";
-
-  public static String FONT_SIZE_NODE_LOC = "size";
-
-  public static String FONT_BOLD_NODE_LOC = "is-bold";
-
-  public static String FONT_ITALIC_NODE_LOC = "is-italic";
+  private static final String COLOR_NODE_LOC = "color"; //$NON-NLS-1$
   
-  public static String TOOLTIP_NODE_LOC = "tooltip";
+  private static final String OUTLINE_COLOR_PALETTE_NODE_LOC = "outline-color-palette"; //$NON-NLS-1$
+  
+  private static final String PLOT_BACKGROUND_NODE_LOC = "plot-background"; //$NON-NLS-1$
+
+  private static final String PLOT_BACKGROUND_COLOR_XPATH = "@type"; //attribute of plot-background  //$NON-NLS-1$
+
+  private static final String CHART_BACKGROUND_NODE_LOC = "chart-background"; //$NON-NLS-1$
+
+  private static final String CHART_BACKGROUND_COLOR_XPATH = "@type"; //attribute of chart-background  //$NON-NLS-1$
+
+  private static final String URL_TEMPLATE_NODE_LOC = "url-template"; //$NON-NLS-1$
+
+  private static final String TOOLTIP_NODE_LOC = "tooltip"; //$NON-NLS-1$
+  
+  // font related elements
+  
+  private static final String FONT_FAMILY_NODE_LOC = "font-family"; //$NON-NLS-1$
+
+  private static final String FONT_SIZE_NODE_LOC = "size"; //$NON-NLS-1$
+
+  private static final String FONT_BOLD_NODE_LOC = "is-bold"; //$NON-NLS-1$
+
+  private static final String FONT_ITALIC_NODE_LOC = "is-italic"; //$NON-NLS-1$
+  
+  // domain axis related elements
+
+  private static final String DOMAIN_STROKE_NODE_LOC = "domain-stroke"; //$NON-NLS-1$
+
+  private static final String DOMAIN_GRID_COLOR_NODE_LOC = "domain-grid-color"; //$NON-NLS-1$
+
+  private static final String DOMAIN_COLOR_NODE_LOC = "domain-color"; //$NON-NLS-1$
+
+  private static final String DOMAIN_STEPS_NODE_LOC = "domain-steps"; //$NON-NLS-1$
+
+  private static final String DOMAIN_TITLE_NODE_LOC = "domain-title"; //$NON-NLS-1$
+
+  private static final String DOMAIN_TITLE_FONT_NODE_LOC = "domain-title-font"; //$NON-NLS-1$
+
+  private static final String DOMAIN_MAXIMUM_NODE_LOC = "domain-maximum"; //$NON-NLS-1$
+
+  private static final String DOMAIN_MINIMUM_NODE_LOC = "domain-minimum"; //$NON-NLS-1$
+  
+  // range axis related elements
+  
+  private static final String RANGE_STROKE_NODE_LOC = "range-stroke"; //$NON-NLS-1$
+
+  private static final String RANGE_GRID_COLOR_NODE_LOC = "range-grid-color"; //$NON-NLS-1$
+
+  private static final String RANGE_COLOR_NODE_LOC = "range-color"; //$NON-NLS-1$
+
+  private static final String RANGE_STEPS_NODE_LOC = "range-steps"; //$NON-NLS-1$
+
+  private static final String RANGE_TITLE_NODE_LOC = "range-title"; //$NON-NLS-1$
+
+  private static final String RANGE_TITLE_FONT_NODE_LOC = "range-title-font"; //$NON-NLS-1$
+
+  private static final String RANGE_MAXIMUM_NODE_LOC = "range-maximum"; //$NON-NLS-1$
+
+  private static final String RANGE_MINIMUM_NODE_LOC = "range-minimum"; //$NON-NLS-1$
+
+  // bubble / dot scatter related elements
+  
+  private static final String MAX_BUBBLE_SIZE_NODE_LOC = "max-bubble-size"; //$NON-NLS-1$
+
+  private static final String BUBBLE_LABEL_Z_FORMAT_NODE_LOC = "bubble-label-z-format"; //$NON-NLS-1$
+
+  private static final String BUBBLE_LABEL_CONTENT_NODE_LOC = "bubble-label-content"; //$NON-NLS-1$
+
+  private static final String DOT_LABEL_CONTENT_NODE_LOC = "dot-label-content"; //$NON-NLS-1$
+
+  // line related elements
+  
+  private static final String LINE_WIDTH_NODE_LOC = "line-width"; //$NON-NLS-1$
+
+  private static final String DOTSTYLE_NODE_LOC = "dot-style"; //$NON-NLS-1$
+  
+  private static final String DOT_WIDTH_NODE_LOC = "dot-width"; //$NON-NLS-1$
+  
+  // bar related elements
+  
+  private static final String HEIGHT_3D_NODE_LOC = "height-3d"; //$NON-NLS-1$
+
+  private static final String FUN_FACTOR_NODE_LOC = "fun-factor"; //$NON-NLS-1$
+
+  private static final String IS3D_NODE_LOC = "is-3D"; //$NON-NLS-1$
+
+  private static final String ISGLASS_NODE_LOC = "is-glass"; //$NON-NLS-1$
+
+  private static final String ISSKETCH_NODE_LOC = "is-sketch"; //$NON-NLS-1$
+  
+  private static final String ISSTACKED_NODE_LOC = "is-stacked"; //$NON-NLS-1$
+
+  private static final String ORIENTATION_NODE_LOC = "orientation"; //$NON-NLS-1$
+  
+  // bar line related elements
+  
+  private static final String BAR_SERIES_SERIES_NODE_LOC = "bar-series/series"; //$NON-NLS-1$
+
+  private static final String LINES_RANGE_STROKE_NODE_LOC = "lines-range-stroke"; //$NON-NLS-1$
+
+  private static final String LINES_RANGE_GRID_COLOR_NODE_LOC = "lines-range-grid-color"; //$NON-NLS-1$
+
+  private static final String LINES_RANGE_COLOR_NODE_LOC = "lines-range-color"; //$NON-NLS-1$
+  
+  private static final String LINE_SERIES_SERIES_NODE_LOC = "line-series/series"; //$NON-NLS-1$
+
+  private static final String LINES_RANGE_MAXIMUM_NODE_LOC = "lines-range-maximum"; //$NON-NLS-1$
+
+  private static final String LINES_RANGE_MINIMUM_NODE_LOC = "lines-range-minimum"; //$NON-NLS-1$
+  
+  private static final String LINE_RANGE_STEPS_NODE_LOC = "line-range-steps"; //$NON-NLS-1$
+  
+  // pie related elements
+  
+  private static final String START_ANGLE_NODE_LOC = "start-angle"; //$NON-NLS-1$
+
+  private static final String ANIMATE_NODE_LOC = "animate"; //$NON-NLS-1$
 
   // Default values
-  public static String CSS_FONT_FAMILY_DEFAULT = "Ariel";
 
-  public static String CSS_FONT_SIZE_DEFAULT = "14";
+  private static final String DATASET_TYPE_DEFAULT = "CategoryDataset"; //$NON-NLS-1$
+  
+  private static final String CSS_FONT_FAMILY_DEFAULT = "Arial"; //$NON-NLS-1$
 
-  public static String DATASET_TYPE_DEFAULT = "CategoryDataset";
+  private static final String CSS_FONT_SIZE_DEFAULT = "14"; //$NON-NLS-1$
 
-  public static String CSS_FONT_WEIGHT_DEFAULT = "normal";
+  private static final String CSS_FONT_WEIGHT_DEFAULT = "normal"; //$NON-NLS-1$
 
-  public static String CSS_FONT_STYLE_DEFAULT = "normal";
+  private static final String CSS_FONT_STYLE_DEFAULT = "normal"; //$NON-NLS-1$
 
-  public static String CHART_TYPE_DEFAULT = "BarChart";
+  private static final String CHART_TYPE_DEFAULT = "BarChart"; //$NON-NLS-1$
 
-  public static Style BARCHART_STYLE_DEFAULT = BarChart.Style.NORMAL;
+  private static final String AXIS_GRID_COLOR_DEFAULT = "#aaaaaa"; //$NON-NLS-1$
 
-  public static LineChart.Style LINECHART_STYLE_DEFAULT = LineChart.Style.NORMAL;
+  private static final String AXIS_COLOR_DEFAULT = "#000000"; //$NON-NLS-1$
 
-  public static String ORIENTATION_DEFAULT = "vertical";
+  private static final LineChart.Style LINECHART_STYLE_DEFAULT = LineChart.Style.NORMAL;
+  
+  private static final String ORIENTATION_DEFAULT = "vertical"; //$NON-NLS-1$
+  
+  private static final Style BARCHART_STYLE_DEFAULT = BarChart.Style.NORMAL;
 
-  public static int SKETCH_FUNFACTOR_DEFAULT = 5;
+  private static final int SKETCH_FUNFACTOR_DEFAULT = 5;
 
-  public static String[] COLORS_DEFAULT = { "#006666", "#0066CC", "#009999", "#336699", "#339966", "#3399FF",
+  @SuppressWarnings("nls")
+  private static final String[] COLORS_DEFAULT = { "#006666", "#0066CC", "#009999", "#336699", "#339966", "#3399FF",
       "#663366", "#666666", "#666699", "#669999", "#6699CC", "#66CCCC", "#993300", "#999933", "#999966", "#999999",
       "#9999CC", "#9999FF", "#99CC33", "#99CCCC", "#99CCFF", "#CC6600", "#CC9933", "#CCCC33", "#CCCC66", "#CCCC99",
       "#CCCCCC", "#FF9900", "#FFCC00", "#FFCC66" };
 
-  // Chart Type Values (CHARTTUPE_NODE_LOC)
-  public static String BARCHART_TYPE = "BarChart";
+  // Chart Type Values (CHART_TYPE_NODE_LOC)
+  private static final String BARCHART_TYPE = "BarChart"; //$NON-NLS-1$
 
-  public static String LINECHART_TYPE = "LineChart";
+  private static final String LINECHART_TYPE = "LineChart"; //$NON-NLS-1$
 
-  public static String PIECHART_TYPE = "PieChart";
+  private static final String PIECHART_TYPE = "PieChart"; //$NON-NLS-1$
 
-  public static String AREACHART_TYPE = "AreaChart";
+  private static final String AREACHART_TYPE = "AreaChart"; //$NON-NLS-1$
 
-  public static String BARLINECHART_TYPE = "BarLineChart";
+  private static final String BARLINECHART_TYPE = "BarLineChart"; //$NON-NLS-1$
   
-  public static String BUBBLECHART_TYPE = "BubbleChart";
+  private static final String BUBBLECHART_TYPE = "BubbleChart"; //$NON-NLS-1$
   
-  public static String DOTCHART_TYPE = "DotChart";
+  private static final String DOTCHART_TYPE = "DotChart"; //$NON-NLS-1$
 
   // Orientation Type Values (ORIENTATION_NODE_LOC)
-  public static String HORIZONTAL_ORIENTATION = "horizontal";
+  private static final String HORIZONTAL_ORIENTATION = "horizontal"; //$NON-NLS-1$
 
-  public static String VERTICAL_ORIENTATION = "vertical";
+  private static final String VERTICAL_ORIENTATION = "vertical"; //$NON-NLS-1$
 
   // Dataset Type Values
-  public static String CATEGORY_TYPE = "CategoryDataset";
+  private static final String CATEGORY_TYPE = "CategoryDataset"; //$NON-NLS-1$
   
-  public static String XY_TYPE = "XYSeriesCollection";
+  private static final String XY_TYPE = "XYSeriesCollection"; //$NON-NLS-1$
   
-  public static String XYZ_TYPE = "XYZSeriesCollection";
+  private static final String XYZ_TYPE = "XYZSeriesCollection"; //$NON-NLS-1$
 
-  // *-background Type Values
-  public static String COLOR_TYPE = "color";
+  // color types
+  
+  private static final String COLOR_TYPE = "color"; //$NON-NLS-1$
 
-  // Private static members
-  private static SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
-
+  private static final String CSS_FONT_STYLES = "font-family: {fontfamily}; font-size: {fontsize}px; " + //$NON-NLS-1$
+                                                "font-weight: {fontweight}; font-style: {fontstyle};"; //$NON-NLS-1$
+  
   // Private members 
+
+  private Chart chart = new Chart();
+  private ArrayList<Element> elements = new ArrayList<Element>();
+  private ArrayList<String> colors = new ArrayList<String>();
+  private ArrayList<String> outlineColors = new ArrayList<String>();
+
+  private Node chartNode;  
+  private String chartType;
+  private Log log;
+  
+  // data related members
+  private String[] rowHeaders;
+  private String[] columnHeaders;
   private IPentahoResultSet data;
-
-  private boolean byRow;
-
-  private Node chartNode;
-
-  private ExtendedChart ec;
-
-  private Chart c;
-
+  private boolean hasRowHeaders = false;
+  private boolean hasColumnHeaders = false;  
   private String datasetType;
 
-  private String chartType;
-
+  // general chart members 
+  private String baseURLTemplate;
+  private String tooltipText;
+  
+  // bar related members
   private String orientation;
-
-  private ArrayList<Element> elements;
-
-  private ArrayList<String> colors;
-  private ArrayList<String> outlineColors;
-
   private BarChart.Style barchartstyle;
-
+  private boolean issketch;
+  private Integer sketchBarFunFactor;
+  private boolean isstacked;
+  private Integer threedheight;
+  private StackedBarChart sbc;
+  
+  // pie related members
   private boolean animate;
   private Integer startAngle;
-  
+
+  // line related members
   private LineChart.Style linechartstyle;
   private Integer linechartwidth;
   private Integer dotwidth;
-
-  private boolean issketch;
   
-  private boolean isstacked = false;
+  // scatter / bubble members
+  private Number bubbleMaxX;
 
-  private String baseURLTemplate;
+  public PentahoOFC4JHelper(Node chartNode, IPentahoResultSet data, boolean byRow, Log log) {
+    this.chartNode = chartNode;
+    this.log = log;
+    if (byRow) {
+      setData(PentahoDataTransmuter.pivot(data));
+    } else {
+      setData(data);
+    }
+  }
   
-  private Integer sketchBarFunFactor;
-  private Integer threedheight;
-  
-  private String tooltipText;
-
-  public static IPentahoResultSet test_setupdata() {
-    IPentahoResultSet ips = null;
-
-    ArrayList<String> colHeaders = new ArrayList();
-
-    colHeaders.add(0, "DEPARTMENT");
-    colHeaders.add(1, "ACTUAL");
-    colHeaders.add(2, "BUDGET");
-
-    ArrayList r1 = new ArrayList();
-    r1.add("Sales");
-    r1.add(11);
-    r1.add(12);
-    ArrayList r2 = new ArrayList();
-    r2.add("Finance");
-    r2.add(14);
-    r2.add(-9);
-    ArrayList r3 = new ArrayList();
-    r3.add("Human Resource");
-    r3.add(7);
-    r3.add(100);
-
-    ArrayList data = new ArrayList();
-    data.add(r1);
-    data.add(r2);
-    data.add(r3);
-
-    ips = MemoryResultSet.createFromLists(colHeaders, data);
-
-    System.out.println(ips.getRowCount());
-
-    return ips;
-  }
-
-  public static void main(String[] args) {
-    SAXReader xmlReader = new SAXReader();
-
-    Document doc = null;
-    try {
-      doc = xmlReader
-          .read("/Users/ngoodman/dev/workspace/pentahoflashcharts/solutions/openflashchart/charts/barchart.xml");
-    } catch (DocumentException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      return;
-    }
-
-    System.out.println(doc.asXML());
-
-    IPentahoResultSet testdata = test_setupdata();
-
-    PentahoOFC4JHelper testing = new PentahoOFC4JHelper(doc, testdata, false);
-
-    //java.lang.Thread.sleep(0);
-    Chart testChart = testing.convert();
-    try {
-      // Create file 
-      FileWriter fstream = new FileWriter(
-          "/Users/ngoodman/pentaho/biserver-ce-2.0.0.stable/tomcat/webapps/ofc/testoutput1.json");
-      BufferedWriter out = new BufferedWriter(fstream);
-      out.write(testChart.toString());
-      //Close the output stream
-      out.close();
-    } catch (Exception e) {//Catch exception if any
-      System.err.println("Error: " + e.getMessage());
-    }
-
-    System.out.println(testChart.toString());
-
-    // Line Chart
-
-    try {
-      doc = xmlReader
-          .read("/Users/ngoodman/dev/workspace/pentahoflashcharts/solutions/openflashchart/charts/linechart.xml");
-    } catch (DocumentException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      return;
-    }
-    testing = new PentahoOFC4JHelper(doc, testdata, false);
-
-    testChart = testing.convert();
-    try {
-      // Create file 
-      FileWriter fstream = new FileWriter(
-          "/Users/ngoodman/pentaho/biserver-ce-2.0.0.stable/tomcat/webapps/ofc/testoutput2.json");
-      BufferedWriter out = new BufferedWriter(fstream);
-      out.write(testChart.toString());
-      //Close the output stream
-      out.close();
-    } catch (Exception e) {//Catch exception if any
-      System.err.println("Error: " + e.getMessage());
-    }
-
-    System.out.println(testChart.toString());
-
-    // Pie Chart
-
-    try {
-      doc = xmlReader
-          .read("/Users/ngoodman/dev/workspace/pentahoflashcharts/solutions/openflashchart/charts/piechart.xml");
-    } catch (DocumentException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      return;
-    }
-    testing = new PentahoOFC4JHelper(doc, testdata, false);
-
-    testChart = testing.convert();
-    try {
-      // Create file 
-      FileWriter fstream = new FileWriter(
-          "/Users/ngoodman/pentaho/biserver-ce-2.0.0.stable/tomcat/webapps/ofc/testoutput3.json");
-      BufferedWriter out = new BufferedWriter(fstream);
-      out.write(testChart.toString());
-      //Close the output stream
-      out.close();
-    } catch (Exception e) {//Catch exception if any
-      System.err.println("Error: " + e.getMessage());
-    }
-
-    System.out.println(testChart.toString());
-
-    //			  Horizontal Bar Chart
-
-    try {
-      doc = xmlReader
-          .read("/Users/ngoodman/dev/workspace/pentahoflashcharts/solutions/openflashchart/charts/barchart_horizontal.xml");
-    } catch (DocumentException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      return;
-    }
-    testing = new PentahoOFC4JHelper(doc, testdata, false);
-
-    testChart = testing.convert();
-    try {
-      // Create file 
-      FileWriter fstream = new FileWriter(
-          "/Users/ngoodman/pentaho/biserver-ce-2.0.0.stable/tomcat/webapps/ofc/testoutput4.json");
-      BufferedWriter out = new BufferedWriter(fstream);
-      out.write(testChart.toString());
-      //Close the output stream
-      out.close();
-    } catch (Exception e) {//Catch exception if any
-      System.err.println("Error: " + e.getMessage());
-    }
-
-    System.out.println(testChart.toString());
-
-    //					  Area Bar Chart
-
-    try {
-      doc = xmlReader
-          .read("/Users/ngoodman/dev/workspace/pentahoflashcharts/solutions/openflashchart/charts/areachart.xml");
-    } catch (DocumentException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      return;
-    }
-    testing = new PentahoOFC4JHelper(doc, testdata, false);
-
-    testChart = testing.convert();
-    try {
-      // Create file 
-      FileWriter fstream = new FileWriter(
-          "/Users/ngoodman/pentaho/biserver-ce-2.0.0.stable/tomcat/webapps/ofc/testoutput5.json");
-      BufferedWriter out = new BufferedWriter(fstream);
-      out.write(testChart.toString());
-      //Close the output stream
-      out.close();
-    } catch (Exception e) {//Catch exception if any
-      System.err.println("Error: " + e.getMessage());
-    }
-
-    System.out.println(testChart.toString());
-
-  }
-
-  public static class ExtendedChart extends Chart {
-    private String innerBackground;
-
-    private boolean legendVisible;
-
-    private Chart c;
-
-    public ExtendedChart(Chart c) {
-      this.c = c;
-    }
-
-//    public void setInnerBackground(String innerBackground) {
-//      this.innerBackground = innerBackground;
-//    }
-
-    public void setLegendVisible(boolean legendVisible) {
-      this.legendVisible = legendVisible;
-    }
-
-    public String toString() {
-      String str = c.toString();
-      // str = str.replaceAll("grid_colour", "grid-colour");
-      // inner background is not yet supported in the actual flash\
-//      String append = "{";
-//      if (innerBackground != null) {
-//        append += "\"inner_bg_colour\":\"" + innerBackground + "\",";
-//      }
-//      if (legendVisible) {
-//        append += "\"legend\":{\"position\":\"right\", \"visible\":true},";
-//      }
-//
-//      str = append + str.substring(1);
-      return str;
-    }
-  }
-
-  public PentahoOFC4JHelper(Document doc, IPentahoResultSet data, boolean byRow) {
-    this.byRow = byRow;
-    this.data = data;
-    this.c = new Chart();
-    this.ec = new ExtendedChart(c);
-    elements = new ArrayList<Element>();
-    colors = new ArrayList<String>();
-    outlineColors = new ArrayList<String>();
-
-    this.chartNode = doc.selectSingleNode(CHART_NODE_LOC);
-
-  }
-
   public Chart convert() {
 
     // These things apply to pretty much all charts
@@ -469,28 +319,91 @@ public class PentahoOFC4JHelper {
     // Build the elements (usually Chart Type specific)
     createElements();
 
-    // Setup a few additional things before adding elements
+    // Setup a few additional things after creating elements
     setupTitles();
     setupRange();
 
-    c.addElements(elements);
+    chart.addElements(elements);
 
-    return ec;
-
+    return chart;
+  }
+  
+  //
+  // Data Related Methods
+  // 
+  
+  public void setData(IPentahoResultSet data) {
+    hasRowHeaders = data.getMetaData().getRowHeaders() != null;
+    hasColumnHeaders = data.getMetaData().getColumnHeaders() != null;
+    if (!hasRowHeaders || !hasColumnHeaders) {
+      // this populates the data's row header and col headers if not already populated
+      data = PentahoDataTransmuter.transmute(data, false);
+    }
+    try {
+      rowHeaders = PentahoDataTransmuter.getCollapsedHeaders(IPentahoDataTypes.AXIS_ROW, data, '|');
+      columnHeaders = PentahoDataTransmuter.getCollapsedHeaders(IPentahoDataTypes.AXIS_COLUMN, data, '|');
+    } catch (Exception e) {
+      // should really NEVER get here
+      if (log != null) {
+        log.error(null, e);
+      }
+    }
+    
+    this.data = data;
+  }
+  
+  private int getColumnCount() {
+    if (!hasRowHeaders) {
+      return data.getColumnCount() - 1;
+    } else {
+      return data.getColumnCount();
+    }
   }
 
+  private int getRowCount() {
+    if (!hasColumnHeaders) {
+      return data.getRowCount() - 1;
+    } else {
+      return data.getRowCount();
+    }
+  }
+
+  private String getRowHeader(int r) {
+    if (!hasColumnHeaders) {
+      r = r + 1;
+    }
+    return rowHeaders[r];
+  }
+
+  private String getColumnHeader(int c) {
+    if (!hasRowHeaders) {
+      c = c + 1;
+    }
+    return columnHeaders[c];
+  }
+  
+  private Object getValueAt(int r, int c) {
+    if (!hasRowHeaders) {
+      c = c + 1;
+    }
+    if (!hasColumnHeaders) {
+      r = r + 1;
+    }
+    return data.getValueAt(r, c);
+  }
+  
+  //
+  // Setup Methods
+  //
+  
   public void setupOnclick() {
-
     Node urlTemplateNode = chartNode.selectSingleNode(URL_TEMPLATE_NODE_LOC);
-
     if (getValue(urlTemplateNode) != null) {
       baseURLTemplate = getValue(urlTemplateNode);
     }
-
   }
 
   private void setupTitles() {
-
     // in the Pentaho chart, range-title equals yLengend title
     Node rangeTitle = chartNode.selectSingleNode(RANGE_TITLE_NODE_LOC);
     Node rangeTitleFont = chartNode.selectSingleNode(RANGE_TITLE_FONT_NODE_LOC);
@@ -501,106 +414,35 @@ public class PentahoOFC4JHelper {
     Node domainTitleFont = chartNode.selectSingleNode(DOMAIN_TITLE_FONT_NODE_LOC);
     Node titleFont = chartNode.selectSingleNode(TITLE_FONT_NODE_LOC);
 
-    Text titleText = new Text();
-
     if (getValue(title) != null) {
+      Text titleText = new Text();
       titleText.setText(getValue(title));
-    } else {
-      // TODO Figure out a default
-      titleText.setText("Title");
+      titleText.setStyle(buildCSSStringFromNode(titleFont));      
+      chart.setTitle(titleText);
     }
-    titleText.setStyle(buildCSSStringFromNode(titleFont));
 
     Text domainText = new Text();
     if (getValue(domainTitle) != null) {
       domainText.setText(getValue(domainTitle));
     } else {
       // TODO figure out what to do if the header isn't CategoryDataset
-      domainText.setText(data.getMetaData().getColumnHeaders()[0][0].toString());
+      domainText.setText(columnHeaders[0]);
     }
     domainText.setStyle(buildCSSStringFromNode(domainTitleFont));
 
     Text rangeText = new Text();
     if (getValue(rangeTitle) != null) {
       rangeText.setText(getValue(rangeTitle));
-    } else {
-      // TODO set it to ??
-      rangeText.setText("Range Title");
+      rangeText.setStyle(buildCSSStringFromNode(rangeTitleFont));
+      chart.setYLegend(rangeText);
     }
-    rangeText.setStyle(buildCSSStringFromNode(rangeTitleFont));
-
-    c.setYLegend(rangeText);
-    // need to support YRightLegend, exposed as y2_legend in open flash charts
     
-    c.setXLegend(domainText);
-    c.setTitle(titleText);
-
-  }
-
-  public static String buildCSSStringFromNode(Node n) {
-
-    String fontFamily = null;
-    String fontSize = null;
-    String fontWeight = null;
-    String fontStyle = null;
-
-    if (n != null) {
-      Node fontFamilyNode = n.selectSingleNode(FONT_FAMILY_NODE_LOC);
-      fontFamily = getValue(fontFamilyNode);
-      Node fontSizeNode = n.selectSingleNode(FONT_SIZE_NODE_LOC);
-      fontSize = getValue(fontSizeNode);
-      Node fontBoldNode = n.selectSingleNode(FONT_BOLD_NODE_LOC);
-      if (fontBoldNode != null && "true".equals(fontBoldNode.getText().trim())) {
-        fontWeight = "bold";
-      }
-      Node fontItalicNode = n.selectSingleNode(FONT_ITALIC_NODE_LOC);
-      if (fontItalicNode != null && "true".equals(fontItalicNode.getText().trim())) {
-        fontStyle = "italic";
-      }
-    }
-    return buildCSSString(fontFamily, fontSize, fontWeight, fontStyle);
-
-  }
-
-  public static String getValue(Node n) {
-
-    if (n != null && n.getText() != null && n.getText().length() > 0) {
-      return n.getText().trim();
-    } else {
-      return null;
-    }
-
-  }
-
-  public static String buildCSSString(String fontname, String fontsize, String fontweight, String fontstyle) {
-    StringBuffer sb = new StringBuffer();
-
-    if (null != fontname)
-      sb.append(CSS_FONT_FAMILY.replace(ARG, fontname));
-    else
-      sb.append(CSS_FONT_FAMILY.replace(ARG, CSS_FONT_FAMILY_DEFAULT));
-
-    if (null != fontsize)
-      sb.append(CSS_FONT_SIZE.replace(ARG, fontsize));
-    else
-      sb.append(CSS_FONT_SIZE.replace(ARG, CSS_FONT_SIZE_DEFAULT));
-
-    if (null != fontweight)
-      sb.append(CSS_FONT_WEIGHT.replace(ARG, fontweight));
-    else
-      sb.append(CSS_FONT_WEIGHT.replace(ARG, CSS_FONT_WEIGHT_DEFAULT));
-
-    if (null != fontstyle)
-      sb.append(CSS_FONT_STYLE.replace(ARG, fontstyle));
-    else
-      sb.append(CSS_FONT_STYLE.replace(ARG, CSS_FONT_STYLE_DEFAULT));
-
-    return sb.toString();
-
+    // TODO: need to support YRightLegend, exposed as y2_legend in open flash charts
+    
+    chart.setXLegend(domainText);
   }
 
   public void setupDataAndType() {
-
     Node temp = chartNode.selectSingleNode(DATASET_TYPE_NODE_LOC);
     if (getValue(temp) != null) {
       datasetType = getValue(temp);
@@ -610,30 +452,25 @@ public class PentahoOFC4JHelper {
     }
 
     temp = chartNode.selectSingleNode(CHART_TYPE_NODE_LOC);
-
     if (getValue(temp) != null) {
       chartType = getValue(temp);
     } else {
       // This should NEVER happen.
       chartType = CHART_TYPE_DEFAULT;
     }
-
   }
 
   /**
    * Setup colors for the series and also background
-   *
    */
   public void setupColors() {
 
     Node temp = chartNode.selectSingleNode(COLOR_PALETTE_NODE_LOC);
     if (temp != null) {
       Object[] colorNodes = temp.selectNodes(COLOR_NODE_LOC).toArray();
-
       for (int j = 0; j < colorNodes.length; j++) {
         colors.add(getValue((Node) colorNodes[j]));
       }
-
     } else {
       for (int i = 0; i < COLORS_DEFAULT.length; i++) {
         colors.add(COLORS_DEFAULT[i]);
@@ -643,48 +480,47 @@ public class PentahoOFC4JHelper {
     temp = chartNode.selectSingleNode(OUTLINE_COLOR_PALETTE_NODE_LOC);
     if (temp != null) {
       Object[] colorNodes = temp.selectNodes(COLOR_NODE_LOC).toArray();
-
       for (int j = 0; j < colorNodes.length; j++) {
         outlineColors.add(getValue((Node) colorNodes[j]));
       }
-
     } else {
       for (int i = 0; i < COLORS_DEFAULT.length; i++) {
         outlineColors.add(COLORS_DEFAULT[i]);
       }
     }
 
-
     // Use either chart-background or plot-background (chart takes precendence)
     temp = chartNode.selectSingleNode(PLOT_BACKGROUND_NODE_LOC);
     if (getValue(temp) != null) {
       String type = temp.valueOf(PLOT_BACKGROUND_COLOR_XPATH);
       if (type != null && COLOR_TYPE.equals(type)) {
-        c.setBackgroundColour(getValue(temp));
-        c.setInnerBackgroundColour(getValue(temp));
+        chart.setBackgroundColour(getValue(temp));
+        chart.setInnerBackgroundColour(getValue(temp));
       }
     }
     temp = chartNode.selectSingleNode(CHART_BACKGROUND_NODE_LOC);
     if (getValue(temp) != null) {
       String type = temp.valueOf(CHART_BACKGROUND_COLOR_XPATH);
       if (type != null && COLOR_TYPE.equals(type))
-        c.setBackgroundColour(getValue(temp));
+        chart.setBackgroundColour(getValue(temp));
     }
-
   }
 
   public void setupStyles() {
-
-    if (BARCHART_TYPE.equals(chartType))
+    if (BARCHART_TYPE.equals(chartType)) {
       setupBarStyles();
-    if (LINECHART_TYPE.equals(chartType))
+    } else if (LINECHART_TYPE.equals(chartType)) {
       setupLineStyles();
-    if (BARLINECHART_TYPE.equals(chartType)) {
+    } else if (BARLINECHART_TYPE.equals(chartType)) {
       setupBarStyles();
       setupLineStyles();
     } else if (PIECHART_TYPE.equals(chartType)) {
       setupPieStyles();
+    } else if (DOTCHART_TYPE.equals(chartType)) {
+      setupDotStyles();
     }
+    
+    // TODO: setupBubbleStyles! missing dots
     
     Node temp = chartNode.selectSingleNode(TOOLTIP_NODE_LOC);
     if (getValue(temp) != null) {
@@ -692,13 +528,14 @@ public class PentahoOFC4JHelper {
     }
   }
 
+  @SuppressWarnings("unchecked")
   public void setupLineRange() {
     int rangeMin = 0;
     int rangeMax = 100;
     int steps = 9;
 
-    String rangeColor = "#000000";
-    String rangeGridColor = "#aaaaaa";
+    String rangeColor = AXIS_COLOR_DEFAULT;
+    String rangeGridColor = AXIS_GRID_COLOR_DEFAULT;
     int rangeStroke = 1;
 
     if (CATEGORY_TYPE.equals(datasetType) || XYZ_TYPE.equals(datasetType)) {
@@ -706,7 +543,7 @@ public class PentahoOFC4JHelper {
       if (BARLINECHART_TYPE.equals(chartType)) {
         rangeMin = Integer.MAX_VALUE;
         rangeMax = Integer.MIN_VALUE;
-        List nodes = chartNode.selectNodes("line-series/series");
+        List nodes = chartNode.selectNodes(LINE_SERIES_SERIES_NODE_LOC);
         List<String> bars = new ArrayList<String>();
         for (Object node : nodes) {
           if (getValue((Node) node) != null) {
@@ -714,10 +551,10 @@ public class PentahoOFC4JHelper {
           }
         }
 
-        for (int c = 1; c < getColumnCount(); c++) {
-          String text = (String) getValueAt(0, c);
+        for (int c = 0; c < getColumnCount(); c++) {
+          String text = getColumnHeader(c);
           if (bars.contains(text)) {
-            for (int r = 1; r < getRowCount(); r++) {
+            for (int r = 0; r < getRowCount(); r++) {
               if (rangeMin > ((Number) getValueAt(r, c)).intValue())
                 rangeMin = ((Number) getValueAt(r, c)).intValue();
               if (rangeMax < ((Number) getValueAt(r, c)).intValue())
@@ -726,11 +563,11 @@ public class PentahoOFC4JHelper {
           }
         }
       } else {
-        rangeMin = ((Number) getValueAt(1, 1)).intValue();
+        rangeMin = ((Number) getValueAt(0, 0)).intValue();
         rangeMax = rangeMin;
         // Iterate over columns 1+
-        for (int c = 1; c < getColumnCount(); c++) {
-          for (int r = 1; r < getRowCount(); r++) {
+        for (int c = 0; c < getColumnCount(); c++) {
+          for (int r = 0; r < getRowCount(); r++) {
             if (rangeMin > ((Number) getValueAt(r, c)).intValue())
               rangeMin = ((Number) getValueAt(r, c)).intValue();
             if (rangeMax < ((Number) getValueAt(r, c)).intValue())
@@ -755,22 +592,22 @@ public class PentahoOFC4JHelper {
       maxDefined = true;
     }
 
-    temp = chartNode.selectSingleNode("lines-range-color");
+    temp = chartNode.selectSingleNode(LINES_RANGE_COLOR_NODE_LOC);
     if (getValue(temp) != null) {
       rangeColor = getValue(temp);
     }
 
-    temp = chartNode.selectSingleNode("lines-range-grid-color");
+    temp = chartNode.selectSingleNode(LINES_RANGE_GRID_COLOR_NODE_LOC);
     if (getValue(temp) != null) {
       rangeGridColor = getValue(temp);
     }
 
-    temp = chartNode.selectSingleNode("lines-range-stroke");
+    temp = chartNode.selectSingleNode(LINES_RANGE_STROKE_NODE_LOC);
     if (getValue(temp) != null) {
       rangeStroke = Integer.parseInt(getValue(temp));
     }
 
-    temp = chartNode.selectSingleNode("range-steps");
+    temp = chartNode.selectSingleNode(LINE_RANGE_STEPS_NODE_LOC);
     if (getValue(temp) != null) {
       steps = new Integer(getValue(temp)).intValue();
     }
@@ -795,25 +632,15 @@ public class PentahoOFC4JHelper {
       rangeMax = rangeMin + (chunksize * (steps + 2));
     }
 
-    //    if (HORIZONTAL_ORIENTATION.equals(orientation)) {
-    //      XAxis xaxis = new XAxis();
-    //      xaxis.setRange(rangeMin, rangeMax, stepforchart);
-    //      xaxis.setStroke(rangeStroke);
-    //      xaxis.setColour(rangeColor);
-    //      xaxis.setGridColour(rangeGridColor);
-    //      c.setXAxis(xaxis);
-    //
-    //    } else {
     YAxis yaxis = new YAxis();
-
     yaxis.setRange(rangeMin, rangeMax, stepforchart);
     yaxis.setStroke(rangeStroke);
     yaxis.setColour(rangeColor);
     yaxis.setGridColour(rangeGridColor);
-    c.setYAxisRight(yaxis);
-    //    }
+    chart.setYAxisRight(yaxis);
   }
 
+  @SuppressWarnings("unchecked")
   public int getStackedMaxRange() {
     int maxRange = 0;
     for (int i = 0; i < sbc.getStackCount(); i++) {
@@ -825,20 +652,18 @@ public class PentahoOFC4JHelper {
       if (currRange > maxRange) {
         maxRange = currRange;
       }
-    }
-    
+    }    
     return maxRange;
-    
   }
   
+  @SuppressWarnings("unchecked")
   public void setupRange() {
-
     int rangeMin = 0;
     int rangeMax = 100;
     int steps = 9;
 
-    String rangeColor = "#000000";
-    String rangeGridColor = "#aaaaaa";
+    String rangeColor = AXIS_COLOR_DEFAULT;
+    String rangeGridColor = AXIS_GRID_COLOR_DEFAULT;
     int rangeStroke = 1;
 
     if (CATEGORY_TYPE.equals(datasetType) || XYZ_TYPE.equals(datasetType) || XY_TYPE.equals(datasetType)) {
@@ -851,7 +676,7 @@ public class PentahoOFC4JHelper {
         } else {
           rangeMin = Integer.MAX_VALUE;
           rangeMax = Integer.MIN_VALUE;
-          List nodes = chartNode.selectNodes("bar-series/series");
+          List nodes = chartNode.selectNodes(BAR_SERIES_SERIES_NODE_LOC);
           List<String> bars = new ArrayList<String>();
           for (Object node : nodes) {
             if (getValue((Node) node) != null) {
@@ -859,10 +684,10 @@ public class PentahoOFC4JHelper {
             }
           }
   
-          for (int c = 1; c < getColumnCount(); c++) {
-            String text = (String) getValueAt(0, c);
+          for (int c = 0; c < getColumnCount(); c++) {
+            String text = getColumnHeader(c);
             if (bars.contains(text)) {
-              for (int r = 1; r < getRowCount(); r++) {
+              for (int r = 0; r < getRowCount(); r++) {
                 if (rangeMin > ((Number) getValueAt(r, c)).intValue())
                   rangeMin = ((Number) getValueAt(r, c)).intValue();
                 if (rangeMax < ((Number) getValueAt(r, c)).intValue())
@@ -872,14 +697,14 @@ public class PentahoOFC4JHelper {
           }
         }
       } else if (XYZ_TYPE.equals(datasetType) || XY_TYPE.equals(datasetType)) {
-        rangeMin = ((Number) getValueAt(1, 2)).intValue();
+        rangeMin = ((Number) getValueAt(0, 1)).intValue();
         rangeMax = rangeMin;
         // Iterate over 2nd row
-        for (int r = 1; r < getRowCount(); r++) {
-            if (rangeMin > ((Number) getValueAt(r, 2)).intValue())
-              rangeMin = ((Number) getValueAt(r, 2)).intValue();
-            if (rangeMax < ((Number) getValueAt(r, 2)).intValue())
-              rangeMax = ((Number) getValueAt(r, 2)).intValue();
+        for (int r = 0; r < getRowCount(); r++) {
+            if (rangeMin > ((Number) getValueAt(r, 1)).intValue())
+              rangeMin = ((Number) getValueAt(r, 1)).intValue();
+            if (rangeMax < ((Number) getValueAt(r, 1)).intValue())
+              rangeMax = ((Number) getValueAt(r, 1)).intValue();
         }
       } else {
         
@@ -887,11 +712,11 @@ public class PentahoOFC4JHelper {
           rangeMin = 0;
           rangeMax = getStackedMaxRange();
         } else {
-          rangeMin = ((Number) getValueAt(1, 1)).intValue();
+          rangeMin = ((Number) getValueAt(0, 0)).intValue();
           rangeMax = rangeMin;
           // Iterate over columns 1+
-          for (int c = 1; c < getColumnCount(); c++) {
-            for (int r = 1; r < getRowCount(); r++) {
+          for (int c = 0; c < getColumnCount(); c++) {
+            for (int r = 0; r < getRowCount(); r++) {
               if (rangeMin > ((Number) getValueAt(r, c)).intValue())
                 rangeMin = ((Number) getValueAt(r, c)).intValue();
               if (rangeMax < ((Number) getValueAt(r, c)).intValue())
@@ -918,22 +743,22 @@ public class PentahoOFC4JHelper {
       maxDefined = true;
     }
     
-    temp = chartNode.selectSingleNode("range-steps");
+    temp = chartNode.selectSingleNode(RANGE_STEPS_NODE_LOC);
     if (getValue(temp) != null) {
       steps = new Integer(getValue(temp)).intValue();
     }
 
-    temp = chartNode.selectSingleNode("range-color");
+    temp = chartNode.selectSingleNode(RANGE_COLOR_NODE_LOC);
     if (getValue(temp) != null) {
       rangeColor = getValue(temp);
     }
 
-    temp = chartNode.selectSingleNode("range-grid-color");
+    temp = chartNode.selectSingleNode(RANGE_GRID_COLOR_NODE_LOC);
     if (getValue(temp) != null) {
       rangeGridColor = getValue(temp);
     }
 
-    temp = chartNode.selectSingleNode("range-stroke");
+    temp = chartNode.selectSingleNode(RANGE_STROKE_NODE_LOC);
     if (getValue(temp) != null) {
       rangeStroke = Integer.parseInt(getValue(temp));
     }
@@ -964,90 +789,87 @@ public class PentahoOFC4JHelper {
       xaxis.setStroke(rangeStroke);
       xaxis.setColour(rangeColor);
       xaxis.setGridColour(rangeGridColor);
-      c.setXAxis(xaxis);
-
+      chart.setXAxis(xaxis);
     } else {
       YAxis yaxis = new YAxis();
       yaxis.setRange(rangeMin, rangeMax, stepforchart);
       yaxis.setStroke(rangeStroke);
       yaxis.setColour(rangeColor);
       yaxis.setGridColour(rangeGridColor);
-      c.setYAxis(yaxis);
+      chart.setYAxis(yaxis);
     }
-
   }
 
   public void setupPieStyles() {
-
-    Node temp = chartNode.selectSingleNode("animate");
+    Node temp = chartNode.selectSingleNode(ANIMATE_NODE_LOC);
     if (getValue(temp) != null) {
-      animate = "true".equals(getValue(temp));
+      animate = "true".equals(getValue(temp)); //$NON-NLS-1$
     }
     
-    temp = chartNode.selectSingleNode("start-angle");
+    temp = chartNode.selectSingleNode(START_ANGLE_NODE_LOC);
     if (getValue(temp) != null) {
       startAngle = Integer.parseInt(getValue(temp));
     }
   }
   
   public void setupBarStyles() {
-
     barchartstyle = BARCHART_STYLE_DEFAULT;
 
     // 3d
     Node temp = chartNode.selectSingleNode(IS3D_NODE_LOC);
-    if (getValue(temp) != null && "true".equals(getValue(temp))) {
+    if (getValue(temp) != null && "true".equals(getValue(temp))) { //$NON-NLS-1$
       barchartstyle = BarChart.Style.THREED;
+      
+      // also load 3d height
+      temp = chartNode.selectSingleNode(HEIGHT_3D_NODE_LOC);
+      if (getValue(temp) != null) {
+        threedheight = Integer.parseInt(getValue(temp));
+      }
     }
     // Glass
     temp = chartNode.selectSingleNode(ISGLASS_NODE_LOC);
-    if (getValue(temp) != null && "true".equals(getValue(temp))) {
+    if (getValue(temp) != null && "true".equals(getValue(temp))) { //$NON-NLS-1$
       barchartstyle = BarChart.Style.GLASS;
     }
     // Sketch
     temp = chartNode.selectSingleNode(ISSKETCH_NODE_LOC);
-    if (getValue(temp) != null && "true".equals(getValue(temp))) {
+    if (getValue(temp) != null && "true".equals(getValue(temp))) { //$NON-NLS-1$
       issketch = true;
+      // Also load fun factor
+      temp = chartNode.selectSingleNode(FUN_FACTOR_NODE_LOC);
+      if (getValue(temp) != null) {
+        sketchBarFunFactor = Integer.parseInt(getValue(temp));
+      } else {
+        sketchBarFunFactor = SKETCH_FUNFACTOR_DEFAULT;
+      }
     } else {
       issketch = false;
     }
 
-    // Sketch
+    // Stacked
     temp = chartNode.selectSingleNode(ISSTACKED_NODE_LOC);
     if (getValue(temp) != null) {
-      isstacked = "true".equals(getValue(temp));
+      isstacked = "true".equals(getValue(temp)); //$NON-NLS-1$
     }
-
     
+    // Orientation
     temp = chartNode.selectSingleNode(ORIENTATION_NODE_LOC);
-    if (getValue(temp) != null)
+    if (getValue(temp) != null) {
       orientation = getValue(temp);
-    else
-      orientation = ORIENTATION_DEFAULT;
-    
-    temp = chartNode.selectSingleNode("fun-factor");
-    if (getValue(temp) != null) {
-      sketchBarFunFactor = Integer.parseInt(getValue(temp));
     } else {
-      sketchBarFunFactor = SKETCH_FUNFACTOR_DEFAULT;
-    }
-
-    temp = chartNode.selectSingleNode("height-3d");
-    if (getValue(temp) != null) {
-      threedheight = Integer.parseInt(getValue(temp));
+      orientation = ORIENTATION_DEFAULT;
     }
   }
 
   public void setupLineStyles() {
-
     Node temp = chartNode.selectSingleNode(DOTSTYLE_NODE_LOC);
 
     if (getValue(temp) != null) {
-      if ("dot".equals(getValue(temp)))
+      if ("dot".equals(getValue(temp))) //$NON-NLS-1$
         linechartstyle = LineChart.Style.DOT;
-      else if ("normal".equals(getValue(temp)))
+      else if ("normal".equals(getValue(temp))) //$NON-NLS-1$
         linechartstyle = LineChart.Style.NORMAL;
-      else if ("hollow".equals(getValue(temp)))
+      else if ("hollow".equals(getValue(temp))) //$NON-NLS-1$
         linechartstyle = LineChart.Style.HOLLOW;
       else
         linechartstyle = LINECHART_STYLE_DEFAULT;
@@ -1055,72 +877,184 @@ public class PentahoOFC4JHelper {
       linechartstyle = LINECHART_STYLE_DEFAULT;
     }
     
-    temp = chartNode.selectSingleNode("line-width");
-    
+    temp = chartNode.selectSingleNode(LINE_WIDTH_NODE_LOC);
     if (getValue(temp) != null) {
-      linechartwidth = Integer.parseInt(getValue(temp));
+      // parse with double so 1.0 is parsable
+      linechartwidth = (int)Double.parseDouble(getValue(temp));
     }
     
     temp = chartNode.selectSingleNode(DOT_WIDTH_NODE_LOC);
     if (getValue(temp) != null) {
       dotwidth = Integer.parseInt(getValue(temp));
     }
-
+  }
+  
+  void setupDotStyles() {
+    Node temp = chartNode.selectSingleNode(DOT_WIDTH_NODE_LOC);
+    if (getValue(temp) != null) {
+      dotwidth = Integer.parseInt(getValue(temp));
+    }
   }
 
-  public void createElements() {
-
+  public void setupDomain() {
+    String[] labels = null;
+    Number domainMin = null;
+    Number domainMax = null;
+    Integer stepforchart = null;
+    
     if (CATEGORY_TYPE.equals(datasetType)) {
+      int rowCount = getRowCount();
+      labels = new String[rowCount];
+      for (int j = 0; j < rowCount; j++) {
+        labels[j] = getRowHeader(j);
+      }
+    } else if (XYZ_TYPE.equals(datasetType) || XY_TYPE.equals(datasetType)) {
+      domainMin = ((Number) getValueAt(0, 0)).intValue();
+      domainMax = domainMin;
+      // Iterate over rows
+      for (int r = 1; r < getRowCount(); r++) {
+          if (domainMin.intValue() > ((Number) getValueAt(r, 0)).intValue()) {
+            domainMin = ((Number) getValueAt(r, 0)).intValue();
+          }
+          if (domainMax.intValue() < ((Number) getValueAt(r, 0)).intValue()) {
+            domainMax = ((Number) getValueAt(r, 0)).intValue();
+          }
+      }
+      
+      int steps = 9;
+      int diff = domainMax.intValue() - domainMin.intValue();
+      
+      Node temp = chartNode.selectSingleNode(DOMAIN_STEPS_NODE_LOC);
+      if (getValue(temp) != null) {
+        steps = new Integer(getValue(temp)).intValue();
+      }
+      
+      int chunksize = diff / steps;
+      
+      if (chunksize > 0) {
+        stepforchart = new Integer(chunksize);
+      }
+      
+      // If actual min is positive, don't go below ZERO
+      if (domainMin.intValue() > 0 && domainMin.intValue() - chunksize < 0) {
+        domainMin = 0;
+      } else {
+        domainMin = domainMin.intValue() - chunksize;
+      }
+      domainMax = domainMin.intValue() + (chunksize * (steps + 2));
 
+      temp = chartNode.selectSingleNode(DOMAIN_MINIMUM_NODE_LOC);
+      if (getValue(temp) != null) {
+        domainMin = new Integer(getValue(temp)).intValue();
+      }
+
+      temp = chartNode.selectSingleNode(DOMAIN_MAXIMUM_NODE_LOC);
+      if (getValue(temp) != null) {
+        domainMax = new Integer(getValue(temp)).intValue();
+      }
+    }
+
+    String domainColor = AXIS_COLOR_DEFAULT;
+    String domainGridColor = AXIS_GRID_COLOR_DEFAULT;
+    int domainStroke = 1;
+
+    Node temp = chartNode.selectSingleNode(DOMAIN_COLOR_NODE_LOC);
+    if (getValue(temp) != null) {
+      domainColor = getValue(temp);
+    }
+
+    temp = chartNode.selectSingleNode(DOMAIN_GRID_COLOR_NODE_LOC);
+    if (getValue(temp) != null) {
+      domainGridColor = getValue(temp);
+    }
+
+    temp = chartNode.selectSingleNode(DOMAIN_STROKE_NODE_LOC);
+    if (getValue(temp) != null) {
+      domainStroke = Integer.parseInt(getValue(temp));
+    }
+
+    if (HORIZONTAL_ORIENTATION.equals(orientation)) {
+      YAxis yaxis = new YAxis();
+      if (labels != null) {
+        yaxis.addLabels(labels);
+      }
+      yaxis.setStroke(domainStroke);
+      yaxis.setColour(domainColor);
+      yaxis.setGridColour(domainGridColor);
+      
+      if (domainMin != null && domainMax != null) {
+        yaxis.setRange(domainMin.intValue(), domainMax.intValue(), stepforchart);  
+      }
+      
+      chart.setYAxis(yaxis);
+    } else {
+      XAxis xaxis = new XAxis();
+      if (labels != null) {
+        xaxis.addLabels(labels);
+      }
+      xaxis.setStroke(domainStroke);
+      xaxis.setColour(domainColor);
+      xaxis.setGridColour(domainGridColor);
+      if (domainMin != null && domainMax != null) {
+        xaxis.setRange(domainMin.intValue(), domainMax.intValue(), stepforchart);  
+      }
+      
+      chart.setXAxis(xaxis);
+    }
+  }
+  
+  //
+  // Element Creation Methods
+  //
+
+  public void createElements() {
+    if (CATEGORY_TYPE.equals(datasetType)) {
       int columnCount;
 
       // Ignore additional columns for PieCharts
-      if (PIECHART_TYPE.equals(chartType))
-        columnCount = 2;
-      else
+      if (PIECHART_TYPE.equals(chartType)) {
+        columnCount = 1;
+      } else {
         columnCount = getColumnCount();
-
+      }
       // Create a "series" or element for each column past the first
-      for (int i = 1; i < columnCount; i++) {
+      for (int i = 0; i < columnCount; i++) {
         elements.add(getElementForColumn(i));
       }
     } else if (XYZ_TYPE.equals(datasetType) || XY_TYPE.equals(datasetType)) {
       
-      int rowCount = getRowCount();
-      for (int i = 1; i < rowCount; i++) {
+      for (int row = 0; row < getRowCount(); row++) {
         Element e = null;
-        String text = (String) getValueAt(i, 0);        
+        String text = getRowHeader(row);        
         if (BUBBLECHART_TYPE.equals(chartType) || DOTCHART_TYPE.equals(chartType)) {
-          ScatterChart sc = new ScatterChart("");
-          sc.setColour(colors.get(i-1));
-          Number x = (Number)getValueAt(i, 1);
-          Number y = (Number)getValueAt(i, 2);
+          ScatterChart sc = new ScatterChart(""); //$NON-NLS-1$
+          sc.setColour(getColor(row));
+          Number x = (Number)getValueAt(row, 0);
+          Number y = (Number)getValueAt(row, 1);
           Number z = null; 
           if (XYZ_TYPE.equals(datasetType)) {
-            z = (Number)getValueAt(i, 3);
+            z = (Number)getValueAt(row, 2);
             setupDotSize(sc, z);
           } else {
             if (dotwidth != null) {
               sc.setDotSize(dotwidth);
-            
             }
             
-            Node temp = chartNode.selectSingleNode("dot-label-content");
+            Node temp = chartNode.selectSingleNode(DOT_LABEL_CONTENT_NODE_LOC);
             if (getValue(temp) != null) {
               sc.setTooltip(MessageFormat.format(getValue(temp), text, 
                   NumberFormat.getInstance().format(x), NumberFormat.getInstance().format(y)));
             } else {
-              sc.setTooltip(MessageFormat.format("{0}: {1}, {2}", text, 
+              sc.setTooltip(MessageFormat.format("{0}: {1}, {2}", text,  //$NON-NLS-1$
                   NumberFormat.getInstance().format(x), NumberFormat.getInstance().format(y)));
             }
           }
           sc.addPoint(x.doubleValue(), y.doubleValue());
           
-          
           if (BUBBLECHART_TYPE.equals(datasetType)) {
-            Node temp = chartNode.selectSingleNode("bubble-label-content");
+            Node temp = chartNode.selectSingleNode(BUBBLE_LABEL_CONTENT_NODE_LOC);
             if (getValue(temp) != null) {
-              Node temp2 = chartNode.selectSingleNode("bubble-label-z-format");
+              Node temp2 = chartNode.selectSingleNode(BUBBLE_LABEL_Z_FORMAT_NODE_LOC);
               String zstr = null;
               if (getValue(temp2) != null) {
                 DecimalFormat df = new DecimalFormat(getValue(temp2));
@@ -1142,173 +1076,23 @@ public class PentahoOFC4JHelper {
       }
     }
   }
-
-  private int getColumnCount() {
-    if (!byRow) {
-      return data.getColumnCount();
-    } else {
-      return data.getRowCount() + 1;
-    }
-  }
-
-  private int getRowCount() {
-    if (byRow) {
-      return data.getColumnCount();
-    } else {
-      return data.getRowCount() + 1;
-    }
-  }
-
-  private Object getValueAt(int i, int n) {
-    if (!byRow) {
-      if (i == 0) {
-        return data.getMetaData().getColumnHeaders()[0][n];
-      } else {
-        return data.getValueAt(i - 1, n);
-      }
-    } else {
-      if (n == 0) {
-        return data.getMetaData().getColumnHeaders()[0][i];
-      } else {
-        return data.getValueAt(n - 1, i);
-      }
-    }
-  }
-
-  public void setupDomain() {
-    String[] labels = null;
-
-    Number domainMin = null;
-    Number domainMax = null;
-    Integer stepforchart = null;
-    
-    if (CATEGORY_TYPE.equals(datasetType)) {
-      int index = 0;
-      int rowCount = getRowCount() - 1;
-      labels = new String[rowCount];
-      for (int j = 0; j < rowCount; j++) {
-        Object obj = getValueAt(j + 1, index);
-        if (obj instanceof java.sql.Timestamp || obj instanceof java.util.Date) {
-          labels[j] = sf.format(obj);
-        } else {
-          labels[j] = obj.toString();
-        }
-      }
-    } else if (XYZ_TYPE.equals(datasetType) || XY_TYPE.equals(datasetType)) {
-      domainMin = ((Number) getValueAt(1, 1)).intValue();
-      domainMax = domainMin;
-      // Iterate over rows
-      for (int r = 1; r < getRowCount(); r++) {
-          if (domainMin.intValue() > ((Number) getValueAt(r, 1)).intValue()) {
-            domainMin = ((Number) getValueAt(r, 1)).intValue();
-          }
-          if (domainMax.intValue() < ((Number) getValueAt(r, 1)).intValue()) {
-            domainMax = ((Number) getValueAt(r, 1)).intValue();
-          }
-      }
-      
-      int steps = 9;
-      int diff = domainMax.intValue() - domainMin.intValue();
-      
-      Node temp = chartNode.selectSingleNode("domain-steps");
-      if (getValue(temp) != null) {
-        steps = new Integer(getValue(temp)).intValue();
-      }
-      
-      int chunksize = diff / steps;
-      
-      if (chunksize > 0) {
-        stepforchart = new Integer(chunksize);
-      }
-      
-      // If actual min is positive, don't go below ZERO
-      if (domainMin.intValue() > 0 && domainMin.intValue() - chunksize < 0)
-        domainMin = 0;
-      else
-        domainMin = domainMin.intValue() - chunksize;
-
-      domainMax = domainMin.intValue() + (chunksize * (steps + 2));
-
-      temp = chartNode.selectSingleNode(DOMAIN_MINIMUM_NODE_LOC);
-      if (getValue(temp) != null) {
-        domainMin = new Integer(getValue(temp)).intValue();
-      }
-
-      temp = chartNode.selectSingleNode(DOMAIN_MAXIMUM_NODE_LOC);
-      if (getValue(temp) != null) {
-        domainMax = new Integer(getValue(temp)).intValue();
-      }
-      
-    }
-
-    String domainColor = "#000000";
-    String domainGridColor = "#aaaaaa";
-    int domainStroke = 1;
-
-    Node temp = chartNode.selectSingleNode("domain-color");
-    if (getValue(temp) != null) {
-      domainColor = getValue(temp);
-    }
-
-    temp = chartNode.selectSingleNode("domain-grid-color");
-    if (getValue(temp) != null) {
-      domainGridColor = getValue(temp);
-    }
-
-    temp = chartNode.selectSingleNode("domain-stroke");
-    if (getValue(temp) != null) {
-      domainStroke = Integer.parseInt(getValue(temp));
-    }
-
-    if (HORIZONTAL_ORIENTATION.equals(orientation)) {
-      YAxis yaxis = new YAxis();
-      if (labels != null) {
-        yaxis.addLabels(labels);
-      }
-      yaxis.setStroke(domainStroke);
-      yaxis.setColour(domainColor);
-      yaxis.setGridColour(domainGridColor);
-      
-      if (domainMin != null && domainMax != null) {
-        yaxis.setRange(domainMin.intValue(), domainMax.intValue(), stepforchart);  
-      }
-      
-      c.setYAxis(yaxis);
-    } else {
-      XAxis xaxis = new XAxis();
-      if (labels != null) {
-        xaxis.addLabels(labels);
-      }
-      xaxis.setStroke(domainStroke);
-      xaxis.setColour(domainColor);
-      xaxis.setGridColour(domainGridColor);
-      if (domainMin != null && domainMax != null) {
-        xaxis.setRange(domainMin.intValue(), domainMax.intValue(), stepforchart);  
-      }
-      
-      c.setXAxis(xaxis);
-    }
-
-  }
   
-  public LineChart getLineChart(int n) {
+  public LineChart getLineChartFromColumn(int col) {
     LineChart lc = new LineChart(this.linechartstyle);
-    for (int i = 1; i < getRowCount(); i++) {
-      double d = ((Number) getValueAt(i, n)).doubleValue();
+    for (int row = 0; row < getRowCount(); row++) {
+      double d = ((Number) getValueAt(row, col)).doubleValue();
       LineChart.Dot dot = new LineChart.Dot(d);
 
       if (dotwidth != null) {
         dot.setDotSize(dotwidth);
       }
       lc.addDots(dot);
-      if (null != baseURLTemplate)
-        lc.setOn_click(baseURLTemplate);
     }
     if (linechartwidth != null) {
       lc.setWidth(linechartwidth);
     }
-    //       TODO wrap around the set of colors if bars.length > colors.length
-    lc.setColour(colors.get(n - 1));
+
+    lc.setColour(getColor(col));
     
     if (tooltipText != null) {
       lc.setTooltip(tooltipText);
@@ -1317,61 +1101,53 @@ public class PentahoOFC4JHelper {
     return lc;
   }
   
-  StackedBarChart sbc;
+  public Element getStackedBarChartFromColumn(int col) {
+    if (sbc == null) {
+      sbc = new StackedBarChart();
+    }
+
+    StackKey key = new StackKey();
+    String text = getColumnHeader(col);
+    key.setText(text);
+    key.setColour(getColor(col));
+    sbc.addKeys(key);
+    
+    for (int row = 0; row < getRowCount(); row++) {
+      Stack stack = null;
+      if (sbc.getStackCount() > row) {
+        stack = sbc.stack(row);
+      } else {
+        stack = sbc.newStack();
+      }
+      double d = ((Number) getValueAt(row, col)).doubleValue();
+      stack.addStackValues(new StackValue(d, getColor(col)));
+    }
+    
+    return sbc;
+  }
   
-  public Element getVerticalBarChart(int n) {
+  public Element getVerticalBarChartFromColumn(int col) {
     if (isstacked) {
-      if (sbc == null) {
-        sbc = new StackedBarChart();
-      }
-      // keys ?
-
-      StackKey key = new StackKey();
-      String text = (String) getValueAt(0, n);
-      key.setText(text);
-      // key.setFontSize(???)
-      key.setColour(colors.get(n - 1));
-      sbc.addKeys(key);
-      // values
-
-      StackValue[] datas = new StackValue[getRowCount()];
-      
-      for (int i = 1; i < getRowCount(); i++) {
-        Stack stack = null;
-        if (sbc.getStackCount() > i - 1) {
-          stack = sbc.stack(i - 1);
-        } else {
-          stack = sbc.newStack();
-        }
-        double d = ((Number) getValueAt(i, n)).doubleValue();
-        stack.addStackValues(new StackValue(d, colors.get(n - 1)));
-      }
-      
-      return sbc;
+      return getStackedBarChartFromColumn(col);
     } else {
-      
       BarChart bc;
-      // Is Sketch?
       if (issketch) {
         bc = new SketchBarChart();
         ((SketchBarChart) bc).setFunFactor(sketchBarFunFactor);
-        ((SketchBarChart) bc).setOutlineColour(outlineColors.get(n - 1));
-        
+        ((SketchBarChart) bc).setOutlineColour(getOutlineColor(col));
       } else {
         bc = new BarChart(this.barchartstyle);
         if (this.barchartstyle == Style.THREED && threedheight != null) {
-          c.getXAxis().set3D(threedheight);
+          chart.getXAxis().set3D(threedheight);
         }
       }
 
-      for (int i = 1; i < getRowCount(); i++) {
-        double d = ((Number) getValueAt(i, n)).doubleValue();
+      for (int row = 0; row < getRowCount(); row++) {
+        double d = ((Number) getValueAt(row, col)).doubleValue();
         bc.addBars(new BarChart.Bar(d));
-        if (null != baseURLTemplate)
-          bc.setOn_click(baseURLTemplate);
       }
-      // TODO wrap around the set of colors if bars.length > colors.length
-      bc.setColour(colors.get(n - 1));
+
+      bc.setColour(getColor(col));
       
       if (tooltipText != null) {
         bc.setTooltip(tooltipText);
@@ -1380,148 +1156,189 @@ public class PentahoOFC4JHelper {
       return bc;
     }
   }
-
-  public Element getElementForColumn(int n) {
-
-    Element e = null;
-
-    if (BARCHART_TYPE.equals(chartType) && VERTICAL_ORIENTATION.equals(orientation)) {
-      e = getVerticalBarChart(n);
-    } else if (BARCHART_TYPE.equals(chartType) && HORIZONTAL_ORIENTATION.equals(orientation)) {
-      HorizontalBarChart hbc = new HorizontalBarChart();
-      for (int i = 1; i < getRowCount(); i++) {
-        double d = ((Number) getValueAt(i, n)).doubleValue();
-        HorizontalBarChart.Bar hbcb = new HorizontalBarChart.Bar(d);
-        hbc.addBars(new HorizontalBarChart.Bar(d));
-        if (null != baseURLTemplate)
-          hbc.setOn_click(baseURLTemplate);
-      }
-      hbc.setColour(colors.get(n - 1));
-      if (tooltipText != null) {
-        hbc.setTooltip(tooltipText);
-      }
-      e = hbc;
-
-    } else if (LINECHART_TYPE.equals(chartType)) {
-      e = getLineChart(n);
-    } else if (PIECHART_TYPE.equals(chartType)) {
-      PieChart pc = new PieChart();
-      PieChart.Slice[] slices = new PieChart.Slice[getRowCount() - 1];
-      for (int i = 1; i < getRowCount(); i++) {
-        double d = ((Number) getValueAt(i, n)).doubleValue();
-        // Labels are already set - use them
-        String label = (String) c.getXAxis().getLabels().getLabels().get(i - 1);
-        
-        slices[i - 1] = new PieChart.Slice(d, label, label);
-        if (tooltipText != null) {
-          slices[i - 1].setTooltip(tooltipText);
-        }
-        
-        if (null != baseURLTemplate) {
-          pc.setOn_click(baseURLTemplate);
-        }
-      }
-
-      pc.addSlices(slices);
-      pc.setColours(this.colors);
-      pc.setStartAngle(startAngle);
-      pc.setAnimate(animate);
+  
+  public Element getHorizontalBarChartFromColumn(int col) {
+    HorizontalBarChart hbc = new HorizontalBarChart();
+    for (int row = 0; row < getRowCount(); row++) {
+      double d = ((Number) getValueAt(row, col)).doubleValue();
+      hbc.addBars(new HorizontalBarChart.Bar(d));
+    }
+    hbc.setColour(getColor(col));
+    if (tooltipText != null) {
+      hbc.setTooltip(tooltipText);
+    }
+    return hbc;
+  }
+  
+  public Element getPieChartFromColumn(int col) {
+    PieChart pc = new PieChart();
+    PieChart.Slice[] slices = new PieChart.Slice[getRowCount()];
+    for (int row = 0; row < getRowCount(); row++) {
+      double d = ((Number) getValueAt(row, col)).doubleValue();
+      // Labels are already set - use them
+      String label = (String) chart.getXAxis().getLabels().getLabels().get(row);
       
-      e = pc;
-
-    } else if (AREACHART_TYPE.equals(chartType)) {
-      LineChart ac = null;
-      if(linechartstyle != LineChart.Style.HOLLOW) {
-        AreaLineChart ahc = new AreaLineChart();
-        ahc.setFill(colors.get(n-1));
-        ac = ahc;
-      } else {
-        AreaHollowChart ahc = new AreaHollowChart();
-        ahc.setFill(colors.get(n-1));
-        ac = ahc;
-      }
-
-      Number[] numbers = new Number[getRowCount() - 1];
-
-      for (int i = 1; i < getRowCount(); i++) {
-        //double d = ((Number) getValueAt(i, n)).doubleValue();
-        //ahc.addDots(new LineChart.Dot(d));
-        numbers[i - 1] = ((Number) getValueAt(i, n)).doubleValue();
-        if (null != baseURLTemplate)
-          ac.setOn_click(baseURLTemplate);
-      }
-
-      ac.addValues(numbers);
-      ac.setColour(colors.get(n - 1));
-      
-      if (linechartwidth != null) {
-        ac.setWidth(linechartwidth);
-      }
+      slices[row] = new PieChart.Slice(d, label, label);
       if (tooltipText != null) {
-        ac.setTooltip(tooltipText);
+        slices[row].setTooltip(tooltipText);
       }
-      e = ac;
-
-    } else if (BARLINECHART_TYPE.equals(chartType)) {
-      String text = (String) getValueAt(0, n);
-      // determine if this is a line or a bar
-      List nodes = chartNode.selectNodes("bar-series/series");
-      List<String> bars = new ArrayList<String>();
-      for (Object node : nodes) {
-        if (getValue((Node) node) != null) {
-          bars.add(getValue((Node) node));
-        }
-      }
-      //      Chart blc = 
-      if (!bars.contains(text)) {
-        LineChart lc = getLineChart(n);
-        lc.setRightYAxis();
-        e = lc;
-      } else {
-        e = getVerticalBarChart(n);
-      }
-//    } else if (BUBBLECHART_TYPE.equals(chartType)) {
-//      ScatterChart sc = new ScatterChart("");
-//      sc.setColour(colors.get(n-1));
-//      setupDotSize(sc, (Number)getValueAt(3, n));
-//      Number x = (Number)getValueAt(1, n);
-//      Number y = (Number)getValueAt(2, n);
-//      sc.addPoint(x.doubleValue(), y.doubleValue());
-//      e = sc;
-//      // TODO: setTooltip(root,se);
-
     }
 
-    String text = (String) getValueAt(0, n);
+    pc.addSlices(slices);
+    pc.setColours(this.colors);
+    pc.setStartAngle(startAngle);
+    pc.setAnimate(animate);
 
-    e.setText(text);
+    return pc;
+  }
+  
+  public Element getAreaChartFromColumn(int col) {
+    LineChart ac = null;
+    if(linechartstyle != LineChart.Style.HOLLOW) {
+      AreaLineChart ahc = new AreaLineChart();
+      ahc.setFill(getColor(col));
+      ac = ahc;
+    } else {
+      AreaHollowChart ahc = new AreaHollowChart();
+      ahc.setFill(getColor(col));
+      ac = ahc;
+    }
 
+    Number[] numbers = new Number[getRowCount()];
+    for (int row = 0; row < getRowCount(); row++) {
+      numbers[row] = ((Number) getValueAt(row, col)).doubleValue();
+    }
+
+    ac.addValues(numbers);
+    ac.setColour(getColor(col));
+    
+    if (linechartwidth != null) {
+      ac.setWidth(linechartwidth);
+    }
+    if (tooltipText != null) {
+      ac.setTooltip(tooltipText);
+    }
+    return ac;
+  }
+  
+  @SuppressWarnings("unchecked")
+  public Element getBarLineChartFromColumn(int col) {
+    String text = getColumnHeader(col); 
+    // determine if this is a line or a bar
+    List nodes = chartNode.selectNodes(BAR_SERIES_SERIES_NODE_LOC);
+    List<String> bars = new ArrayList<String>();
+    for (Object node : nodes) {
+      if (getValue((Node) node) != null) {
+        bars.add(getValue((Node) node));
+      }
+    }
+    if (!bars.contains(text)) {
+      LineChart lc = getLineChartFromColumn(col);
+      lc.setRightYAxis();
+      return lc;
+    } else {
+      return getVerticalBarChartFromColumn(col);
+    }
+  }
+  
+  public Element getElementForColumn(int col) {
+    Element e = null;
+    if (BARCHART_TYPE.equals(chartType) && VERTICAL_ORIENTATION.equals(orientation)) {
+      e = getVerticalBarChartFromColumn(col);
+    } else if (BARCHART_TYPE.equals(chartType) && HORIZONTAL_ORIENTATION.equals(orientation)) {
+      e = getHorizontalBarChartFromColumn(col);
+    } else if (LINECHART_TYPE.equals(chartType)) {
+      e = getLineChartFromColumn(col);
+    } else if (PIECHART_TYPE.equals(chartType)) {
+      e = getPieChartFromColumn(col);
+    } else if (AREACHART_TYPE.equals(chartType)) {
+      e = getAreaChartFromColumn(col);
+    } else if (BARLINECHART_TYPE.equals(chartType)) {
+      e = getBarLineChartFromColumn(col);
+    } else {
+      // Log exception, chart not recognized
+      log.error(Messages.getString("PentahoOFC4JHelper.ERROR_0001_UNSUPPORTED_CHART_TYPE", chartType)); //$NON-NLS-1$
+    }
+
+    // set the title for this series
+    e.setText(getColumnHeader(col));
+
+    // set the onclick event to the base url template
+    if (null != baseURLTemplate) {
+      e.setOn_click(baseURLTemplate);
+    }
+    
     return e;
   }
   
-  private Number bubbleMaxX = null;
+  //
+  // Utility Methods
+  //
   
-  private void setupDotSize(ScatterChart se, Number x) {
+  public String buildCSSStringFromNode(Node n) {
+    String fontFamily = getNodeValue(n, FONT_FAMILY_NODE_LOC);
+    String fontSize = getNodeValue(n, FONT_SIZE_NODE_LOC);
+    String fontWeight = null;
+    if ("true".equals(getNodeValue(n, FONT_BOLD_NODE_LOC))) { //$NON-NLS-1$
+      fontWeight = "bold"; //$NON-NLS-1$
+    }
+    String fontStyle = null;
+    if ("true".equals(getNodeValue(n, FONT_ITALIC_NODE_LOC))) { //$NON-NLS-1$
+      fontStyle = "italic"; //$NON-NLS-1$
+    }
+    return buildCSSString(fontFamily, fontSize, fontWeight, fontStyle);
+  }
+  
+  public String getNodeValue(Node parent, String node) {
+    if (parent == null) {
+      return null;
+    }
+    Node textNode = parent.selectSingleNode(node);
+    return getValue(textNode);
+  }
+  
+  public String getValue(Node n) {
+    if (n != null && n.getText() != null && n.getText().length() > 0) {
+      return n.getText().trim();
+    } else {
+      return null;
+    }
+  }
+
+  public String buildCSSString(String fontfamily, String fontsize, String fontweight, String fontstyle) {
+    Properties props = new Properties();
+    props.put("fontfamily", fontfamily != null ? fontfamily : CSS_FONT_FAMILY_DEFAULT); //$NON-NLS-1$
+    props.put("fontsize", fontsize != null ? fontsize : CSS_FONT_SIZE_DEFAULT); //$NON-NLS-1$
+    props.put("fontweight", fontweight != null ? fontweight : CSS_FONT_WEIGHT_DEFAULT); //$NON-NLS-1$
+    props.put("fontstyle", fontstyle != null ? fontstyle : CSS_FONT_STYLE_DEFAULT); //$NON-NLS-1$
     
+    return TemplateUtil.applyTemplate(CSS_FONT_STYLES, props, null);
+  }
+  
+  public String getColor(int i) {
+    return colors.get(i%colors.size());
+  }
+  
+  public String getOutlineColor(int i) {
+    return outlineColors.get(i % outlineColors.size());
+  }
+  
+  public void setupDotSize(ScatterChart se, Number x) {
     // cache the max x value once looked up
     if (bubbleMaxX == null) {
-      Number maxX=0;
+      Number maxX = 0;
       int rowCount = getRowCount();
-      for (int j = 1; j < rowCount; j++) {
-        Number currx = (Number)getValueAt(j, 3);
-        if(maxX.doubleValue()<currx.doubleValue())
-        {
+      for (int row = 0; row < rowCount; row++) {
+        Number currx = (Number)getValueAt(row, 2);
+        if(maxX.doubleValue() < currx.doubleValue()) {
           maxX = currx;
         }
       }
       bubbleMaxX = maxX;
     }
-    
-    // Number x = (Number)getValueAt(i, 3);
 
-    //<max-bubble-size>100</max-bubble-size>
     int maxBubbleSize = 100;
-    Node bubbleSizeNode = chartNode.selectSingleNode("max-bubble-size");
+    Node bubbleSizeNode = chartNode.selectSingleNode(MAX_BUBBLE_SIZE_NODE_LOC);
 
     if (getValue(bubbleSizeNode) != null) {
       maxBubbleSize = Integer.parseInt(getValue(bubbleSizeNode));
