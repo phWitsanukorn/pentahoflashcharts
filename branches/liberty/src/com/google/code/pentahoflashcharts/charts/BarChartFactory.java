@@ -3,6 +3,7 @@ package com.google.code.pentahoflashcharts.charts;
 import java.util.ArrayList;
 import java.util.List;
 
+import ofc4j.model.axis.Axis;
 import ofc4j.model.elements.BarChart;
 import ofc4j.model.elements.Element;
 import ofc4j.model.elements.HorizontalBarChart;
@@ -45,8 +46,18 @@ public class BarChartFactory extends AbstractChartFactory {
     if (isstacked) {
       return new MinMax(0, getStackedMaxRange());
     } else {
-      return super.getRangeMinMax();
+      MinMax minmax = super.getRangeMinMax();
+      if (minmax.min > 0) {
+        minmax.min = 0;
+      }
+      return minmax;
     }
+  }
+  
+  public Axis setupDomain() {
+    Axis axis = super.setupDomain();
+    axis.setOffset(true);
+    return axis;
   }
   
   @SuppressWarnings("unchecked")
@@ -219,6 +230,15 @@ public class BarChartFactory extends AbstractChartFactory {
     if (tooltipText != null) {
       hbc.setTooltip(tooltipText);
     }
+    
+    // set the title for this series
+    hbc.setText(getColumnHeader(col));
+
+    // set the onclick event to the base url template
+    if (null != baseURLTemplate) {
+      hbc.setOn_click(baseURLTemplate);
+    }
+    
     return hbc;
   }
   

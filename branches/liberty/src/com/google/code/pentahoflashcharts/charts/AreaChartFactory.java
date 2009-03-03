@@ -33,6 +33,15 @@ public class AreaChartFactory extends LineChartFactory {
     if (tooltipText != null) {
       ac.setTooltip(tooltipText);
     }
+    
+    // set the title for this series
+    ac.setText(getColumnHeader(col));
+
+    // set the onclick event to the base url template
+    if (null != baseURLTemplate) {
+      ac.setOn_click(baseURLTemplate);
+    }
+    
     return ac;
   }
 }

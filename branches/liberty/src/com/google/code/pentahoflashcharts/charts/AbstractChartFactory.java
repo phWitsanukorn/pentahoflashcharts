@@ -7,6 +7,7 @@ import java.util.Properties;
 
 import ofc4j.model.Chart;
 import ofc4j.model.Text;
+import ofc4j.model.axis.Axis;
 import ofc4j.model.axis.XAxis;
 import ofc4j.model.axis.YAxis;
 import ofc4j.model.elements.Element;
@@ -247,7 +248,7 @@ public abstract class AbstractChartFactory implements ChartFactory {
     }
   }
   
-  public void setupDomain() {
+  public Axis setupDomain() {
     String[] labels = null;
     Number domainMin = null;
     Number domainMax = null;
@@ -347,6 +348,7 @@ public abstract class AbstractChartFactory implements ChartFactory {
       }
       
       chart.setYAxis(yaxis);
+      return yaxis;
     } else {
       XAxis xaxis = new XAxis();
       if (labels != null) {
@@ -360,6 +362,7 @@ public abstract class AbstractChartFactory implements ChartFactory {
       }
       
       chart.setXAxis(xaxis);
+      return xaxis;
     }
   }
   
@@ -393,7 +396,7 @@ public abstract class AbstractChartFactory implements ChartFactory {
   }
   
   @SuppressWarnings("unchecked")
-  public void setupRange() {
+  public Axis setupRange() {
     int rangeMin = 0;
     int rangeMax = 100;
     int steps = 9;
@@ -404,7 +407,7 @@ public abstract class AbstractChartFactory implements ChartFactory {
 
     MinMax rangeMinMax = getRangeMinMax();
     rangeMin = rangeMinMax.min;
-    rangeMin = rangeMinMax.max;
+    rangeMax = rangeMinMax.max;
 
     boolean minDefined = false;
     boolean maxDefined = false;
@@ -452,7 +455,7 @@ public abstract class AbstractChartFactory implements ChartFactory {
     // Readjust mins/maxs only if they weren't specified
     if (!minDefined) {
       // If actual min is positive, don't go below ZERO
-      if (rangeMin > 0 && rangeMin - chunksize < 0)
+      if (rangeMin >= 0 && rangeMin - chunksize < 0)
         rangeMin = 0;
       else
         rangeMin = rangeMin - chunksize;
@@ -468,6 +471,7 @@ public abstract class AbstractChartFactory implements ChartFactory {
       xaxis.setColour(rangeColor);
       xaxis.setGridColour(rangeGridColor);
       chart.setXAxis(xaxis);
+      return xaxis;
     } else {
       YAxis yaxis = new YAxis();
       yaxis.setRange(rangeMin, rangeMax, stepforchart);
@@ -475,6 +479,7 @@ public abstract class AbstractChartFactory implements ChartFactory {
       yaxis.setColour(rangeColor);
       yaxis.setGridColour(rangeGridColor);
       chart.setYAxis(yaxis);
+      return yaxis;
     }
   }
   
