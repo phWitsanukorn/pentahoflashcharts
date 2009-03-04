@@ -8,6 +8,7 @@ import ofc4j.model.elements.Element;
 import ofc4j.model.elements.ScatterChart;
 
 import org.dom4j.Node;
+import org.pentaho.platform.engine.core.messages.Messages;
 
 public class BubbleChartFactory extends AbstractChartFactory {
 
@@ -18,6 +19,15 @@ public class BubbleChartFactory extends AbstractChartFactory {
   // scatter / bubble members
   private Number bubbleMaxX;
   private int maxBubbleSize = 100;
+  
+  @Override
+  public void validateData() {
+    super.validateData();
+    if (getColumnCount() < 3) {
+      throw new RuntimeException(Messages.getErrorString("BubbleChartFactory.ERROR_0001_XYZ_ROW_COUNT")); //$NON-NLS-1$
+    }
+  }
+
   
   @Override
   void createElements() {

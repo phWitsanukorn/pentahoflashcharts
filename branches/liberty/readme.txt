@@ -9,7 +9,7 @@ GENERAL
 
 <title> - Title Text
 <title-font>
-	<font-family> ie Ariel
+	<font-family> ie Arial
 	<size> ie 14
 	<is-bold> ie true
 	<is-italic> ie true
@@ -53,13 +53,7 @@ Used in bar/line/bubble/ etc for color selection:
 	<color>#00FF00
 	...
 
-Used in sketch bar for outlines of bars:
-<outline-color-palette>
-	<color>#FF0000
-	<color>#00FF00
-	...
 
-	
 LineChart
 ---------
 <chart-type>LineChart
@@ -82,7 +76,12 @@ The following bar chart styles are mutually exclusive:
 <is-sketch>true OR false
  - additional sketch properties:
 	<fun-factor> 0,1 and 2 are pretty boring. 4 to 6 is a bit fun, 7 and above is lots of fun. 
- - also see <outline-color-palette> above
+  - Used in sketch bar for outlines of bars:
+	<outline-color-palette>
+		<color>#FF0000
+		<color>#00FF00
+		...
+
 
 <is-stacked>true OR false
 
@@ -135,4 +134,25 @@ BubbleChart
 <bubble-label-content> <- formatted label, using {0} - series name, {1} - x , {2} - y {3} - z
 <bubble-label-z-format> <- formatted using java decimal format, ie #,###
 
+
+OpenFlashChartComponent standard inputs and outputs
+---------------------------------------------------
+inputs:
+	chart-data - required - PentahoResultSet
+	chart-attributes - required - resource or input defining chart xml
+	width - optional - sets the width of the chart, defaults to 300
+	height - optional - sets the height of the chart, defaults to 300
+	by-row - optional - if true, pivots the data
+outputs:
+	image-tag
+
+OpenFlashChartComponent additional inputs and outputs
+-----------------------------------------------------
+inputs:
+	ofc_lib_name - optional - allows overriding of the swf file
+	ofc_url - optional - allows overriding of the default location of the swf file
+outputs:
+	html_fragment
+
+note that you may also add {INPUT PARAM} values in the chart-attributes resource or input to parameterize the chart xml.  Note that component-definitions do not get resolved, only input values.
 
