@@ -2,8 +2,6 @@ package com.google.code.pentahoflashcharts;
 
 import java.util.Properties;
 
-import ofc4j.model.Chart;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -18,6 +16,8 @@ import org.pentaho.platform.plugin.action.messages.Messages;
 import org.pentaho.platform.util.UUIDUtil;
 import org.pentaho.platform.util.xml.dom4j.XmlDom4JHelper;
 
+import com.google.code.pentahoflashcharts.charts.PentahoOFC4JChartHelper;
+
 /**
  * This component is derived from Nick Goodman and Tom Qin's contribution,
  * it conforms to the ChartComponent API.  Please see the wiki for details on this
@@ -26,6 +26,22 @@ import org.pentaho.platform.util.xml.dom4j.XmlDom4JHelper;
  * The component uses open-flash-chart-full-embedded-font.swf, found at
  * http://www.ofc2dz.com/, which is a patched version of Open Flash Chart 2, found at
  * http://teethgrinder.co.uk/open-flash-chart-2/
+ * 
+ * note: onclick events are only partially implemented, due to limitations of
+ * OFC.  In future releases of OFC, this should be revisited.
+ * 
+ * Backlog:
+ * - y2_legend - barline right axis title, would need to update OFC4J
+ * - horizontal stacked bars
+ * http://www.ofc2dz.com/OFC2/examples/HorizontalStackedBars.html
+ * - styled stacked bars (would require impl in OFC)
+ * - dial chart (would require impl in OFC)
+ * - XY Line Chart
+ * - XY Area Chart
+ * - onclick / link support (would require enhancements to OFC) 
+ * - allow override of dataFunction name
+ * - review colors, move into config file for both jfree and ofc?
+ * - area stacked
  *
  * @author Will Gorman (wgorman@pentaho.com)
  */
@@ -35,7 +51,7 @@ public class OpenFlashChartComponent extends ComponentBase {
 
   private static final Log log = LogFactory.getLog(OpenFlashChartComponent.class);
 
-  private static final String DEFAULT_FLASH_LOC = "/pentaho-style/images";
+  private static final String DEFAULT_FLASH_LOC = "openflashchart"; //$NON-NLS-1$
   
   private static final String DEFAULT_FLASH_SWF = "open-flash-chart-full-embedded-font.swf"; //$NON-NLS-1$s
   
@@ -68,13 +84,13 @@ public class OpenFlashChartComponent extends ComponentBase {
         "<script>function {dataFunction}() { return \"{chartJson}\";}</script>" //$NON-NLS-1$
         + "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" " //$NON-NLS-1$
         + "codebase=\"http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0\" " //$NON-NLS-1$
-        + "width=\"{chart-width}\" height=\"{chart-height}\"  id=\"ofcgraphx\" align=\"middle\"> " //$NON-NLS-1$
+        + "width=\"{chart-width}\" height=\"{chart-height}\"  id=\"ofco{chartId}\" align=\"middle\"> " //$NON-NLS-1$
         + "<param name=\"allowScriptAccess\" value=\"sameDomain\" /> " //$NON-NLS-1$
         + "<param name=\"wmode\" value=\"opaque\">"  //$NON-NLS-1$
         + "<param name=\"movie\" value=\"{ofc-url}/{ofc-libname}?get-data={dataFunction}\" /> " //$NON-NLS-1$
         + "<param name=\"quality\" value=\"high\" /> " //$NON-NLS-1$
         + "<embed src=\"{ofc-url}/{ofc-libname}?get-data={dataFunction}\" wmode=\"opaque\" quality=\"high\" bgcolor=\"#FFFFFF\" " //$NON-NLS-1$
-        + "width=\"{chart-width}\" height=\"{chart-height}\"  id=\"ofcgraph1\" align=\"middle\" allowScriptAccess=\"sameDomain\" type=\"application/x-shockwave-flash\" " //$NON-NLS-1$
+        + "width=\"{chart-width}\" height=\"{chart-height}\"  id=\"ofce{chartId}\" align=\"middle\" allowScriptAccess=\"sameDomain\" type=\"application/x-shockwave-flash\" " //$NON-NLS-1$
         + "pluginspage=\"http://www.macromedia.com/go/getflashplayer\" /></object>"; //$NON-NLS-1$
 
   public OpenFlashChartComponent() {
@@ -194,22 +210,22 @@ public class OpenFlashChartComponent extends ComponentBase {
       byRow = Boolean.valueOf(getInputStringValue(BY_ROW_PROP)).booleanValue();
     }
 
-    PentahoOFC4JHelper helper = new PentahoOFC4JHelper(chartNode, data, byRow, log);
-    Chart c = helper.convert();
+    String chartJson = PentahoOFC4JChartHelper.generateChartJson(chartNode, data, byRow, log);
 
     // generate a unique name for the function
     
-    String getDataFunctionName = "getData" + UUIDUtil.getUUIDAsString().replaceAll("[^\\w]",""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    String chartId = UUIDUtil.getUUIDAsString().replaceAll("[^\\w]",""); //$NON-NLS-1$ //$NON-NLS-2$
     
     // populate the flash html template
     
     Properties props = new Properties();
-    props.setProperty("dataFunction", getDataFunctionName); //$NON-NLS-1$
+    props.setProperty("chartId", chartId); //$NON-NLS-1$
+    props.setProperty("dataFunction", "getData" + chartId); //$NON-NLS-1$ //$NON-NLS-2$
     props.setProperty("chart-width", chartWidth.toString()); //$NON-NLS-1$
     props.setProperty("chart-height", chartHeight.toString()); //$NON-NLS-1$
     props.setProperty("ofc-url", ofcURL); //$NON-NLS-1$
     props.setProperty("ofc-libname", ofclibname); //$NON-NLS-1$
-    props.setProperty("chartJson", c.toString().replaceAll("\"", "\\\\\"")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    props.setProperty("chartJson", chartJson.replaceAll("\"", "\\\\\"")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     
     String flashContent = TemplateUtil.applyTemplate(getFlashFragment(), props, null);
     

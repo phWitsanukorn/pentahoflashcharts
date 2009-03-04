@@ -52,6 +52,9 @@ import org.pentaho.platform.plugin.action.messages.Messages;
  * - XY Line Chart
  * - XY Area Chart
  * - onclick / link support (would require enhancements to OFC) 
+ * - allow override of dataFunction name
+ * - review colors, move into config file for both jfree and ofc?
+ * - area stacked
  */
 public class PentahoOFC4JHelper {
 

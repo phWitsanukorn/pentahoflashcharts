@@ -1,8 +1,6 @@
 package com.google.code.pentahoflashcharts.charts;
 
-import java.awt.Dimension;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 import ofc4j.model.Chart;
@@ -17,9 +15,10 @@ import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoDataTypes;
 import org.pentaho.commons.connection.IPentahoResultSet;
 import org.pentaho.commons.connection.PentahoDataTransmuter;
+import org.pentaho.platform.engine.core.messages.Messages;
 import org.pentaho.platform.engine.services.runtime.TemplateUtil;
 
-public abstract class AbstractChartFactory implements ChartFactory {
+public abstract class AbstractChartFactory implements IChartFactory {
 
   public static class MinMax {
     int min;
@@ -118,11 +117,11 @@ public abstract class AbstractChartFactory implements ChartFactory {
   private Log log;
   
   // data related members
-  private String[] rowHeaders;
-  private String[] columnHeaders;
-  private IPentahoResultSet data;
-  private boolean hasRowHeaders = false;
-  private boolean hasColumnHeaders = false;  
+  public String[] rowHeaders;
+  public String[] columnHeaders;
+  public IPentahoResultSet data;
+  public boolean hasRowHeaders = false;
+  public boolean hasColumnHeaders = false;  
   
   protected String datasetType;
 
@@ -142,7 +141,33 @@ public abstract class AbstractChartFactory implements ChartFactory {
     this.log = log;
   }
   
-  public Chart convert() {
+  public void validateData() {
+    // make sure data is of a category dataset.
+    if (getRowCount() < 1) {
+      throw new RuntimeException(Messages.getErrorString("AbstractChartFactory.ERROR_0001_ROW_COUNT")); //$NON-NLS-1$
+    }
+    if (getColumnCount() < 1) {
+      throw new RuntimeException(Messages.getErrorString("AbstractChartFactory.ERROR_0002_COLUMN_COUNT")); //$NON-NLS-1$
+    }
+
+    // check first row and first column, making sure the values are numbers
+    for (int c = 0; c < getColumnCount(); c++) {
+      Object data = getValueAt(0, c);
+      if (!(data instanceof Number)) {
+        throw new RuntimeException(Messages.getErrorString("AbstractChartFactory.ERROR_0003_INVALID_TYPE")); //$NON-NLS-1$
+      }
+    }
+    
+    // check first row
+    for (int r = 1; r < getRowCount(); r++) {
+      Object data = getValueAt(r, 0);
+      if (!(data instanceof Number)) {
+        throw new RuntimeException(Messages.getErrorString("AbstractChartFactory.ERROR_0003_INVALID_TYPE")); //$NON-NLS-1$
+      }
+    }
+  }
+  
+  public String convertToJson() {
     
     // first, determine the dataset type
     
@@ -154,6 +179,8 @@ public abstract class AbstractChartFactory implements ChartFactory {
       datasetType = DATASET_TYPE_DEFAULT;
     }
 
+    validateData();
+    
     // These things apply to pretty much all charts
     setupColors();
     setupStyles();
@@ -168,7 +195,7 @@ public abstract class AbstractChartFactory implements ChartFactory {
     setupRange();
 
     chart.addElements(elements);
-    return chart;
+    return chart.toString();
   }
   
   //

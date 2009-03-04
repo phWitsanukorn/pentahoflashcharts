@@ -9,7 +9,9 @@ import ofc4j.model.axis.YAxis;
 import ofc4j.model.elements.Element;
 import ofc4j.model.elements.LineChart;
 
+import org.apache.commons.logging.Log;
 import org.dom4j.Node;
+import org.pentaho.commons.connection.IPentahoResultSet;
 
 public class BarLineChartFactory extends BarChartFactory {
   
@@ -24,17 +26,36 @@ public class BarLineChartFactory extends BarChartFactory {
   private static final String LINE_RANGE_STEPS_NODE_LOC = "line-range-steps"; //$NON-NLS-1$
   
   LineChartFactory lineChartFactory = new LineChartFactory();
-  
+
+  @Override
   public void setupStyles() {
     super.setupStyles();
     lineChartFactory.setupStyles();
   }
-  
-  public Chart convert() {
-    lineChartFactory.chart = this.chart;
-    return super.convert();
+
+  @Override
+  public void setData(IPentahoResultSet data) {
+    super.setData(data);
+    lineChartFactory.setData(data);
   }
   
+  @Override
+  public void setChartNode(Node chartNode) {
+    super.setChartNode(chartNode);
+    lineChartFactory.setChartNode(chartNode);
+  }
+  
+  @Override
+  public void setLog(Log log) {
+    super.setLog(log);
+    lineChartFactory.setLog(log);
+  }
+  
+  protected void setupColors() {
+    super.setupColors();
+    lineChartFactory.setupColors();
+  }
+
   public Axis setupRange() {
     Axis axis = super.setupRange();
     setupLineRange();
@@ -159,7 +180,7 @@ public class BarLineChartFactory extends BarChartFactory {
     // Readjust mins/maxs only if they weren't specified
     if (!minDefined) {
       // If actual min is positive, don't go below ZERO
-      if (rangeMin > 0 && rangeMin - chunksize < 0)
+      if (rangeMin >= 0 && rangeMin - chunksize < 0)
         rangeMin = 0;
       else
         rangeMin = rangeMin - chunksize;
@@ -187,7 +208,6 @@ public class BarLineChartFactory extends BarChartFactory {
       // TOOD: Support XY in the future?
     }
   }
-  
   
   @SuppressWarnings("unchecked")
   public Element getBarLineChartFromColumn(int col) {

@@ -7,6 +7,7 @@ import ofc4j.model.elements.Element;
 import ofc4j.model.elements.ScatterChart;
 
 import org.dom4j.Node;
+import org.pentaho.platform.engine.core.messages.Messages;
 
 public class DotChartFactory extends AbstractChartFactory {
   
@@ -14,6 +15,13 @@ public class DotChartFactory extends AbstractChartFactory {
   private static final String DOT_LABEL_CONTENT_NODE_LOC = "dot-label-content"; //$NON-NLS-1$
   
   private Integer dotwidth;
+  
+  public void validateData() {
+    super.validateData();
+    if (getColumnCount() < 2) {
+      throw new RuntimeException(Messages.getErrorString("DotChartFactory.ERROR_0001_XY_ROW_COUNT")); //$NON-NLS-1$
+    }
+  }
   
   @Override
   void createElements() {
