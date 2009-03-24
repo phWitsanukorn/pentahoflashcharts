@@ -1,3 +1,19 @@
+/*
+ * This program is free software; you can redistribute it and/or modify it under the 
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software 
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this 
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html 
+ * or from the Free Software Foundation, Inc., 
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright 2009 Pentaho Corporation.  All rights reserved.
+ */
 package com.google.code.pentahoflashcharts.charts;
 
 import java.text.DecimalFormat;
@@ -8,7 +24,7 @@ import ofc4j.model.elements.Element;
 import ofc4j.model.elements.ScatterChart;
 
 import org.dom4j.Node;
-import org.pentaho.platform.engine.core.messages.Messages;
+import com.google.code.pentahoflashcharts.Messages;
 
 public class BubbleChartFactory extends AbstractChartFactory {
 
@@ -24,13 +40,13 @@ public class BubbleChartFactory extends AbstractChartFactory {
   public void validateData() {
     super.validateData();
     if (getColumnCount() < 3) {
-      throw new RuntimeException(Messages.getErrorString("BubbleChartFactory.ERROR_0001_XYZ_ROW_COUNT")); //$NON-NLS-1$
+      throw new RuntimeException(Messages.getErrorString("BubbleChartFactory.ERROR_0001_XYZ_COLUMN_COUNT")); //$NON-NLS-1$
     }
   }
 
   
   @Override
-  void createElements() {
+  protected void createElements() {
     Node contentNode = chartNode.selectSingleNode(BUBBLE_LABEL_CONTENT_NODE_LOC);
     String content = getValue(contentNode);
     Node zFormatNode = chartNode.selectSingleNode(BUBBLE_LABEL_Z_FORMAT_NODE_LOC);
@@ -66,6 +82,11 @@ public class BubbleChartFactory extends AbstractChartFactory {
         sc.setTooltip(MessageFormat.format(content, text, 
             NumberFormat.getInstance().format(x), NumberFormat.getInstance().format(y), zstr));
       } 
+      
+      if (alpha != null) {
+        sc.setAlpha(alpha);
+      }
+      
       e = sc;
       e.setText(text);
       elements.add(e);
@@ -73,8 +94,8 @@ public class BubbleChartFactory extends AbstractChartFactory {
   }
 
   @Override
-  void setupStyles() {
-    
+  protected void setupStyles() {
+    super.setupStyles();
     // max bubble x
     
     Number maxX = 0;

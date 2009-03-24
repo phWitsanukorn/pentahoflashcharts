@@ -1,3 +1,19 @@
+/*
+ * This program is free software; you can redistribute it and/or modify it under the 
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software 
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this 
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html 
+ * or from the Free Software Foundation, Inc., 
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright 2009 Pentaho Corporation.  All rights reserved.
+ */
 package com.google.code.pentahoflashcharts.charts;
 
 import java.util.ArrayList;
@@ -78,6 +94,7 @@ public class BarChartFactory extends AbstractChartFactory {
   
   @Override
   public void setupStyles() {
+    super.setupStyles();
     barchartstyle = BARCHART_STYLE_DEFAULT;
 
     // 3d
@@ -159,6 +176,10 @@ public class BarChartFactory extends AbstractChartFactory {
       if (null != baseURLTemplate) {
         sbc.setOn_click(baseURLTemplate);
       }
+      
+      if (alpha != null) {
+        sbc.setAlpha(alpha);
+      }
     }
 
     StackKey key = new StackKey();
@@ -216,6 +237,10 @@ public class BarChartFactory extends AbstractChartFactory {
         bc.setOn_click(baseURLTemplate);
       }
 
+      if (alpha != null) {
+        bc.setAlpha(alpha);
+      }
+      
       return bc;
     }
   }
@@ -237,6 +262,10 @@ public class BarChartFactory extends AbstractChartFactory {
     // set the onclick event to the base url template
     if (null != baseURLTemplate) {
       hbc.setOn_click(baseURLTemplate);
+    }
+    
+    if (alpha != null) {
+      hbc.setAlpha(alpha);
     }
     
     return hbc;

@@ -1,3 +1,19 @@
+/*
+ * This program is free software; you can redistribute it and/or modify it under the 
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software 
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this 
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html 
+ * or from the Free Software Foundation, Inc., 
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright 2009 Pentaho Corporation.  All rights reserved.
+ */
 package com.google.code.pentahoflashcharts.charts;
 
 import java.util.ArrayList;
@@ -15,8 +31,9 @@ import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoDataTypes;
 import org.pentaho.commons.connection.IPentahoResultSet;
 import org.pentaho.commons.connection.PentahoDataTransmuter;
-import org.pentaho.platform.engine.core.messages.Messages;
 import org.pentaho.platform.engine.services.runtime.TemplateUtil;
+
+import com.google.code.pentahoflashcharts.Messages;
 
 public abstract class AbstractChartFactory implements IChartFactory {
 
@@ -44,6 +61,8 @@ public abstract class AbstractChartFactory implements IChartFactory {
   private static final String URL_TEMPLATE_NODE_LOC = "url-template"; //$NON-NLS-1$
   private static final String TOOLTIP_NODE_LOC = "tooltip"; //$NON-NLS-1$
   private static final String ORIENTATION_NODE_LOC = "orientation"; //$NON-NLS-1$
+  private static final String ALPHA_NODE_LOC = "alpha"; //$NON-NLS-1$
+  
   
   // font related elements 
   private static final String FONT_FAMILY_NODE_LOC = "font-family"; //$NON-NLS-1$
@@ -129,9 +148,20 @@ public abstract class AbstractChartFactory implements IChartFactory {
   protected String orientation;
   protected String baseURLTemplate;
   protected String tooltipText;
+  protected Float alpha;
   
-  abstract void createElements();
-  abstract void setupStyles();
+  protected abstract void createElements();
+  protected void setupStyles() {
+    Node temp = chartNode.selectSingleNode(TOOLTIP_NODE_LOC);
+    if (getValue(temp) != null) {
+      tooltipText = getValue(temp);
+    }
+    
+    temp = chartNode.selectSingleNode(ALPHA_NODE_LOC);
+    if (getValue(temp) != null) {
+      alpha = Float.parseFloat(getValue(temp));
+    }
+  }
   
   public void setChartNode(Node chartNode) {
     this.chartNode = chartNode;
@@ -422,7 +452,6 @@ public abstract class AbstractChartFactory implements IChartFactory {
     return new MinMax(rangeMin, rangeMax);
   }
   
-  @SuppressWarnings("unchecked")
   public Axis setupRange() {
     int rangeMin = 0;
     int rangeMax = 100;
