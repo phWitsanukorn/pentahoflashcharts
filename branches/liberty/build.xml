@@ -15,9 +15,7 @@
 	<property name="pfc.jar.name" value="pentahoflashchart-${pfc.version}-r${pfc.revision}.jar"/>
 	<property name="pfc.samples.name" value="pentahoflashchart-samples-${pfc.version}-r${pfc.revision}.zip"/>
 	<property name="pfc.dist.name" value="pentahoflashchart-dist-${pfc.version}-r${pfc.revision}.zip"/>
-		
-			
-
+	<property name="pfc.plugin.dist.name" value="pentahoflashchart-plugin-${pfc.version}-r${pfc.revision}.zip"/>
 
 	<path id="project.classpath">
 		<pathelement location="${class.dir}" />
@@ -72,6 +70,17 @@
 	</target>
 	
 	<target name="dist" depends="distjar,samples">
+		<zip destfile="${build.dir}/${pfc.plugin.dist.name}">
+			<zipfileset dir="${resource.dir}" prefix="openflashchart">
+				<exclude name="**/.svn/**"/>
+			</zipfileset>
+			<zipfileset dir="${lib.dir}" prefix="openflashchart/lib">
+				<include name="ofc4j*.jar"/>
+				<include name="xstream*.jar"/>
+			</zipfileset>
+			<zipfileset dir="${build.dir}" includes="${pfc.jar.name}" prefix="openflashchart/lib"/>
+
+		</zip>
 		<zip destfile="${build.dir}/${pfc.dist.name}">
 			<zipfileset dir="${samples.dir}" prefix="samples">
 				<exclude name="**/.svn/**"/>

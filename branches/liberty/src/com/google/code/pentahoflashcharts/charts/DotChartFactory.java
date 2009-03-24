@@ -1,3 +1,19 @@
+/*
+ * This program is free software; you can redistribute it and/or modify it under the 
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software 
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this 
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html 
+ * or from the Free Software Foundation, Inc., 
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright 2009 Pentaho Corporation.  All rights reserved.
+ */
 package com.google.code.pentahoflashcharts.charts;
 
 import java.text.MessageFormat;
@@ -7,7 +23,7 @@ import ofc4j.model.elements.Element;
 import ofc4j.model.elements.ScatterChart;
 
 import org.dom4j.Node;
-import org.pentaho.platform.engine.core.messages.Messages;
+import com.google.code.pentahoflashcharts.Messages;
 
 public class DotChartFactory extends AbstractChartFactory {
   
@@ -19,12 +35,12 @@ public class DotChartFactory extends AbstractChartFactory {
   public void validateData() {
     super.validateData();
     if (getColumnCount() < 2) {
-      throw new RuntimeException(Messages.getErrorString("DotChartFactory.ERROR_0001_XY_ROW_COUNT")); //$NON-NLS-1$
+      throw new RuntimeException(Messages.getErrorString("DotChartFactory.ERROR_0001_XY_COLUMN_COUNT")); //$NON-NLS-1$
     }
   }
   
   @Override
-  void createElements() {
+  protected void createElements() {
     for (int row = 0; row < getRowCount(); row++) {
       Element e = null;
       String text = getRowHeader(row);        
@@ -47,6 +63,11 @@ public class DotChartFactory extends AbstractChartFactory {
       }
 
       sc.addPoint(x.doubleValue(), y.doubleValue());
+      
+      if (alpha != null) {
+        sc.setAlpha(alpha);
+      }
+      
       e = sc;
       e.setText(text);
       elements.add(e);
@@ -54,7 +75,9 @@ public class DotChartFactory extends AbstractChartFactory {
   }
 
   @Override
-  void setupStyles() {
+  protected void setupStyles() {
+    super.setupStyles();
+    
     Node temp = chartNode.selectSingleNode(DOT_WIDTH_NODE_LOC);
     if (getValue(temp) != null) {
       dotwidth = Integer.parseInt(getValue(temp));

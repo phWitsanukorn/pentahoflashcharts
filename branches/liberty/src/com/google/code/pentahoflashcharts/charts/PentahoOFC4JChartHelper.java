@@ -1,3 +1,19 @@
+/*
+ * This program is free software; you can redistribute it and/or modify it under the 
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software 
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this 
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html 
+ * or from the Free Software Foundation, Inc., 
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright 2009 Pentaho Corporation.  All rights reserved.
+ */
 package com.google.code.pentahoflashcharts.charts;
 
 import java.io.FileNotFoundException;
@@ -17,7 +33,7 @@ import org.pentaho.commons.connection.PentahoDataTransmuter;
 import org.pentaho.platform.api.repository.ISolutionRepository;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.core.system.StandaloneSession;
-import org.pentaho.platform.engine.services.messages.Messages;
+import com.google.code.pentahoflashcharts.Messages;
 
 public class PentahoOFC4JChartHelper {
 
@@ -47,22 +63,27 @@ public class PentahoOFC4JChartHelper {
       }
 
       factoryClassString = (String)getChartFactories().get(chartType);
-      Class factoryClass = Class.forName(factoryClassString);
-      
-      // throw exception if factoryClass not found
-      
-      IChartFactory factory = (IChartFactory)factoryClass.getConstructor(new Class[0]).newInstance(new Object[0]);      
-      factory.setChartNode(chartNode);
-      factory.setLog(log);
-      if (byRow) {
-        factory.setData(PentahoDataTransmuter.pivot(data));
+      if (factoryClassString == null) {
+        throw new RuntimeException(Messages.getErrorString("PentahoOFC4JChartHelper.ERROR_0001_FACTORY_INIT", chartType, factoryClassString)); //$NON-NLS-1$
       } else {
-        factory.setData(data);
+
+
+        Class factoryClass = Class.forName(factoryClassString);
+        
+        // throw exception if factoryClass not found
+        
+        IChartFactory factory = (IChartFactory)factoryClass.getConstructor(new Class[0]).newInstance(new Object[0]);      
+        factory.setChartNode(chartNode);
+        factory.setLog(log);
+        if (byRow) {
+          factory.setData(PentahoDataTransmuter.pivot(data));
+        } else {
+          factory.setData(data);
+        }
+        return factory.convertToJson();
       }
-      return factory.convertToJson();
-      
     } catch (Exception e) {
-      logger.error(Messages.getString("PentahoOFC4JChartHelper.ERROR_0001_FACTORY_INIT", chartType, factoryClassString), e); //$NON-NLS-1$
+      logger.error(Messages.getErrorString("PentahoOFC4JChartHelper.ERROR_0001_FACTORY_INIT", chartType, factoryClassString), e); //$NON-NLS-1$
       throw new RuntimeException(e);
     }
   }

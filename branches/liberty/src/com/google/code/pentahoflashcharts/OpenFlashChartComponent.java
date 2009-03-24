@@ -1,3 +1,19 @@
+/*
+ * This program is free software; you can redistribute it and/or modify it under the 
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software 
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this 
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html 
+ * or from the Free Software Foundation, Inc., 
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright 2009 Pentaho Corporation.  All rights reserved.
+ */
 package com.google.code.pentahoflashcharts;
 
 import java.util.Properties;
@@ -13,13 +29,12 @@ import org.pentaho.platform.engine.services.runtime.TemplateUtil;
 import org.pentaho.platform.engine.services.solution.ComponentBase;
 import org.pentaho.platform.engine.services.solution.PentahoEntityResolver;
 import org.pentaho.platform.plugin.action.messages.Messages;
+import com.google.code.pentahoflashcharts.charts.PentahoOFC4JChartHelper;
 import org.pentaho.platform.util.UUIDUtil;
 import org.pentaho.platform.util.xml.dom4j.XmlDom4JHelper;
 
-import com.google.code.pentahoflashcharts.charts.PentahoOFC4JChartHelper;
-
 /**
- * This component is derived from Nick Goodman and Tom Qin's contribution,
+ * This component is a contribution from Nick Goodman and Tom Qin,
  * it conforms to the ChartComponent API.  Please see the wiki for details on this
  * component.
  * 
@@ -42,7 +57,12 @@ import com.google.code.pentahoflashcharts.charts.PentahoOFC4JChartHelper;
  * - allow override of dataFunction name
  * - review colors, move into config file for both jfree and ofc?
  * - area stacked
+ * - bold font on y axis legend, requires change to OFC swf
+ * - disable x axis grid lines, control thickness? both would require enhancements to OFC
+ * - 
  *
+ * @author Nick Goodman
+ * @author Tom Qin
  * @author Will Gorman (wgorman@pentaho.com)
  */
 public class OpenFlashChartComponent extends ComponentBase {
@@ -51,7 +71,7 @@ public class OpenFlashChartComponent extends ComponentBase {
 
   private static final Log log = LogFactory.getLog(OpenFlashChartComponent.class);
 
-  private static final String DEFAULT_FLASH_LOC = "openflashchart"; //$NON-NLS-1$
+  private static final String DEFAULT_FLASH_LOC = "content/openflashchart"; //$NON-NLS-1$
   
   private static final String DEFAULT_FLASH_SWF = "open-flash-chart-full-embedded-font.swf"; //$NON-NLS-1$s
   
@@ -72,9 +92,9 @@ public class OpenFlashChartComponent extends ComponentBase {
 
   private static final String BY_ROW_PROP = "by-row"; //$NON-NLS-1$
 
-  private static final int DEFAULT_WIDTH = 300;
+  private static final String DEFAULT_WIDTH = "100%";
 
-  private static final int DEFAULT_HEIGHT = 300;
+  private static final String DEFAULT_HEIGHT = "100%";
 
   protected String template = null;
 
@@ -124,24 +144,24 @@ public class OpenFlashChartComponent extends ComponentBase {
 
     // chart width
     
-    Integer chartWidth = null;
+    String chartWidth = null;
     String inputWidth = getInputStringValue(CHART_WIDTH);
 
     if (inputWidth == null) {
-      chartWidth = new Integer(DEFAULT_WIDTH);
+      chartWidth = DEFAULT_WIDTH;
     } else {
-      chartWidth = Integer.valueOf(inputWidth);
+      chartWidth = inputWidth;
     }
 
     // chart height
     
-    Integer chartHeight = null;
+    String chartHeight = null;
     String inputHeight = getInputStringValue(CHART_HEIGHT);
 
     if (null == inputHeight) {
-      chartHeight = new Integer(DEFAULT_HEIGHT);
+      chartHeight = DEFAULT_HEIGHT;
     } else {
-      chartHeight = Integer.valueOf(inputHeight);
+      chartHeight = inputHeight;
     }
 
     // swf file location
@@ -187,7 +207,7 @@ public class OpenFlashChartComponent extends ComponentBase {
         }
   
       } catch (XmlParseException e) {
-        getLogger().error(Messages.getString("ChartComponent.ERROR_0005_CANT_DOCUMENT_FROM_STRING"), e);//$NON-NLS-1$
+        getLogger().error(Messages.getErrorString("OpenFlashChartComponent.ERROR_0001_CANT_DOCUMENT_FROM_STRING"), e);//$NON-NLS-1$
         return false;
       }
     } else {
@@ -200,7 +220,7 @@ public class OpenFlashChartComponent extends ComponentBase {
     // if the chart def isn't available, exit
     
     if (chartNode == null) {
-      getLogger().error(Messages.getString("OpenFlashChartComponent.ERROR_0002_CHART_DEFINITION_NOT_FOUND"));//$NON-NLS-1$
+      getLogger().error(Messages.getErrorString("OpenFlashChartComponent.ERROR_0002_CHART_DEFINITION_NOT_FOUND"));//$NON-NLS-1$
       return false;
     }
     
@@ -221,8 +241,8 @@ public class OpenFlashChartComponent extends ComponentBase {
     Properties props = new Properties();
     props.setProperty("chartId", chartId); //$NON-NLS-1$
     props.setProperty("dataFunction", "getData" + chartId); //$NON-NLS-1$ //$NON-NLS-2$
-    props.setProperty("chart-width", chartWidth.toString()); //$NON-NLS-1$
-    props.setProperty("chart-height", chartHeight.toString()); //$NON-NLS-1$
+    props.setProperty("chart-width", chartWidth); //$NON-NLS-1$
+    props.setProperty("chart-height", chartHeight); //$NON-NLS-1$
     props.setProperty("ofc-url", ofcURL); //$NON-NLS-1$
     props.setProperty("ofc-libname", ofclibname); //$NON-NLS-1$
     props.setProperty("chartJson", chartJson.replaceAll("\"", "\\\\\"")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
