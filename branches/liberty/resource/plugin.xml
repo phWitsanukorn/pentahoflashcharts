@@ -13,5 +13,4 @@
     </content-generator>
 
     <bean id="OpenFlashChartComponent" class="com.google.code.pentahoflashcharts.OpenFlashChartComponent"/>
-    <bean id="OpenFlashChartComponent2" class="com.google.code.pentahoflashcharts.OpenFlashChartComponent"/>
 </plugin>
