@@ -3,8 +3,8 @@
 
 = Code =
 
-  * Bayon Technologies, Inc ([http://nicholasgoodman.com Blog])
-  * Tom Qin ([http://qinhui99.itpub.net/ Blog])
+  * Nicholas Goodman @ Bayon Technologies, Inc ([http://nicholasgoodman.com Blog])
+  * Tom Qin @ RedSun BI ([http://qinhui99.itpub.net/ Blog])
   * Will Gorman @ Pentaho ([http://www.willgorman.com/ Blog])
 
 = Projects =
