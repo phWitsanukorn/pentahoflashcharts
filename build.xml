@@ -9,7 +9,10 @@
 	<property name="resource.dir" location="${base.dir}/resource" />
 		
 		
-	<property name="pentaho.pci.webapp" location="/Users/ngoodman/pentaho/biserver-ce-2.0.0.stable" />
+	<property name="pentaho.pci.webapp" location="/Users/ngoodman/pentaho/biserver-ce-3.0.RC1" />
+	<property name="pentaho.pci.pentaho-solutions" location="${pentaho.pci.webapp}/pentaho-solutions" />
+	<property name="pentaho.pci.system" location="${pentaho.pci.pentaho-solutions}/system" />
+		
 	<property name="pfc.version" value="0.1"/>
 	<property name="pfc.revision" value="218"/>
 	<property name="pfc.jar.name" value="pentahoflashchart-${pfc.version}-r${pfc.revision}.jar"/>
@@ -91,6 +94,11 @@
 			<zipfileset dir="${build.dir}" includes="${pfc.jar.name}"/>
 			<zipfileset dir="${resource.dir}" includes="README.txt"/>
 		</zip>
+	</target>
+	
+	<target name="deployplugin" depends="dist">
+		<unzip src="${build.dir}/${pfc.plugin.dist.name}" dest="${pentaho.pci.system}"/>
+		<get src="http://localhost:8080/pentaho/Publish?publish=now&amp;class=org.pentaho.platform.plugin.services.pluginmgr.PluginAdapter&amp;userid=joe&amp;password=password" dest="${build.dir}/blah.html"/>
 	</target>
 		
 	

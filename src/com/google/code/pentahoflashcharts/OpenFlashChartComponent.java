@@ -16,6 +16,8 @@
  */
 package com.google.code.pentahoflashcharts;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -89,12 +91,18 @@ public class OpenFlashChartComponent extends ComponentBase {
   private static final String CHART_ATTRIBUTES = "chart-attributes"; //$NON-NLS-1$
 
   private static final String OFC_LIB_NAME = "ofc_lib_name"; //$NON-NLS-1$
+  
+  private static final String USE_PENTAHO_XML = "use_pentaho_xml"; //$NON-NLS-1$
+  
+  private static final String DEFAULT_USE_PENTAHO_XML = "true";
 
   private static final String BY_ROW_PROP = "by-row"; //$NON-NLS-1$
 
   private static final String DEFAULT_WIDTH = "100%";
 
   private static final String DEFAULT_HEIGHT = "100%";
+  
+  
 
   protected String template = null;
 
@@ -178,6 +186,13 @@ public class OpenFlashChartComponent extends ComponentBase {
       ofclibname = DEFAULT_FLASH_SWF;
     }
     
+    // use_pentaho_xml
+    String use_pentaho_xml = getInputStringValue(USE_PENTAHO_XML);
+    if (use_pentaho_xml == null || "".equals(use_pentaho_xml)) { //$NON-NLS-1$
+      use_pentaho_xml = DEFAULT_USE_PENTAHO_XML;
+    }
+   
+    
     // chart definition
     
     String chartAttributeString = null;
@@ -230,7 +245,33 @@ public class OpenFlashChartComponent extends ComponentBase {
       byRow = Boolean.valueOf(getInputStringValue(BY_ROW_PROP)).booleanValue();
     }
 
-    String chartJson = PentahoOFC4JChartHelper.generateChartJson(chartNode, data, byRow, log);
+   
+    
+    // set Helper classname based on use_pentaho_xml
+    String helperclassname;
+    if ( "false".equals(use_pentaho_xml) )
+    	helperclassname = "com.google.code.pentahoflashcharts.charts.pfcxml.OFC4JHelper";
+    else if ( "true".equals(use_pentaho_xml)) 
+    	helperclassname = "com.google.code.pentahoflashcharts.charts.PentahoOFC4JChartHelper";
+    else {
+		getLogger().error(Messages.getErrorString("OpenFlashChartComponent.ERROR_0003_CHARTHELPER_NOT_FOUND"));
+		return false;
+    }
+    	
+
+    // Use reflection to access static methods
+    String chartJson = "";
+	try {
+		Class c = Class.forName(helperclassname);
+	    
+	    Method m = c.getMethod("generateChartJson", new Class[] {Node.class, IPentahoResultSet.class, boolean.class, Log.class});
+		chartJson = (String) m.invoke(null, new Object[] {chartNode, data, byRow, log});
+		
+	} catch (Exception e) {
+		getLogger().error(Messages.getErrorString("OpenFlashChartComponent.ERROR_0003_CHARTHELPER_NOT_FOUND"), e);
+		return false;
+	}
+    
 
     // generate a unique name for the function
     

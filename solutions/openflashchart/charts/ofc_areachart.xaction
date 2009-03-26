@@ -28,13 +28,13 @@
     </html_fragment> 
   </outputs>
 
-  <resources>
-    <chart_template>
-      <solution-file>
-        <location>ofc_area_chart.txt</location>
-        <mime-type>text/plain</mime-type>
-      </solution-file>
-    </chart_template>
+  <resources> 
+    <chart-attributes> 
+      <solution-file> 
+        <location>ofc_area_chart.txt</location>  
+        <mime-type>text/plain</mime-type> 
+      </solution-file> 
+    </chart-attributes> 
   </resources>
   
   <actions> 
@@ -42,7 +42,7 @@
       <component-name>SQLLookupRule</component-name>
       <action-type>Relational</action-type>
       <action-outputs> 
-        <query-result type="result-set" mapping="chart_dataset"/> 
+        <query-result type="result-set" mapping="chart-data"/> 
       </action-outputs>
       <component-definition> 
         <jndi><![CDATA[SampleData]]></jndi>  
@@ -56,17 +56,20 @@ FROM
      INNER JOIN CUSTOMER_W_TER ON ORDERFACT.CUSTOMERNUMBER = CUSTOMER_W_TER.CUSTOMERNUMBER GROUP BY
      LINE
 ORDER BY
-     2 DESC]]></query>
+     2 DESC]]></query> 
       </component-definition> 
     </action-definition>
   
     <action-definition> 
-      <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+      <component-name>OpenFlashChartComponent</component-name>
       <action-type>Open Flash Chart</action-type>
       <action-inputs> 
-        <chart_dataset type="result-set"/>  
+        <chart-data type="result-set"/>  
         <use_pentaho_xml type="string"/> 
       </action-inputs>
+      <action-resources>
+        <chart-attributes type="resource" mapping="chart-attributes"/>
+      </action-resources>
       <action-outputs> 
         <html_fragment type="string"/>  
         <content_url type="string"/> 
