@@ -61,18 +61,18 @@
       </sources>  
       <default-value><![CDATA[ChartComponent]]></default-value> 
     </component_name>  
-    <chart_width type="string"> 
+    <width type="string"> 
       <sources> 
-        <request>chart_width</request> 
+        <request>width</request> 
       </sources>  
       <default-value><![CDATA[600]]></default-value> 
-    </chart_width>  
-    <chart_height type="string"> 
+    </width>  
+    <height type="string"> 
       <sources> 
-        <request>chart_height</request> 
+        <request>height</request> 
       </sources>  
       <default-value><![CDATA[400]]></default-value> 
-    </chart_height> 
+    </height> 
   </inputs>
 
   <outputs> 
@@ -190,15 +190,15 @@ ORDER BY
     <actions> 
       <condition><![CDATA[chart_type == 'bar']]></condition>  
       <action-definition> 
-        <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+        <component-name>OpenFlashChartComponent</component-name>
         <action-type>Open Flash Char</action-type>
         <action-inputs> 
-          <chart_dataset type="string" mapping="query_result"/>  
-          <chart_height type="string"/>  
-          <chart_width type="string"/> 
+          <chart-data type="string" mapping="query_result"/>  
+          <height type="string"/>  
+          <width type="string"/> 
         </action-inputs>
         <action-resources> 
-          <chart_template type="resource" mapping="bar"/> 
+          <chart-attributes type="resource" mapping="bar"/> 
         </action-resources>
         <action-outputs> 
           <html_fragment type="string"/>  
@@ -212,15 +212,15 @@ ORDER BY
     <actions> 
       <condition><![CDATA[chart_type == 'line']]></condition>  
       <action-definition> 
-        <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+        <component-name>OpenFlashChartComponent</component-name>
         <action-type>Open Flash Chart</action-type>
         <action-inputs> 
-          <chart_dataset type="string" mapping="query_result"/>  
-          <chart_height type="string"/>  
-          <chart_width type="string"/> 
+          <chart-data type="string" mapping="query_result"/>  
+          <height type="string"/>  
+          <width type="string"/> 
         </action-inputs>
         <action-resources> 
-          <chart_template type="resource" mapping="line"/> 
+          <chart-attributes type="resource" mapping="line"/> 
         </action-resources>
         <action-outputs> 
           <html_fragment type="string"/>  
@@ -234,15 +234,15 @@ ORDER BY
         <actions> 
       <condition><![CDATA[chart_type == 'area']]></condition>  
       <action-definition> 
-        <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+        <component-name>OpenFlashChartComponent</component-name>
         <action-type>Open Flash Chart</action-type>
         <action-inputs> 
-          <chart_dataset type="string" mapping="query_result"/>  
-          <chart_height type="string"/>  
-          <chart_width type="string"/> 
+          <chart-data type="string" mapping="query_result"/>  
+          <height type="string"/>  
+          <width type="string"/> 
         </action-inputs>
         <action-resources> 
-          <chart_template type="resource" mapping="area"/> 
+          <chart-attributes type="resource" mapping="area"/> 
         </action-resources>
         <action-outputs> 
           <html_fragment type="string"/>  
@@ -256,15 +256,15 @@ ORDER BY
     <actions> 
       <condition><![CDATA[chart_type == 'barchart_horizontal']]></condition>  
       <action-definition> 
-        <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+        <component-name>OpenFlashChartComponent</component-name>
         <action-type>Open Flash Chart</action-type>
         <action-inputs> 
-          <chart_dataset type="string" mapping="query_result"/>  
-          <chart_height type="string"/>  
-          <chart_width type="string"/> 
+          <chart-data type="string" mapping="query_result"/>  
+          <height type="string"/>  
+          <width type="string"/> 
         </action-inputs>
         <action-resources> 
-          <chart_template type="resource" mapping="barchart_horizontal"/> 
+          <chart-attributes type="resource" mapping="barchart_horizontal"/> 
         </action-resources>
         <action-outputs> 
           <html_fragment type="string"/>  
@@ -278,15 +278,15 @@ ORDER BY
     <actions> 
       <condition><![CDATA[chart_type == 'pie']]></condition>  
       <action-definition> 
-        <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+        <component-name>OpenFlashChartComponent</component-name>
         <action-type>Open Flash Chart</action-type>
         <action-inputs> 
-          <chart_dataset type="string" mapping="query_result"/>  
-          <chart_height type="string"/>  
-          <chart_width type="string"/> 
+          <chart-data type="string" mapping="query_result"/>  
+          <height type="string"/>  
+          <width type="string"/> 
         </action-inputs>
         <action-resources> 
-          <chart_template type="resource" mapping="pie"/> 
+          <chart-attributes type="resource" mapping="pie"/> 
         </action-resources>
         <action-outputs> 
           <html_fragment type="string"/>  
@@ -300,15 +300,15 @@ ORDER BY
     <actions> 
       <condition><![CDATA[chart_type == 'barchart_3d']]></condition>  
       <action-definition> 
-        <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+        <component-name>OpenFlashChartComponent</component-name>
         <action-type>Open Flash Chart</action-type>
         <action-inputs> 
-          <chart_dataset type="string" mapping="query_result"/>  
-          <chart_height type="string"/>  
-          <chart_width type="string"/> 
+          <chart-data type="string" mapping="query_result"/>  
+          <height type="string"/>  
+          <width type="string"/> 
         </action-inputs>
         <action-resources> 
-          <chart_template type="resource" mapping="barchart_3d"/> 
+          <chart-attributes type="resource" mapping="barchart_3d"/> 
         </action-resources>
         <action-outputs> 
           <html_fragment type="string"/>  
@@ -322,15 +322,15 @@ ORDER BY
     <actions> 
       <condition><![CDATA[chart_type == 'barchart_glass']]></condition>  
       <action-definition> 
-        <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+        <component-name>OpenFlashChartComponent</component-name>
         <action-type>Open Flash Chart</action-type>
         <action-inputs> 
-          <chart_dataset type="string" mapping="query_result"/>  
-          <chart_height type="string"/>  
-          <chart_width type="string"/> 
+          <chart-data type="string" mapping="query_result"/>  
+          <height type="string"/>  
+          <width type="string"/> 
         </action-inputs>
         <action-resources> 
-          <chart_template type="resource" mapping="barchart_glass"/> 
+          <chart-attributes type="resource" mapping="barchart_glass"/> 
         </action-resources>
         <action-outputs> 
           <html_fragment type="string"/>  
@@ -344,15 +344,15 @@ ORDER BY
     <actions> 
       <condition><![CDATA[chart_type == 'barchart_sketch']]></condition>  
       <action-definition> 
-        <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+        <component-name>OpenFlashChartComponent</component-name>
         <action-type>Open Flash Chart</action-type>
         <action-inputs> 
-          <chart_dataset type="string" mapping="query_result"/>  
-          <chart_height type="string"/>  
-          <chart_width type="string"/> 
+          <chart-data type="string" mapping="query_result"/>  
+          <height type="string"/>  
+          <width type="string"/> 
         </action-inputs>
         <action-resources> 
-          <chart_template type="resource" mapping="barchart_sketch"/> 
+          <chart-attributes type="resource" mapping="barchart_sketch"/> 
         </action-resources>
         <action-outputs> 
           <html_fragment type="string"/>  

@@ -12,18 +12,18 @@
   </documentation>
 
   <inputs> 
-    <chart_height type="string"> 
+    <height type="string"> 
       <sources> 
-        <request>chart_height</request> 
+        <request>height</request> 
       </sources>  
       <default-value><![CDATA[480]]></default-value> 
-    </chart_height>  
-    <chart_width type="string"> 
+    </height>  
+    <width type="string"> 
       <sources> 
-        <request>chart_width</request> 
+        <request>width</request> 
       </sources>  
       <default-value><![CDATA[680]]></default-value> 
-    </chart_width>  
+    </width>  
     <legendtext type="string"> 
       <sources> 
         <request>legendtext</request> 
@@ -47,12 +47,12 @@
   </outputs>
 
   <resources> 
-    <chart_template> 
+    <chart-attributes> 
       <solution-file> 
         <location>barchart.xml</location>  
         <mime-type>text/plain</mime-type> 
       </solution-file> 
-    </chart_template> 
+    </chart-attributes> 
   </resources>
   
   <actions> 
@@ -96,7 +96,7 @@ aRow = new Array(); aRow[0] = 'p3'; aRow[1] = 'r4'; aRow[2] = 12; chart_data_nor
         <result_set type="result-set" mapping="chart_data_normalized"/> 
       </action-inputs>
       <action-outputs> 
-        <query-result2 type="result-set" mapping="chart_dataset"/> 
+        <query-result2 type="result-set" mapping="chart-data"/> 
       </action-outputs>
       <component-definition> 
         <pivot_column>1</pivot_column>  
@@ -106,15 +106,15 @@ aRow = new Array(); aRow[0] = 'p3'; aRow[1] = 'r4'; aRow[2] = 12; chart_data_nor
     </action-definition>
   
     <action-definition> 
-      <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+      <component-name>OpenFlashChartComponent</component-name>
       <action-type>Open Flash Chartt</action-type>
       <action-inputs> 
-        <chart_dataset type="result-set"/>  
-        <chart_height type="string"/>  
-        <chart_width type="string"/> 
+        <chart-data type="result-set"/>  
+        <height type="string"/>  
+        <width type="string"/> 
       </action-inputs>
       <action-resources> 
-        <chart_template type="resource"/> 
+        <chart-attributes type="resource"/> 
       </action-resources>
       <action-outputs> 
         <html_fragment type="string"/>  

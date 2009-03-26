@@ -12,18 +12,18 @@
   </documentation>
 
   <inputs> 
-    <chart_height type="string"> 
+    <height type="string"> 
       <sources> 
-        <request>chart_height</request> 
+        <request>height</request> 
       </sources>  
       <default-value><![CDATA[480]]></default-value> 
-    </chart_height>  
-    <chart_width type="string"> 
+    </height>  
+    <width type="string"> 
       <sources> 
-        <request>chart_width</request> 
+        <request>width</request> 
       </sources>  
       <default-value><![CDATA[600]]></default-value> 
-    </chart_width>  
+    </width>  
     <use_pentaho_xml type="string"> 
       <sources> 
         <request>use_pentaho_xml</request> 
@@ -47,12 +47,12 @@
   </outputs>
 
   <resources> 
-    <chart_template> 
+    <chart-attributes> 
       <solution-file> 
         <location>ofc_bar_chart_stacked.txt</location>  
         <mime-type>text/plain</mime-type> 
       </solution-file> 
-    </chart_template> 
+    </chart-attributes> 
   </resources>
   
   <actions> 
@@ -60,7 +60,7 @@
       <component-name>SQLLookupRule</component-name>
       <action-type>Relational</action-type>
       <action-outputs> 
-        <query-result type="result-set" mapping="chart_dataset"/> 
+        <query-result type="result-set" mapping="chart-data"/> 
       </action-outputs>
       <component-definition> 
         <jndi><![CDATA[SampleData]]></jndi>  
@@ -79,17 +79,17 @@ ORDER BY
     </action-definition>
   
     <action-definition> 
-      <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+      <component-name>OpenFlashChartComponent</component-name>
       <action-type>Open Flash Chart</action-type>
       <action-inputs> 
-        <chart_dataset type="result-set"/>  
-        <chart_height type="string"/>  
-        <chart_width type="string"/>  
+        <chart-data type="result-set"/>  
+        <height type="string"/>  
+        <width type="string"/>  
         <use_pentaho_xml type="string"/>  
         <ofc_lib_name type="string"/>
       </action-inputs>
       <action-resources> 
-        <chart_template type="resource"/> 
+        <chart-attributes type="resource"/> 
       </action-resources>
       <action-outputs> 
         <html_fragment type="string"/>  

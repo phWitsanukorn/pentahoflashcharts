@@ -18,12 +18,12 @@
       </sources>  
       <default-value><![CDATA[false]]></default-value> 
     </use_pentaho_xml>  
-    <chart_width type="string"> 
+    <width type="string"> 
       <sources> 
-        <request>chart_width</request> 
+        <request>width</request> 
       </sources>  
       <default-value><![CDATA[700]]></default-value> 
-    </chart_width> 
+    </width> 
   </inputs>
 
   <outputs> 
@@ -35,12 +35,12 @@
   </outputs>
 
   <resources> 
-    <chart_template> 
+    <chart-attributes> 
       <solution-file> 
         <location>ofc_multiple_line_chart.txt</location>  
         <mime-type>text/plain</mime-type> 
       </solution-file> 
-    </chart_template> 
+    </chart-attributes> 
   </resources>
   
   <actions> 
@@ -48,7 +48,7 @@
       <component-name>SQLLookupRule</component-name>
       <action-type>Relational</action-type>
       <action-outputs> 
-        <query-result type="result-set" mapping="chart_dataset"/> 
+        <query-result type="result-set" mapping="chart-data"/> 
       </action-outputs>
       <component-definition> 
         <jndi><![CDATA[SampleData]]></jndi>  
@@ -67,15 +67,15 @@ ORDER BY
     </action-definition>
   
     <action-definition> 
-      <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+      <component-name>OpenFlashChartComponent</component-name>
       <action-type>Open Flash Chart</action-type>
       <action-inputs> 
-        <chart_dataset type="result-set"/>  
+        <chart-data type="result-set"/>  
         <use_pentaho_xml type="string"/>  
-        <chart_width type="string"/> 
+        <width type="string"/> 
       </action-inputs>
       <action-resources> 
-        <chart_template type="resource"/> 
+        <chart-attributes type="resource"/> 
       </action-resources>
       <action-outputs> 
         <html_fragment type="string"/>  

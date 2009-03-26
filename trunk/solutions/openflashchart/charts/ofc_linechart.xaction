@@ -12,12 +12,12 @@
   </documentation>
 
   <inputs> 
-    <chart_template_string type="string"> 
+    <chart-attributes type="string"> 
       <sources> 
-        <request>chart_template_string</request> 
+        <request>chart-attributes</request> 
       </sources>  
       <default-value><![CDATA[<chart><chart-type>LineChart</chart-type><title>Line Chart--Product "1948 Porsche 356-A Roadster"</title><x-steps>1000</x-steps><x-max>20000</x-max><domain-title>Day</domain-title><range-title>Sold Price</range-title><y-axis><labels></labels><y-steps>1000</y-steps><y-max>10000</y-max><color>#909090</color></y-axis></chart>]]></default-value> 
-    </chart_template_string>  
+    </chart-attributes>  
     <use_pentaho_xml type="string"> 
       <sources> 
         <request>use_pentaho_xml</request> 
@@ -41,7 +41,7 @@
       <component-name>SQLLookupRule</component-name>
       <action-type>Relational</action-type>
       <action-outputs> 
-        <query-result type="result-set" mapping="chart_dataset"/> 
+        <query-result type="result-set" mapping="chart-data"/> 
       </action-outputs>
       <component-definition> 
         <jndi><![CDATA[SampleData]]></jndi>  
@@ -57,11 +57,11 @@ ORDER BY  PRODUCTLINE desc, PRODUCTNAME, ORDERS.ORDERDATE]]></query>
     </action-definition>
   
     <action-definition> 
-      <component-name>com.google.code.pentahoflashcharts.OpenFlashChartComponent</component-name>
+      <component-name>OpenFlashChartComponent</component-name>
       <action-type>Open Flash Chart</action-type>
       <action-inputs> 
-        <chart_template_string type="string"/>  
-        <chart_dataset type="result-set"/>  
+        <chart-attributes type="string"/>  
+        <chart-data type="result-set"/>  
         <use_pentaho_xml type="string"/> 
       </action-inputs>
       <action-outputs> 

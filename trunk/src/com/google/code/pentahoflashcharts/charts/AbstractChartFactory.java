@@ -48,82 +48,82 @@ public abstract class AbstractChartFactory implements IChartFactory {
   }
   
   // general chart related elements
-  protected static final String COLOR_NODE_LOC = "color"; //$NON-NLS-1$
+  public static final String COLOR_NODE_LOC = "color"; //$NON-NLS-1$
   
-  private static final String TITLE_NODE_LOC = "title"; //$NON-NLS-1$
-  private static final String TITLE_FONT_NODE_LOC = "title-font"; //$NON-NLS-1$
-  private static final String DATASET_TYPE_NODE_LOC = "dataset-type"; //$NON-NLS-1$
-  private static final String COLOR_PALETTE_NODE_LOC = "color-palette"; //$NON-NLS-1$  
-  private static final String PLOT_BACKGROUND_NODE_LOC = "plot-background"; //$NON-NLS-1$
-  private static final String PLOT_BACKGROUND_COLOR_XPATH = "@type"; //attribute of plot-background  //$NON-NLS-1$
-  private static final String CHART_BACKGROUND_NODE_LOC = "chart-background"; //$NON-NLS-1$
-  private static final String CHART_BACKGROUND_COLOR_XPATH = "@type"; //attribute of chart-background  //$NON-NLS-1$
-  private static final String URL_TEMPLATE_NODE_LOC = "url-template"; //$NON-NLS-1$
-  private static final String TOOLTIP_NODE_LOC = "tooltip"; //$NON-NLS-1$
-  private static final String ORIENTATION_NODE_LOC = "orientation"; //$NON-NLS-1$
-  private static final String ALPHA_NODE_LOC = "alpha"; //$NON-NLS-1$
+  public static final String TITLE_NODE_LOC = "title"; //$NON-NLS-1$
+  public static final String TITLE_FONT_NODE_LOC = "title-font"; //$NON-NLS-1$
+  public static final String DATASET_TYPE_NODE_LOC = "dataset-type"; //$NON-NLS-1$
+  public static final String COLOR_PALETTE_NODE_LOC = "color-palette"; //$NON-NLS-1$  
+  public static final String PLOT_BACKGROUND_NODE_LOC = "plot-background"; //$NON-NLS-1$
+  public static final String PLOT_BACKGROUND_COLOR_XPATH = "@type"; //attribute of plot-background  //$NON-NLS-1$
+  public static final String CHART_BACKGROUND_NODE_LOC = "chart-background"; //$NON-NLS-1$
+  public static final String CHART_BACKGROUND_COLOR_XPATH = "@type"; //attribute of chart-background  //$NON-NLS-1$
+  public static final String URL_TEMPLATE_NODE_LOC = "url-template"; //$NON-NLS-1$
+  public static final String TOOLTIP_NODE_LOC = "tooltip"; //$NON-NLS-1$
+  public static final String ORIENTATION_NODE_LOC = "orientation"; //$NON-NLS-1$
+  public static final String ALPHA_NODE_LOC = "alpha"; //$NON-NLS-1$
   
   
   // font related elements 
-  private static final String FONT_FAMILY_NODE_LOC = "font-family"; //$NON-NLS-1$
-  private static final String FONT_SIZE_NODE_LOC = "size"; //$NON-NLS-1$
-  private static final String FONT_BOLD_NODE_LOC = "is-bold"; //$NON-NLS-1$
-  private static final String FONT_ITALIC_NODE_LOC = "is-italic"; //$NON-NLS-1$
+  public static final String FONT_FAMILY_NODE_LOC = "font-family"; //$NON-NLS-1$
+  public static final String FONT_SIZE_NODE_LOC = "size"; //$NON-NLS-1$
+  public static final String FONT_BOLD_NODE_LOC = "is-bold"; //$NON-NLS-1$
+  public static final String FONT_ITALIC_NODE_LOC = "is-italic"; //$NON-NLS-1$
   
   // domain axis related elements
-  private static final String DOMAIN_STROKE_NODE_LOC = "domain-stroke"; //$NON-NLS-1$
-  private static final String DOMAIN_GRID_COLOR_NODE_LOC = "domain-grid-color"; //$NON-NLS-1$
-  private static final String DOMAIN_COLOR_NODE_LOC = "domain-color"; //$NON-NLS-1$
-  private static final String DOMAIN_STEPS_NODE_LOC = "domain-steps"; //$NON-NLS-1$
-  private static final String DOMAIN_TITLE_NODE_LOC = "domain-title"; //$NON-NLS-1$
-  private static final String DOMAIN_TITLE_FONT_NODE_LOC = "domain-title-font"; //$NON-NLS-1$
-  private static final String DOMAIN_MAXIMUM_NODE_LOC = "domain-maximum"; //$NON-NLS-1$
-  private static final String DOMAIN_MINIMUM_NODE_LOC = "domain-minimum"; //$NON-NLS-1$
+  public static final String DOMAIN_STROKE_NODE_LOC = "domain-stroke"; //$NON-NLS-1$
+  public static final String DOMAIN_GRID_COLOR_NODE_LOC = "domain-grid-color"; //$NON-NLS-1$
+  public static final String DOMAIN_COLOR_NODE_LOC = "domain-color"; //$NON-NLS-1$
+  public static final String DOMAIN_STEPS_NODE_LOC = "domain-steps"; //$NON-NLS-1$
+  public static final String DOMAIN_TITLE_NODE_LOC = "domain-title"; //$NON-NLS-1$
+  public static final String DOMAIN_TITLE_FONT_NODE_LOC = "domain-title-font"; //$NON-NLS-1$
+  public static final String DOMAIN_MAXIMUM_NODE_LOC = "domain-maximum"; //$NON-NLS-1$
+  public static final String DOMAIN_MINIMUM_NODE_LOC = "domain-minimum"; //$NON-NLS-1$
   
   // range axis related elements
-  private static final String RANGE_STROKE_NODE_LOC = "range-stroke"; //$NON-NLS-1$
-  private static final String RANGE_GRID_COLOR_NODE_LOC = "range-grid-color"; //$NON-NLS-1$
-  private static final String RANGE_COLOR_NODE_LOC = "range-color"; //$NON-NLS-1$
+  public static final String RANGE_STROKE_NODE_LOC = "range-stroke"; //$NON-NLS-1$
+  public static final String RANGE_GRID_COLOR_NODE_LOC = "range-grid-color"; //$NON-NLS-1$
+  public static final String RANGE_COLOR_NODE_LOC = "range-color"; //$NON-NLS-1$
   
-  protected static final String RANGE_STEPS_NODE_LOC = "range-steps"; //$NON-NLS-1$
+  public static final String RANGE_STEPS_NODE_LOC = "range-steps"; //$NON-NLS-1$
   
-  private static final String RANGE_TITLE_NODE_LOC = "range-title"; //$NON-NLS-1$
-  private static final String RANGE_TITLE_FONT_NODE_LOC = "range-title-font"; //$NON-NLS-1$
-  private static final String RANGE_MAXIMUM_NODE_LOC = "range-maximum"; //$NON-NLS-1$
-  private static final String RANGE_MINIMUM_NODE_LOC = "range-minimum"; //$NON-NLS-1$
+  public static final String RANGE_TITLE_NODE_LOC = "range-title"; //$NON-NLS-1$
+  public static final String RANGE_TITLE_FONT_NODE_LOC = "range-title-font"; //$NON-NLS-1$
+  public static final String RANGE_MAXIMUM_NODE_LOC = "range-maximum"; //$NON-NLS-1$
+  public static final String RANGE_MINIMUM_NODE_LOC = "range-minimum"; //$NON-NLS-1$
 
   
   // color types
   
-  private static final String COLOR_TYPE = "color"; //$NON-NLS-1$
+  public static final String COLOR_TYPE = "color"; //$NON-NLS-1$
 
-  private static final String CSS_FONT_STYLES = "font-family: {fontfamily}; font-size: {fontsize}px; " + //$NON-NLS-1$
+  public static final String CSS_FONT_STYLES = "font-family: {fontfamily}; font-size: {fontsize}px; " + //$NON-NLS-1$
                                                 "font-weight: {fontweight}; font-style: {fontstyle};"; //$NON-NLS-1$
     
   // Orientation Type Values (ORIENTATION_NODE_LOC)
-  protected static final String HORIZONTAL_ORIENTATION = "horizontal"; //$NON-NLS-1$
-  protected static final String VERTICAL_ORIENTATION = "vertical"; //$NON-NLS-1$
+  public static final String HORIZONTAL_ORIENTATION = "horizontal"; //$NON-NLS-1$
+  public static final String VERTICAL_ORIENTATION = "vertical"; //$NON-NLS-1$
   
   // Dataset Type Values
-  protected static final String CATEGORY_TYPE = "CategoryDataset"; //$NON-NLS-1$
-  protected static final String XY_TYPE = "XYSeriesCollection"; //$NON-NLS-1$
-  protected static final String XYZ_TYPE = "XYZSeriesCollection"; //$NON-NLS-1$
+  public static final String CATEGORY_TYPE = "CategoryDataset"; //$NON-NLS-1$
+  public static final String XY_TYPE = "XYSeriesCollection"; //$NON-NLS-1$
+  public static final String XYZ_TYPE = "XYZSeriesCollection"; //$NON-NLS-1$
 
   // defaults
-  private static final String DATASET_TYPE_DEFAULT = "CategoryDataset"; //$NON-NLS-1$
-  private static final String CSS_FONT_FAMILY_DEFAULT = "Arial"; //$NON-NLS-1$
-  private static final String CSS_FONT_SIZE_DEFAULT = "14"; //$NON-NLS-1$
-  private static final String CSS_FONT_WEIGHT_DEFAULT = "normal"; //$NON-NLS-1$
-  private static final String CSS_FONT_STYLE_DEFAULT = "normal"; //$NON-NLS-1$
+  public static final String DATASET_TYPE_DEFAULT = "CategoryDataset"; //$NON-NLS-1$
+  public static final String CSS_FONT_FAMILY_DEFAULT = "Arial"; //$NON-NLS-1$
+  public static final String CSS_FONT_SIZE_DEFAULT = "14"; //$NON-NLS-1$
+  public static final String CSS_FONT_WEIGHT_DEFAULT = "normal"; //$NON-NLS-1$
+  public static final String CSS_FONT_STYLE_DEFAULT = "normal"; //$NON-NLS-1$
   
-  protected static final String AXIS_GRID_COLOR_DEFAULT = "#aaaaaa"; //$NON-NLS-1$
-  protected static final String AXIS_COLOR_DEFAULT = "#000000"; //$NON-NLS-1$
+  public static final String AXIS_GRID_COLOR_DEFAULT = "#aaaaaa"; //$NON-NLS-1$
+  public static final String AXIS_COLOR_DEFAULT = "#000000"; //$NON-NLS-1$
   
-  protected static final String ORIENTATION_DEFAULT = "vertical"; //$NON-NLS-1$
+  public static final String ORIENTATION_DEFAULT = "vertical"; //$NON-NLS-1$
 
   
   @SuppressWarnings("nls")
-  protected static final String[] COLORS_DEFAULT = { "#006666", "#0066CC", "#009999", "#336699", "#339966", "#3399FF",
+  public static final String[] COLORS_DEFAULT = { "#006666", "#0066CC", "#009999", "#336699", "#339966", "#3399FF",
       "#663366", "#666666", "#666699", "#669999", "#6699CC", "#66CCCC", "#993300", "#999933", "#999966", "#999999",
       "#9999CC", "#9999FF", "#99CC33", "#99CCCC", "#99CCFF", "#CC6600", "#CC9933", "#CCCC33", "#CCCC66", "#CCCC99",
       "#CCCCCC", "#FF9900", "#FFCC00", "#FFCC66" };
@@ -615,7 +615,7 @@ public abstract class AbstractChartFactory implements IChartFactory {
   // Utility Methods
   //
   
-  protected String buildCSSStringFromNode(Node n) {
+  public static String buildCSSStringFromNode(Node n) {
     String fontFamily = getNodeValue(n, FONT_FAMILY_NODE_LOC);
     String fontSize = getNodeValue(n, FONT_SIZE_NODE_LOC);
     String fontWeight = null;
@@ -631,7 +631,7 @@ public abstract class AbstractChartFactory implements IChartFactory {
   
 
 
-  protected String buildCSSString(String fontfamily, String fontsize, String fontweight, String fontstyle) {
+  public static String buildCSSString(String fontfamily, String fontsize, String fontweight, String fontstyle) {
     Properties props = new Properties();
     props.put("fontfamily", fontfamily != null ? fontfamily : CSS_FONT_FAMILY_DEFAULT); //$NON-NLS-1$
     props.put("fontsize", fontsize != null ? fontsize : CSS_FONT_SIZE_DEFAULT); //$NON-NLS-1$
