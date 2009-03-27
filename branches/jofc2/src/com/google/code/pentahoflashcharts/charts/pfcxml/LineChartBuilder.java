@@ -21,10 +21,10 @@ package com.google.code.pentahoflashcharts.charts.pfcxml;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import ofc4j.model.Chart;
-import ofc4j.model.axis.XAxis;
-import ofc4j.model.elements.LineChart;
-import ofc4j.model.elements.LineChart.Style;
+import jofc2.model.Chart;
+import jofc2.model.axis.XAxis;
+import jofc2.model.elements.LineChart;
+import jofc2.model.elements.LineChart.Style;
 
 import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoResultSet;
