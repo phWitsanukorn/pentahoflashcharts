@@ -19,7 +19,7 @@
 
 package com.google.code.pentahoflashcharts.charts.pfcxml;
 
-import ofc4j.model.elements.BarChart.Style;
+import jofc2.model.elements.BarChart.Style;
 
 public class GlassBarChartBuilder extends BarChartBuilder {
 	

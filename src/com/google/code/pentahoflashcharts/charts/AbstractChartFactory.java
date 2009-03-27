@@ -295,8 +295,7 @@ public abstract class AbstractChartFactory implements IChartFactory {
       String type = temp.valueOf(PLOT_BACKGROUND_COLOR_XPATH);
       if (type != null && COLOR_TYPE.equals(type)) {
         chart.setBackgroundColour(getValue(temp));
-        //TODO: jofc2
-        //chart.setInnerBackgroundColour(getValue(temp));
+        chart.setInnerBackgroundColour(getValue(temp));
       }
     }
     temp = chartNode.selectSingleNode(CHART_BACKGROUND_NODE_LOC);

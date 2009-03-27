@@ -20,9 +20,9 @@ package com.google.code.pentahoflashcharts.charts.pfcxml;
 
 import java.util.List;
 
-import ofc4j.model.Chart;
-import ofc4j.model.elements.Element;
-import ofc4j.model.elements.HorizontalBarChart;
+import jofc2.model.Chart;
+import jofc2.model.elements.Element;
+import jofc2.model.elements.HorizontalBarChart;
 
 import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoResultSet;

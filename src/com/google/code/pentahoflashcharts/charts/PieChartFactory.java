@@ -44,7 +44,7 @@ public class PieChartFactory extends AbstractChartFactory {
       // Labels are already set - use them
       String label = (String) chart.getXAxis().getLabels().getLabels().get(row);
       
-      slices[row] = new PieChart.Slice(d, label, label);
+      slices[row] = new PieChart.Slice(d, label);
       if (tooltipText != null) {
         slices[row].setTip(tooltipText);
       }
