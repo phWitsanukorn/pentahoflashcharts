@@ -1,0 +1,16 @@
+<chart>
+<chart-type>PieChart</chart-type>
+<title>OFC Pie  Chart Sample</title>
+<isAnimate>true</isAnimate>
+<slice>
+<datas>
+<sql-column-index>2</sql-column-index>
+<values></values>
+</datas>
+<labels>
+<sql-column-index>1</sql-column-index>
+<values></values>
+</labels>
+<color-palette>#d01f3c,#356aa0,#C79810,#D54C78</color-palette>
+</slice>
+</chart>
