@@ -78,7 +78,7 @@
 				<exclude name="**/.svn/**"/>
 			</zipfileset>
 			<zipfileset dir="${lib.dir}" prefix="openflashchart/lib">
-				<include name="ofc4j*.jar"/>
+				<include name="*ofc*.jar"/>
 				<include name="xstream*.jar"/>
 			</zipfileset>
 			<zipfileset dir="${build.dir}" includes="${pfc.jar.name}" prefix="openflashchart/lib"/>
