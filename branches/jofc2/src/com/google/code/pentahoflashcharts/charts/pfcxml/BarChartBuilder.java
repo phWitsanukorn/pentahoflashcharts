@@ -3,10 +3,10 @@ package com.google.code.pentahoflashcharts.charts.pfcxml;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import ofc4j.model.Chart;
-import ofc4j.model.elements.BarChart;
-import ofc4j.model.elements.Element;
-import ofc4j.model.elements.BarChart.Style;
+import jofc2.model.Chart;
+import jofc2.model.elements.BarChart;
+import jofc2.model.elements.Element;
+import jofc2.model.elements.BarChart.Style;
 
 import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoResultSet;

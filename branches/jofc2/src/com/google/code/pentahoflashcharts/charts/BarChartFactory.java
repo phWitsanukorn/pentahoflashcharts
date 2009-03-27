@@ -182,10 +182,9 @@ public class BarChartFactory extends AbstractChartFactory {
       }
     }
 
-    StackedBarChart.Key key = new StackedBarChart.Key();
     String text = getColumnHeader(col);
-    key.setText(text);
-    key.setColour(getColor(col));
+    StackedBarChart.Key key = new StackedBarChart.Key(getColor(col), text, null);
+    
     sbc.addKeys(key);
     
     for (int row = 0; row < getRowCount(); row++) {

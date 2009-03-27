@@ -20,11 +20,11 @@ package com.google.code.pentahoflashcharts.charts.pfcxml;
 
 import java.text.SimpleDateFormat;
 
-import ofc4j.model.Chart;
-import ofc4j.model.Text;
-import ofc4j.model.axis.XAxis;
-import ofc4j.model.axis.YAxis;
-import ofc4j.model.elements.Element;
+import jofc2.model.Chart;
+import jofc2.model.Text;
+import jofc2.model.axis.XAxis;
+import jofc2.model.axis.YAxis;
+import jofc2.model.elements.Element;
 
 import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoResultSet;
