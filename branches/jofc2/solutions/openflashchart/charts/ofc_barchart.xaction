@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<action-sequence> 
+  <title>PFC XML - Bar Chart normal</title>
+  <version>1</version>
+  <logging-level>DEBUG</logging-level>
+  <documentation> 
+    <author>Bayon Technologies</author>  
+    <description>Animated, simple Pie Chart based on a Relational Data source. Includes an example of drill thru links.</description>  
+    <help/>  
+    <result-type/>  
+    <icon>HelloWorld.png</icon> 
+  </documentation>
+
+  <inputs> 
+    <height type="string"> 
+      <sources> 
+        <request>height</request> 
+      </sources>  
+      <default-value><![CDATA[600]]></default-value> 
+    </height>  
+    <width type="string"> 
+      <sources> 
+        <request>width</request> 
+      </sources>  
+      <default-value><![CDATA[800]]></default-value> 
+    </width>  
+    <use_pentaho_xml type="string"> 
+      <sources> 
+        <request>use_pentaho_xml</request> 
+      </sources>  
+      <default-value><![CDATA[false]]></default-value> 
+    </use_pentaho_xml> 
+  </inputs>
+
+  <outputs> 
+    <html_fragment type="string"> 
+      <destinations> 
+        <response>content</response> 
+      </destinations> 
+    </html_fragment> 
+  </outputs>
+
+  <resources> 
+    <chart-attributes> 
+      <solution-file> 
+        <location>ofc_bar_chart_normal.txt</location>  
+        <mime-type>text/plain</mime-type> 
+      </solution-file> 
+    </chart-attributes> 
+  </resources>
+  
+  <actions> 
+    <action-definition> 
+      <component-name>SQLLookupRule</component-name>
+      <action-type>Relational</action-type>
+      <action-outputs> 
+        <query-result type="result-set" mapping="chart-data"/> 
+      </action-outputs>
+      <component-definition> 
+        <jndi><![CDATA[SampleData]]></jndi>  
+        <live><![CDATA[true]]></live>  
+        <query><![CDATA[select 
+ 
+case  
+ when month(orderdate) = 1 then 'Jan'
+when  month(orderdate) = 2 then 'Feb'
+when  month(orderdate) = 3 then 'Mar'
+when  month(orderdate) = 4 then 'Apr'
+when  month(orderdate) = 5 then 'May'
+when  month(orderdate) = 6 then 'Jun'
+when  month(orderdate) = 7 then 'Jul'
+when  month(orderdate) = 8 then 'Aug'
+when  month(orderdate) = 9 then 'Sep'
+when  month(orderdate) = 10 then 'Oct'
+when  month(orderdate) = 11 then 'Nov'
+when  month(orderdate) = 12 then 'Dec'
+
+else 'Blah'
+end as "Month",sum(quantityordered * priceeach) as "Revenue"
+from orderfact group by month(orderdate) order by month(orderdate)]]></query> 
+      </component-definition> 
+    </action-definition>
+  
+    <action-definition> 
+      <component-name>OpenFlashChartComponent</component-name>
+      <action-type>Open Flash Chart</action-type>
+      <action-inputs> 
+        <chart-data type="result-set"/>  
+        <height type="string"/>  
+        <width type="string"/>  
+        <use_pentaho_xml type="string"/> 
+      </action-inputs>
+      <action-resources> 
+        <chart-attributes type="resource"/> 
+      </action-resources>
+      <action-outputs> 
+        <html_fragment type="string"/>  
+        <content_url type="string"/> 
+      </action-outputs>
+      <component-definition/> 
+    </action-definition>
+ 
+  </actions> 
+</action-sequence>
