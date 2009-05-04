@@ -20,8 +20,8 @@ package com.google.code.pentahoflashcharts.charts.pfcxml;
 
 import java.util.List;
 
-import ofc4j.model.Chart;
-import ofc4j.model.elements.ScatterChart;
+import jofc2.model.Chart;
+import jofc2.model.elements.ScatterChart;
 
 import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoResultSet;
@@ -31,7 +31,7 @@ public class ScatterChartBuilder extends DefaultChartBuilder {
 	protected void setupElements(Chart c, Node root, IPentahoResultSet data) {
 		int rowCount = data.getRowCount();
 		for (int i = 0; i < rowCount; i++) {
-			ScatterChart se = new ScatterChart("");
+			ScatterChart se = new ScatterChart();
 			String text = (String) data.getValueAt(i, 0);
 			se.setText(text);
 			setupColors(root, se,i);

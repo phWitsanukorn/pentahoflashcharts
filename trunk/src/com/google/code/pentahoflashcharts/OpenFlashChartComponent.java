@@ -75,7 +75,7 @@ public class OpenFlashChartComponent extends ComponentBase {
 
   private static final String DEFAULT_FLASH_LOC = "content/openflashchart"; //$NON-NLS-1$
   
-  private static final String DEFAULT_FLASH_SWF = "open-flash-chart-full-embedded-font.swf"; //$NON-NLS-1$s
+  private static final String DEFAULT_FLASH_SWF = "open-flash-chart-full-embedded-fontDZ.swf"; //$NON-NLS-1$s
   
   private static final String CHART_DATA = "chart-data"; //$NON-NLS-1$
 

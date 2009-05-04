@@ -20,10 +20,10 @@ package com.google.code.pentahoflashcharts.charts.pfcxml;
 
 import java.util.List;
 
-import ofc4j.model.Chart;
-import ofc4j.model.elements.StackedBarChart;
-import ofc4j.model.elements.StackedBarChart.StackKey;
-import ofc4j.model.elements.StackedBarChart.StackValue;
+import jofc2.model.Chart;
+import jofc2.model.elements.StackedBarChart;
+import jofc2.model.elements.StackedBarChart.Key;
+import jofc2.model.elements.StackedBarChart.StackValue;
 
 import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoResultSet;
@@ -61,11 +61,12 @@ public class StackedBarChartBuilder extends BarChartBuilder {
 		List colors =root.selectNodes("/chart/color-palette/color");
 		for (int j = 0; j < rowCount; j++) {
 			Object obj = data.getValueAt(j, 0);
-			StackKey key1 =new StackKey();
-			key1.setText(""+obj);
-			key1.setFontSize("14");
+			String text = ""+obj;
+			Integer fontsize = 14;
 			Node colorNode = (Node)colors.get(j);
-			key1.setColour(getNodeValue(colorNode));
+			String colour = getNodeValue(colorNode);
+			StackedBarChart.Key key1 =new StackedBarChart.Key(colour, text, fontsize);
+			
 			sbc.addKeys(key1);
 		}
 			
