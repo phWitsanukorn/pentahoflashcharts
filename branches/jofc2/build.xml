@@ -38,6 +38,8 @@
 	<target name="jar" depends="compile" description="jar">
 		<jar destfile="${build.dir}/pentahoflashchart.jar">
 			<fileset dir="${class.dir}" />
+			<fileset dir="${src.dir}" />
+						
 		</jar>
 	</target>
 
