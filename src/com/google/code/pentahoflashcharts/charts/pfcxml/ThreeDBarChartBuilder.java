@@ -21,8 +21,8 @@ package com.google.code.pentahoflashcharts.charts.pfcxml;
 import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoResultSet;
 
-import ofc4j.model.Chart;
-import ofc4j.model.elements.BarChart.Style;
+import jofc2.model.Chart;
+import jofc2.model.elements.BarChart.Style;
 
 public class ThreeDBarChartBuilder extends BarChartBuilder {
 	
