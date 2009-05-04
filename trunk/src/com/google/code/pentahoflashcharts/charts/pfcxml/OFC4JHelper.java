@@ -18,7 +18,7 @@
  */
 package com.google.code.pentahoflashcharts.charts.pfcxml;
 
-import ofc4j.model.Chart;
+import jofc2.model.Chart;
 
 import org.apache.commons.logging.Log;
 import org.dom4j.Document;

@@ -16,7 +16,7 @@
  */
 package com.google.code.pentahoflashcharts.charts;
 
-import ofc4j.model.elements.LineChart;
+import jofc2.model.elements.LineChart;
 
 import org.dom4j.Node;
 
@@ -75,7 +75,7 @@ public class LineChartFactory extends AbstractChartFactory {
 
     // set the onclick event to the base url template
     if (null != baseURLTemplate) {
-      lc.setOn_click(baseURLTemplate);
+      lc.setOnClick(baseURLTemplate);
     }
     
     if (alpha != null) {

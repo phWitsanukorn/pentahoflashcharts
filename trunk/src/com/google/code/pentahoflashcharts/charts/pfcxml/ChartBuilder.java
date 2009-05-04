@@ -21,9 +21,9 @@ package com.google.code.pentahoflashcharts.charts.pfcxml;
 
 import java.util.StringTokenizer;
 
-import ofc4j.model.Chart;
-import ofc4j.model.Text;
-import ofc4j.model.axis.YAxis;
+import jofc2.model.Chart;
+import jofc2.model.Text;
+import jofc2.model.axis.YAxis;
 
 import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoResultSet;
@@ -33,18 +33,19 @@ public abstract class ChartBuilder {
 	
 	public abstract Chart build(Node root, IPentahoResultSet data) ;
 	
-	public static void setOnClick(ofc4j.model.elements.Element e,Node root ,String xpath) {
+	public static void setOnClick(jofc2.model.elements.Element e,Node root ,String xpath) {
 		if(getValue(root.selectSingleNode(xpath))!=null)
 		{
-			e.setOn_click(getNodeValue(root.selectSingleNode(xpath)));
+			e.setOnClick(getNodeValue(root.selectSingleNode(xpath)));
 		}
 		
 	}
 	
-	public static void setLink(ofc4j.model.elements.Element e,Node root ,String xpath) {
+	public static void setLink(jofc2.model.elements.Element e,Node root ,String xpath) {
 		if(getValue(root.selectSingleNode(xpath))!=null)
 		{
-			e.setLink(getNodeValue(root.selectSingleNode(xpath)));
+			// TODO: this was setLink() before.  need to figure out what that was.
+			e.setOnClick(getNodeValue(root.selectSingleNode(xpath)));
 		}
 		
 	}
@@ -101,7 +102,7 @@ public abstract class ChartBuilder {
 	public static void addLabels(YAxis y_axis_right, Node rightstepsNode) {
 		String[] labels =null;
 		labels = fillLabels(rightstepsNode);
-		y_axis_right.addLabels(labels);
+		y_axis_right.setLabels(labels);
 	}
 	
 
