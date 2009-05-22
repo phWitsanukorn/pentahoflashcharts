@@ -12,4 +12,6 @@ These instructions are valid for the following versions of Pentaho BI Server
  # cd $PENTAHO_HOME/tomcat/webapps/pentaho/WEB-INF/lib
  # rm xstream-1.3.1.jar ofc4j-1.0-alpha5-pentaho.jar
  # rm -rf $PENTAHO_HOME/tomcat/webapps/pentaho/openflashchart
+ # cd $PENTAHO_HOME/pentaho-solutions/system
+ # unzip pentahoflashchart-plugin-0.1-r218.zip (this should create a directory in pentaho-solutions/system named openflashchart)
  # As an administrator, Use Tools -> Refresh -> Plugins
