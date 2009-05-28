@@ -32,6 +32,7 @@ import org.dom4j.Node;
 import org.pentaho.commons.connection.IPentahoDataTypes;
 import org.pentaho.commons.connection.IPentahoResultSet;
 import org.pentaho.commons.connection.PentahoDataTransmuter;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.services.runtime.TemplateUtil;
 
 import com.google.code.pentahoflashcharts.Messages;
@@ -60,6 +61,7 @@ public abstract class AbstractChartFactory implements IChartFactory {
   public static final String CHART_BACKGROUND_NODE_LOC = "chart-background"; //$NON-NLS-1$
   public static final String CHART_BACKGROUND_COLOR_XPATH = "@type"; //attribute of chart-background  //$NON-NLS-1$
   public static final String URL_TEMPLATE_NODE_LOC = "url-template"; //$NON-NLS-1$
+  public static final String USE_BASE_URL_NODE_LOC = "use-base-url"; //$NON-NLS-1$
   public static final String TOOLTIP_NODE_LOC = "tooltip"; //$NON-NLS-1$
   public static final String ORIENTATION_NODE_LOC = "orientation"; //$NON-NLS-1$
   public static final String ALPHA_NODE_LOC = "alpha"; //$NON-NLS-1$
@@ -543,8 +545,18 @@ public abstract class AbstractChartFactory implements IChartFactory {
   
   public void setupOnclick() {
     Node urlTemplateNode = chartNode.selectSingleNode(URL_TEMPLATE_NODE_LOC);
+    Node useBaseURLNode = chartNode.selectSingleNode(USE_BASE_URL_NODE_LOC);
+    
+    baseURLTemplate = "";
+    // default is "false" if unspecified
+    if ( getValue(useBaseURLNode) != null || "true".equals(getValue(useBaseURLNode))){
+    	//baseURLTemplate += "http://localhost:8080/pentaho/";
+    	//baseURLTemplate += PentahoSystem.getSystemSetting("base-url", "http://");
+    	baseURLTemplate += PentahoSystem.getApplicationContext().getBaseUrl();
+    }
     if (getValue(urlTemplateNode) != null) {
-      baseURLTemplate = getValue(urlTemplateNode);
+    	baseURLTemplate += getValue(urlTemplateNode);
+    		
     }
   }
   
