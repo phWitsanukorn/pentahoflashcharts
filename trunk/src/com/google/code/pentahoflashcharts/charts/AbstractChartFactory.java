@@ -662,4 +662,21 @@ public abstract class AbstractChartFactory implements IChartFactory {
       return null;
     }
   }
+  
+  protected String buildURLTemplate(String seriesName, String categoryName) {
+	  
+	  if ( baseURLTemplate != null ) {
+		  String seriesReplacementString = "";
+		  if ( seriesName != null ) {
+			  seriesReplacementString = seriesName;
+		  }
+		  String categoryReplacementString = "";
+		  if ( categoryName != null ) {
+			  categoryReplacementString = categoryName;
+		  }
+		  
+		  return this.baseURLTemplate.replace("{series}", seriesReplacementString).replace("{category}", categoryReplacementString);
+	  }
+	  return null;
+  }
 }

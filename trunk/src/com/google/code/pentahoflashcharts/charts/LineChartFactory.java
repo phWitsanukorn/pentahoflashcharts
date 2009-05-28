@@ -28,7 +28,7 @@ public class LineChartFactory extends AbstractChartFactory {
   private static final String DOT_WIDTH_NODE_LOC = "dot-width"; //$NON-NLS-1$
 
   // defaults
-  private static final LineChart.Style LINECHART_STYLE_DEFAULT = LineChart.Style.NORMAL;
+  private static final LineChart.Style.Type LINECHART_STYLE_TYPE_DEFAULT = LineChart.Style.Type.DOT;
   
   // line related members
   protected LineChart.Style linechartstyle;
@@ -58,6 +58,7 @@ public class LineChartFactory extends AbstractChartFactory {
       if (dotwidth != null) {
         dot.setDotSize(dotwidth);
       }
+      dot.setOnClick(buildURLTemplate(getColumnHeader(col), getRowHeader(row)));
       lc.addDots(dot);
     }
     if (linechartwidth != null) {
@@ -73,10 +74,6 @@ public class LineChartFactory extends AbstractChartFactory {
     // set the title for this series
     lc.setText(getColumnHeader(col));
 
-    // set the onclick event to the base url template
-    if (null != baseURLTemplate) {
-      lc.setOnClick(baseURLTemplate);
-    }
     
     if (alpha != null) {
       lc.setAlpha(alpha);
@@ -89,20 +86,15 @@ public class LineChartFactory extends AbstractChartFactory {
   protected void setupStyles() {
     super.setupStyles();
     
+    LineChart.Style.Type mytype = this.LINECHART_STYLE_TYPE_DEFAULT;
+    linechartstyle = new LineChart.Style(mytype);
+    
     Node temp = chartNode.selectSingleNode(DOTSTYLE_NODE_LOC);
-
     if (getValue(temp) != null) {
-      if ("dot".equals(getValue(temp))) //$NON-NLS-1$
-        linechartstyle = LineChart.Style.DOT;
-      else if ("normal".equals(getValue(temp))) //$NON-NLS-1$
-        linechartstyle = LineChart.Style.NORMAL;
-      else if ("hollow".equals(getValue(temp))) //$NON-NLS-1$
-        linechartstyle = LineChart.Style.HOLLOW;
-      else
-        linechartstyle = LINECHART_STYLE_DEFAULT;
-    } else {
-      linechartstyle = LINECHART_STYLE_DEFAULT;
+    	linechartstyle.setType(getValue(temp));
     }
+    
+    
     
     temp = chartNode.selectSingleNode(LINE_WIDTH_NODE_LOC);
     if (getValue(temp) != null) {

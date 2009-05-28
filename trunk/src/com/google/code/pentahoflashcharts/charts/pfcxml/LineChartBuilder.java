@@ -90,19 +90,19 @@ public class LineChartBuilder  extends DefaultChartBuilder {
 	}
 
 	protected Style setupLineStyle(Node root) {
+		
+		LineChart.Style.Type t = LineChart.Style.Type.DOT;
+		
+		Style style = new LineChart.Style(t);
+		
 		if(getValue(root.selectSingleNode("/chart/dot-style"))!=null)
 		{
-			String style = getNodeValue(root.selectSingleNode("/chart/dot-style"));
-			if(DOT_TYPE_DOT.equalsIgnoreCase(style))
-			{
-				return LineChart.Style.DOT;
-			}
-			else if(DOT_TYPE_HOLLOW.equalsIgnoreCase(style))
-			{
-				return LineChart.Style.HOLLOW;
-			}
+			String stylestring = getNodeValue(root.selectSingleNode("/chart/dot-style"));
+			// TODO: Need to check to make sure stylestring in TYPEs
+			style.setType(stylestring);
+			return style;
 		}
-		return LineChart.Style.NORMAL;
+		return style;
 	}
 	
 

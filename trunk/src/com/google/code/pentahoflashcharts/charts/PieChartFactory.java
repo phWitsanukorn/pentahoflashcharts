@@ -45,6 +45,7 @@ public class PieChartFactory extends AbstractChartFactory {
       String label = (String) chart.getXAxis().getLabels().getLabels().get(row);
       
       slices[row] = new PieChart.Slice(d, label);
+      slices[row].setOnClick(buildURLTemplate(label, null));
       if (tooltipText != null) {
         slices[row].setTip(tooltipText);
       }
