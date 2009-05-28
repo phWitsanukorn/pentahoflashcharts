@@ -25,7 +25,7 @@ public class AreaChartFactory extends LineChartFactory {
   @Override
   public LineChart getLineChartFromColumn(int col) {
     LineChart ac = null;
-    if(linechartstyle != LineChart.Style.HOLLOW) {
+    if(linechartstyle.getType() != LineChart.Style.Type.HALLOW_DOT.toString()) {
       AreaLineChart ahc = new AreaLineChart();
       ahc.setFillColor(getColor(col));
       ac = ahc;
@@ -35,12 +35,20 @@ public class AreaChartFactory extends LineChartFactory {
       ac = ahc;
     }
 
-    Number[] numbers = new Number[getRowCount()];
+    
     for (int row = 0; row < getRowCount(); row++) {
-      numbers[row] = ((Number) getValueAt(row, col)).doubleValue();
+      Number n = ((Number) getValueAt(row, col)).doubleValue();
+      LineChart.Dot dot = new LineChart.Dot(n);
+
+      if (dotwidth != null) {
+        dot.setDotSize(dotwidth);
+      }
+      
+      dot.setOnClick(buildURLTemplate(getColumnHeader(col), getRowHeader(row)));
+      ac.addDots(dot);
     }
 
-    ac.addValues(numbers);
+
     ac.setColour(getColor(col));
     
     if (linechartwidth != null) {
@@ -53,10 +61,6 @@ public class AreaChartFactory extends LineChartFactory {
     // set the title for this series
     ac.setText(getColumnHeader(col));
 
-    // set the onclick event to the base url template
-    if (null != baseURLTemplate) {
-      ac.setOnClick(baseURLTemplate);
-    }
     if (alpha != null) {
       ac.setAlpha(alpha);
     }

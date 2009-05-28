@@ -217,9 +217,13 @@ public class BarChartFactory extends AbstractChartFactory {
         }
       }
 
+      BarChart.Bar b;
       for (int row = 0; row < getRowCount(); row++) {
         double d = ((Number) getValueAt(row, col)).doubleValue();
-        bc.addBars(new BarChart.Bar(d));
+        b = new BarChart.Bar(d);
+        // set the onclick event to the URLTemplate
+        b.setOnClick(buildURLTemplate(getColumnHeader(col), getRowHeader(row)));
+        bc.addBars(b);
       }
 
       bc.setColour(getColor(col));
@@ -231,14 +235,12 @@ public class BarChartFactory extends AbstractChartFactory {
       // set the title for this series
       bc.setText(getColumnHeader(col));
   
-      // set the onclick event to the base url template
-      if (null != baseURLTemplate) {
-        bc.setOnClick(baseURLTemplate);
-      }
+   
 
       if (alpha != null) {
         bc.setAlpha(alpha);
       }
+      //bc.useAnimation(false)
       
       return bc;
     }
@@ -248,6 +250,7 @@ public class BarChartFactory extends AbstractChartFactory {
     HorizontalBarChart hbc = new HorizontalBarChart();
     for (int row = 0; row < getRowCount(); row++) {
       double d = ((Number) getValueAt(row, col)).doubleValue();
+      //TODO: Add OnClick to horizontal
       hbc.addBars(new HorizontalBarChart.Bar(d));
     }
     hbc.setColour(getColor(col));
@@ -260,7 +263,11 @@ public class BarChartFactory extends AbstractChartFactory {
 
     // set the onclick event to the base url template
     if (null != baseURLTemplate) {
-      hbc.setOnClick(baseURLTemplate);
+    	String newURL = baseURLTemplate.replace("{series}", "seriesname");
+    	
+      hbc.setOnClick(newURL);
+      
+      
     }
     
     if (alpha != null) {
