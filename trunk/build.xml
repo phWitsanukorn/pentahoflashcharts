@@ -9,7 +9,7 @@
 	<property name="resource.dir" location="${base.dir}/resource" />
 		
 		
-	<property name="pentaho.pci.webapp" location="/Users/ngoodman/pentaho/biserver-ce-CITRUS-M3/biserver-ce" />
+	<property name="pentaho.pci.webapp" location="/Users/ngoodman/pentaho/biserver-ce-3.0.0.stable/biserver-ce" />
 	<property name="pentaho.pci.pentaho-solutions" location="${pentaho.pci.webapp}/pentaho-solutions" />
 	<property name="pentaho.pci.system" location="${pentaho.pci.pentaho-solutions}/system" />
 		
