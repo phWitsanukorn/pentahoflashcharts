@@ -62,11 +62,12 @@ public class BubbleChartFactory extends AbstractChartFactory {
 
       ScatterChart sc = new ScatterChart();
       sc.setColour(getColor(row));
+      // Need to actually convert objects not cast.
       Number x = (Number)getValueAt(row, 0);
       Number y = (Number)getValueAt(row, 1);
       Number z = (Number)getValueAt(row, 2);
 
-      setupDotSize(sc, z);
+      setupDotSize(sc, z.doubleValue());
       
       sc.addPoint(x.doubleValue(), y.doubleValue());
       

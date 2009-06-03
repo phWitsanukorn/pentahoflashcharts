@@ -13,8 +13,8 @@
 	<property name="pentaho.pci.pentaho-solutions" location="${pentaho.pci.webapp}/pentaho-solutions" />
 	<property name="pentaho.pci.system" location="${pentaho.pci.pentaho-solutions}/system" />
 		
-	<property name="pfc.version" value="0.1"/>
-	<property name="pfc.revision" value="218"/>
+	<property name="pfc.version" value="3.0.ce.stable.01"/>
+	<property name="pfc.revision" value="238"/>
 	<property name="pfc.jar.name" value="pentahoflashchart-${pfc.version}-r${pfc.revision}.jar"/>
 	<property name="pfc.samples.name" value="pentahoflashchart-samples-${pfc.version}-r${pfc.revision}.zip"/>
 	<property name="pfc.dist.name" value="pentahoflashchart-dist-${pfc.version}-r${pfc.revision}.zip"/>
