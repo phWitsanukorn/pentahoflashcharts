@@ -1,0 +1,67 @@
+<chart>
+	<!-- Define the chart type -->	
+	<chart-type>LineChart</chart-type>
+	
+	<!-- Specify the title of the chart -->
+	<title></title>	
+	<title-font>
+		<font-family>Arial</font-family>
+		<size>18</size>
+		<is-bold>false</is-bold>
+	</title-font>
+	
+	<!--  Line Chart properties -->
+	<line-width>2.0</line-width>
+	<dot-style>hollow</dot-style> <!-- values: dot, normal, hollow -->
+	<dot-width>5</dot-width>
+
+    <!-- General Chart Propeties --> 
+	<chart-background type="color">#FFFFFF</chart-background>
+	<plot-background type="color">#FFFFFF</plot-background>
+	
+	<!--  X-Axis properties (domain) -->
+	<domain-title></domain-title>
+	<domain-title-font>
+      <font-family>Arial</font-family>
+	  <size>14</size>
+	  <is-bold>true</is-bold>	
+	</domain-title-font>
+	<domain-color>#000000</domain-color>
+	<!--domain-grid-color>#CCCCCC</domain-grid-color -->
+		<domain-grid-color>#D9EED1</domain-grid-color>
+	<domain-stroke>1</domain-stroke>
+
+
+	<!--  Y-Axis properties (range) -->
+	<range-title></range-title>
+	<range-title-font>
+      <font-family>Arial</font-family>
+	  <size>14</size>
+	  <is-bold>true</is-bold>	
+	</range-title-font>
+	<range-minimum></range-minimum>
+	<range-maximum></range-maximum>
+	<range-color>#000000</range-color>
+	<!--range-grid-color>#CCCCCC</range-grid-color-->
+	<range-grid-color>#D9EED1</range-grid-color>
+	<range-stroke>1</range-stroke>
+	<range-steps>8</range-steps>
+	
+	<!-- Specify the color palette for the chart -->
+	<color-palette>
+		<color>#66BB49</color>
+		<color>#FA8E9E</color>
+		<color>#FE913C</color>
+		<color>#D4DACE</color>
+		<color>#91CCDA</color>
+		<color>#6A5A98</color>
+		<color>#123D82</color>
+		<color>#4A0866</color>
+		<color>#445500</color>
+		<color>#FFAA00</color>
+		<color>#1E8AD3</color>
+		<color>#AA6611</color>
+		<color>#772200</color>
+	</color-palette>
+
+</chart>
