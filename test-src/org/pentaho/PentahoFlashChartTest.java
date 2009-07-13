@@ -14,6 +14,7 @@ import org.pentaho.commons.connection.memory.MemoryResultSet;
 import org.pentaho.platform.api.util.XmlParseException;
 import org.pentaho.platform.engine.services.solution.PentahoEntityResolver;
 import org.pentaho.platform.util.xml.dom4j.XmlDom4JHelper;
+
 import com.google.code.pentahoflashcharts.charts.PentahoOFC4JChartHelper;
 
 @SuppressWarnings({"unchecked","nls"})
@@ -349,11 +350,13 @@ public class PentahoFlashChartTest {
     String c2 = PentahoOFC4JChartHelper.generateChartJson(chartNode, rs, false, null);
     
     Assert.assertEquals(c2, 
+    		"{\"is_thousand_separator_disabled\":0,\"is_decimal_separator_comma\":0,\"x_legend\":{\"text\":\"DEPARTMENT\",\"style\":\"font-family: Arial; font-size: 14px; font-weight: normal; font-style: normal;\"},\"y_axis\":{\"stroke\":1,\"grid-colour\":\"#aaaaaa\",\"colour\":\"#000000\",\"labels\":[\"Human Resource\",\"Finance\",\"Sales\"],\"offset\":1},\"x_axis\":{\"min\":0,\"steps\":11,\"stroke\":1,\"grid-colour\":\"#aaaaaa\",\"colour\":\"#000000\",\"labels\":{},\"max\":121},\"num_decimals\":2,\"is_fixed_num_decimals_forced\":0,\"elements\":[{\"text\":\"ACTUAL\",\"type\":\"hbar\",\"values\":[{\"right\":11,\"left\":null,\"tip\":null},{\"right\":14,\"left\":null,\"tip\":null},{\"right\":7,\"left\":null,\"tip\":null}],\"colour\":\"#006666\",\"on-click\":\"\"},{\"text\":\"BUDGET\",\"type\":\"hbar\",\"values\":[{\"right\":12,\"left\":null,\"tip\":null},{\"right\":9,\"left\":null,\"tip\":null},{\"right\":100,\"left\":null,\"tip\":null}],\"colour\":\"#0066CC\",\"on-click\":\"\"}]}");
+    		/*
       "{\"x_legend\":{\"text\":\"DEPARTMENT\",\"style\":\"font-family: Arial; font-size: 14px; font-weight: normal; font-style: normal;\"},"+
        "\"y_axis\":{\"stroke\":1,\"grid-colour\":\"#aaaaaa\",\"colour\":\"#000000\",\"labels\":[\"Sales\",\"Finance\",\"Human Resource\"],\"offset\":1},"+
        "\"x_axis\":{\"min\":0,\"steps\":11,\"stroke\":1,\"grid-colour\":\"#aaaaaa\",\"colour\":\"#000000\",\"labels\":{},\"max\":121},"+
        "\"elements\":[{\"text\":\"ACTUAL\",\"type\":\"hbar\",\"values\":[{\"right\":11},{\"right\":14},{\"right\":7}],\"colour\":\"#006666\"},{\"text\":\"BUDGET\",\"type\":\"hbar\",\"values\":[{\"right\":12},{\"right\":9},{\"right\":100}],\"colour\":\"#0066CC\"}]}");
-
+	*/
 
   }
   
