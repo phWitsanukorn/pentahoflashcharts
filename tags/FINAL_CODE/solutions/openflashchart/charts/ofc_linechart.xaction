@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<action-sequence> 
+  <title>PFC XML - Line Chart</title>
+  <version>1</version>
+  <logging-level>DEBUG</logging-level>
+  <documentation> 
+    <author>Bayon Technologies</author>  
+    <description>Animated, simple Pie Chart based on a Relational Data source. Includes an example of drill thru links.</description>  
+    <help/>  
+    <result-type/>  
+    <icon>HelloWorld.png</icon> 
+  </documentation>
+
+  <inputs> 
+    <chart-attributes type="string"> 
+      <sources> 
+        <request>chart-attributes</request> 
+      </sources>  
+      <default-value><![CDATA[<chart><chart-type>LineChart</chart-type><title>Line Chart--Product "1948 Porsche 356-A Roadster"</title><x-steps>1000</x-steps><x-max>20000</x-max><domain-title>Day</domain-title><range-title>Sold Price</range-title><y-axis><labels></labels><y-steps>1000</y-steps><y-max>10000</y-max><color>#909090</color></y-axis></chart>]]></default-value> 
+    </chart-attributes>  
+    <use_pentaho_xml type="string"> 
+      <sources> 
+        <request>use_pentaho_xml</request> 
+      </sources>  
+      <default-value><![CDATA[false]]></default-value> 
+    </use_pentaho_xml> 
+  </inputs>
+
+  <outputs> 
+    <html_fragment type="string"> 
+      <destinations> 
+        <response>content</response> 
+      </destinations> 
+    </html_fragment> 
+  </outputs>
+
+  <resources/>
+  
+  <actions> 
+    <action-definition> 
+      <component-name>SQLLookupRule</component-name>
+      <action-type>Relational</action-type>
+      <action-outputs> 
+        <query-result type="result-set" mapping="chart-data"/> 
+      </action-outputs>
+      <component-definition> 
+        <jndi><![CDATA[SampleData]]></jndi>  
+        <live><![CDATA[true]]></live>  
+        <query><![CDATA[SELECT  ORDERS.ORDERDATE, SUM(ORDERDETAILS.QUANTITYORDERED*ORDERDETAILS.PRICEEACH) SOLD_PRICE 
+FROM ORDERS INNER JOIN ORDERDETAILS ON ORDERS.ORDERNUMBER = ORDERDETAILS.ORDERNUMBER INNER JOIN PRODUCTS ON ORDERDETAILS.PRODUCTCODE =PRODUCTS.PRODUCTCODE INNER JOIN CUSTOMERS ON ORDERS.CUSTOMERNUMBER =CUSTOMERS.CUSTOMERNUMBER  
+INNER JOIN EMPLOYEES ON CUSTOMERS.SALESREPEMPLOYEENUMBER = EMPLOYEES.EMPLOYEENUMBER
+INNER JOIN OFFICES ON EMPLOYEES.OFFICECODE=OFFICES.OFFICECODE
+WHERE (ORDERS.ORDERDATE >= '2005-01-01' AND ORDERS.ORDERDATE <= '2005-06-30') AND PRODUCTNAME = '1948 Porsche 356-A Roadster'
+GROUP BY  PRODUCTLINE, PRODUCTNAME,  ORDERS.ORDERDATE
+ORDER BY  PRODUCTLINE desc, PRODUCTNAME, ORDERS.ORDERDATE]]></query> 
+      </component-definition> 
+    </action-definition>
+  
+    <action-definition> 
+      <component-name>OpenFlashChartComponent</component-name>
+      <action-type>Open Flash Chart</action-type>
+      <action-inputs> 
+        <chart-attributes type="string"/>  
+        <chart-data type="result-set"/>  
+        <use_pentaho_xml type="string"/> 
+      </action-inputs>
+      <action-outputs> 
+        <html_fragment type="string"/>  
+        <content_url type="string"/> 
+      </action-outputs>
+      <component-definition/> 
+    </action-definition>
+ 
+  </actions> 
+</action-sequence>
