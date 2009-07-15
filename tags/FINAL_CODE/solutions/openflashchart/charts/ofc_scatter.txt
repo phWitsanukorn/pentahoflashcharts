@@ -1,0 +1,61 @@
+<chart>
+<chart-type>ScatterChart</chart-type>
+<title>Product Line Sales compared to On Hand vs Units Sold</title>
+<title-font>
+		<font-family>Arial</font-family>
+		<size>14</size>
+		<is-bold>true</is-bold>
+		<is-italic>false</is-italic>
+</title-font>
+<dot-style>hollow</dot-style>
+
+<domain-title>On hand</domain-title>
+<domain-title-font>
+      <font-family>Arial</font-family>
+	  <size>12</size>
+	  <is-bold>false</is-bold>
+	  <is-italic>false</is-italic>	
+</domain-title-font>
+<range-title>Sold unit</range-title>
+<range-title-font>
+      <font-family>Arial</font-family>
+	  <size>12</size>
+	  <is-bold>false</is-bold>
+	  <is-italic>false</is-italic>	
+</range-title-font>
+
+<x-axis>
+<labels>
+
+</labels>
+<x-steps>
+1000000
+</x-steps>
+<x-max>
+6000000
+</x-max>
+<color>#909090</color>
+</x-axis>
+<y-axis>
+<labels></labels>
+<y-steps>5000</y-steps>
+<y-max>40000</y-max>
+</y-axis>
+<color-palette>
+	<color>#387179</color>
+	<color>#626638</color>
+	<color>#A8979A</color>
+	<color>#B09A6B</color>
+	<color>#772200</color>
+	<color>#C52F0D</color>
+	<color>#123D82</color>
+	<color>#4A0866</color>
+	<color>#445500</color>
+	<color>#FFAA00</color>
+	<color>#1E8AD3</color>
+	<color>#AA6611</color>
+	<color>#772200</color>
+</color-palette>
+<max-bubble-size>50</max-bubble-size>
+<tooltip>On Hand and Sold Unit:(#x#,#y#)</tooltip>		
+</chart>

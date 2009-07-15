@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<action-sequence> 
+  <title>PFC XML - Scatter Chart</title>
+  <version>1</version>
+  <logging-level>DEBUG</logging-level>
+  <documentation> 
+    <author>Bayon Technologies</author>  
+    <description>PFC XML - Scatter Chart</description>  
+    <help/>  
+    <result-type/>  
+    <icon>HelloWorld.png</icon> 
+  </documentation>
+
+  <inputs> 
+    <use_pentaho_xml type="string"> 
+      <sources> 
+        <request>use_pentaho_xml</request> 
+      </sources>  
+      <default-value><![CDATA[false]]></default-value> 
+    </use_pentaho_xml>  
+    <ofc_lib_name type="string">
+      <sources>
+        <request>ofc_lib_name</request>
+      </sources>
+      <default-value><![CDATA[open-flash-chart-full-embedded-font.swf]]></default-value>
+    </ofc_lib_name>
+  </inputs>
+
+  <outputs> 
+    <html_fragment type="string"> 
+      <destinations> 
+        <response>content</response> 
+      </destinations> 
+    </html_fragment> 
+  </outputs>
+
+  <resources> 
+    <chart-attributes> 
+      <solution-file> 
+        <location>ofc_scatter.txt</location>  
+        <mime-type>text/plain</mime-type> 
+      </solution-file> 
+    </chart-attributes> 
+  </resources>
+  
+  <actions> 
+    <action-definition> 
+      <component-name>SQLLookupRule</component-name>
+      <action-type>Relational</action-type>
+      <action-outputs> 
+        <query-result type="result-set" mapping="chart-data"/> 
+      </action-outputs>
+      <component-definition> 
+        <jndi><![CDATA[SampleData]]></jndi>  
+        <live><![CDATA[true]]></live>  
+        <query><![CDATA[SELECT
+     PRODUCTS.PRODUCTLINE AS LINE,
+     SUM (PRODUCTS.QUANTITYINSTOCK) AS ONHAND,
+     SUM(ORDERFACT.QUANTITYORDERED) AS QUANTITY,
+     SUM(ORDERFACT.TOTALPRICE) AS TOTAL
+FROM
+     PRODUCTS INNER JOIN ORDERFACT ON PRODUCTS.PRODUCTCODE = ORDERFACT.PRODUCTCODE
+GROUP BY
+     PRODUCTS.PRODUCTLINE
+ORDER BY
+     PRODUCTS.PRODUCTLINE ASC]]></query>
+      </component-definition> 
+    </action-definition>
+  
+    <action-definition> 
+      <component-name>OpenFlashChartComponent</component-name>
+      <action-type>Open Flash Chart</action-type>
+      <action-inputs> 
+        <chart-data type="result-set"/>  
+        <use_pentaho_xml type="string"/>  
+        <ofc_lib_name type="string"/>
+      </action-inputs>
+      <action-outputs> 
+        <html_fragment type="string"/>  
+        <content_url type="string"/> 
+      </action-outputs>
+      <component-definition/> 
+    </action-definition>
+ 
+  </actions> 
+</action-sequence>

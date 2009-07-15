@@ -1,0 +1,15 @@
+<chart>
+<chart-type>LineChart</chart-type>
+<title>Multiple Line Chart</title>
+<domain-title>Day</domain-title><range-title>Sold Price</range-title>
+<y-axis>
+<labels></labels>
+<y-steps>200150</y-steps>
+<y-max>2201650</y-max>
+</y-axis>
+<color-palette>
+<color>#387179</color>
+<color>#626638</color>
+<color>#A8979A</color>	
+</color-palette>
+</chart>

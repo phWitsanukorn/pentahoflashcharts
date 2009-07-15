@@ -1,0 +1,109 @@
+<project default="jar">
+
+	<property name="base.dir" location="." />
+	<property name="src.dir" location="${base.dir}/src" />
+	<property name="class.dir" location="${base.dir}/classes" />
+	<property name="lib.dir" location="${base.dir}/lib" />
+	<property name="build.dir" location="${base.dir}/build" />
+	<property name="samples.dir" location="${base.dir}/solutions" />
+	<property name="resource.dir" location="${base.dir}/resource" />
+		
+		
+	<property name="pentaho.pci.webapp" location="/Users/ngoodman/pentaho/biserver-ce-3.0.0.stable/biserver-ce" />
+	<property name="pentaho.pci.pentaho-solutions" location="${pentaho.pci.webapp}/pentaho-solutions" />
+	<property name="pentaho.pci.system" location="${pentaho.pci.pentaho-solutions}/system" />
+		
+	<property name="pfc.version" value="3.0.ce.stable.01"/>
+	<property name="pfc.revision" value="238"/>
+	<property name="pfc.jar.name" value="pentahoflashchart-${pfc.version}-r${pfc.revision}.jar"/>
+	<property name="pfc.samples.name" value="pentahoflashchart-samples-${pfc.version}-r${pfc.revision}.zip"/>
+	<property name="pfc.dist.name" value="pentahoflashchart-dist-${pfc.version}-r${pfc.revision}.zip"/>
+	<property name="pfc.plugin.dist.name" value="pentahoflashchart-plugin-${pfc.version}-r${pfc.revision}.zip"/>
+
+	<path id="project.classpath">
+		<pathelement location="${class.dir}" />
+		<fileset dir="${lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init" depends="">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.dir}/classes" />
+		<mkdir dir="${build.dir}/dist" />
+	</target>
+	<!-- ================================= 
+          target: jar              
+         ================================= -->
+	<target name="jar" depends="compile" description="jar">
+		<jar destfile="${build.dir}/pentahoflashchart.jar">
+			<fileset dir="${class.dir}" />
+			<fileset dir="${src.dir}" />
+						
+		</jar>
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: compile                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="compile" depends="init">
+		<javac debug="on" fork="false" destdir="${class.dir}" srcdir="${src.dir}" classpathref="project.classpath" />
+
+	</target>
+
+	<target name="copyjars" depends="jar">
+		<!-- copy pentahoflashchart.jar into PCI  -->
+
+		<copy toDir="${pentaho.pci.webapp}/tomcat/webapps/pentaho/WEB-INF/lib" overwrite="true" failonerror="false">
+			<fileset dir="${build.dir}">
+				<include name="**/*.jar" />
+			</fileset>
+			<fileset dir="${lib.dir}">
+				<include name="xstream*"/>
+				<include name="ofc*"/>
+			</fileset>
+		</copy>
+	</target>
+	<target name="samples">
+		<zip destfile="${build.dir}/${pfc.samples.name}" basedir="${samples.dir}">
+			<exclude name="**/.svn/**"/>
+		</zip>
+	</target>
+	
+	<target name="distjar" depends="jar">
+		<copy tofile="${build.dir}/${pfc.jar.name}" file="${build.dir}/pentahoflashchart.jar"/>
+	</target>
+	
+	<target name="dist" depends="distjar,samples">
+		<zip destfile="${build.dir}/${pfc.plugin.dist.name}">
+			<zipfileset dir="${resource.dir}" prefix="openflashchart">
+				<exclude name="**/.svn/**"/>
+			</zipfileset>
+			<zipfileset dir="${lib.dir}" prefix="openflashchart/lib">
+				<include name="*ofc*.jar"/>
+				<include name="xstream*.jar"/>
+			</zipfileset>
+			<zipfileset dir="${build.dir}" includes="${pfc.jar.name}" prefix="openflashchart/lib"/>
+
+		</zip>
+		<zip destfile="${build.dir}/${pfc.dist.name}">
+			<zipfileset dir="${samples.dir}" prefix="samples">
+				<exclude name="**/.svn/**"/>
+			</zipfileset>
+			<zipfileset dir="${resource.dir}" includes="*.swf" prefix="resource">
+				<exclude name="**/.svn/**"/>
+			</zipfileset>
+			<zipfileset dir="${build.dir}" includes="${pfc.jar.name}"/>
+			<zipfileset dir="${resource.dir}" includes="README.txt"/>
+		</zip>
+	</target>
+	
+	<target name="deployplugin" depends="dist">
+		<unzip src="${build.dir}/${pfc.plugin.dist.name}" dest="${pentaho.pci.system}"/>
+		<get src="http://localhost:8080/pentaho/Publish?publish=now&amp;class=org.pentaho.platform.plugin.services.pluginmgr.PluginAdapter&amp;userid=joe&amp;password=password" dest="${build.dir}/blah.html"/>
+	</target>
+		
+	
+	
+
+</project>
