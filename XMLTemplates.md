@@ -1,0 +1,110 @@
+This document covers how to use Pentaho's existing [Chart Definition XML](http://wiki.pentaho.com/display/ServerDoc2x/Chart+Properties+Reference) to create flash charts in Pentaho.
+
+Most charts that are built for Pentaho Charts will work with the PentahoFlashChart component.  Same XML, Same Data should produce a similar chart.
+
+The replacements outlined in [TemplateReplacements](TemplateReplacements.md) are applied to the chart XML before processing.  In other words, you can put ${head1} into the XML and it will be replaced with the literal header value before processing into a chart.
+
+# Supported XML #
+
+By default, any "unknown" XML is ignored.  You can add as many additional Pentaho XML fragments as you want.  The PentahoFlashChart component will simply ignore tags it doesn't know how to process.
+
+## Pentaho XML tags supported ##
+
+```
+
+<dataset-type>CategoryDataset</dataset-type>
+
+<chart-type>BarChart</chart-type>
+<chart-type>LineChart</chart-type>
+<chart-type>PieChart</chart-type>
+<chart-type>AreaChart</chart-type>
+
+<title></title>
+<title-font>
+  <font-family></font-family>
+  <size></size>
+  <is-bold></is-bold>
+  <is-italic></is-italic>
+</title-font>
+
+<range-title></range-title>
+<range-title-font>
+  <font-family></font-family>
+  <size></size>
+  <is-bold></is-bold>
+  <is-italic></is-italic>
+</range-title-font>
+<range-minimum></range-minimum>
+<range-maximum></range-maximum>
+
+<domain-title></domain-title>
+<domain-title-font>
+  <font-family></font-family>
+  <size></size>
+  <is-bold></is-bold>
+  <is-italic></is-italic>
+</domain-title-font>
+
+<color-palette><color></color></color-palette>
+
+<plot-background type="color"></plot-background>
+<chart-background type="color"></chart-background>
+
+<orientation>horizontal</orientation> BarChart ONLY!
+<orientation>vertical</orientation>
+
+<is-3d></is-3d>
+
+```
+
+## PentahoFlashChart XML extensions ##
+
+```
+
+<is-glass>true/false</is-glass>
+<is-sketch>true/false</is-sketch>
+
+```
+
+
+# Example #
+
+At a very basic level, the PentahoFlashChart component will do precisely what the PentahoChartComponent does, except it will output an OFC HTML Fragment along with a JSON text file (flash chart instead of image)
+
+For example, using the chart XML resource:
+
+```
+<chart>
+ <chart-type>BarChart</chart-type>
+ <title>Sales Title</title>
+</chart>
+```
+
+with the data
+
+|Product|Amount|
+|:------|:-----|
+|VCR    |2981.21|
+|DVD    |8389.89|
+
+Will produce the OFC JSON output ( a bar chart )
+
+```
+
+{
+  "title":{
+    "text":  "Sales Title"
+  },
+  "elements":[
+    {
+      "type":      "bar",
+      "text":      "Amount",
+      "values" :   [2981.21,8389.89]
+    }
+  ],
+  "x_axis":{
+    "labels":      ["VCR", "DVD"]
+  }
+}
+
+```
